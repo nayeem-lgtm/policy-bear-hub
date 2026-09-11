@@ -7,7 +7,6 @@ import {
   Eye,
   EyeOff,
   FileText,
-  Headphones,
   HeartPulse,
   LockKeyhole,
   PhoneCall,
@@ -19,10 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PolicyBearMark } from "@/components/brand/PolicyBearLogo";
-import { DEMO_ACCOUNTS } from "@/lib/rbac";
 import { useAuth } from "@/context/AuthContext";
 import brandLogo from "@/assets/policybear-brand-logo.png.asset.json";
 import wordmarkWhite from "@/assets/policybear-wordmark-white.png.asset.json";

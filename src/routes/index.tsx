@@ -250,34 +250,6 @@ function LoginPage() {
               </Button>
           </form>
 
-          <div className="mt-8 border-t border-border pt-5">
-            <p className="flex items-center gap-2 text-xs font-semibold text-foreground">
-              <Headphones className="size-3.5 text-brand" /> Quick demo access
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {DEMO_ACCOUNTS.map((account) => (
-                  <Button
-                    key={account.id}
-                    type="button"
-                    variant={email === account.email ? "secondary" : "outline"}
-                    size="sm"
-                    onClick={() => {
-                      setEmail(account.email);
-                      setPassword(account.password);
-                      setError(null);
-                    }}
-                  >
-                    {account.role}
-                    {email === account.email && <Badge className="size-1.5 rounded-full p-0" aria-label="Selected" />}
-                  </Button>
-              ))}
-            </div>
-          </div>
-
-          <p className="mt-8 text-center text-xs text-muted-foreground">
-            Trouble signing in? Contact IT Support at ext. 210 or{" "}
-            <span className="text-brand">it@policybear.com</span>
-          </p>
         </div>
       </section>
     </main>

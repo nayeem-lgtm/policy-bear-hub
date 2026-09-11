@@ -22,7 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { PolicyBearMark } from "@/components/brand/PolicyBearLogo";
 import { useAuth } from "@/context/AuthContext";
 import brandLogo from "@/assets/policybear-brand-logo.png.asset.json";
-import wordmarkWhite from "@/assets/policybear-wordmark-white.png.asset.json";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({

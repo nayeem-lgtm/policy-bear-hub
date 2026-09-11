@@ -281,3 +281,69 @@
     transform: rotate(12deg) scale(1.06);
   }
 }
+
+/* Sign-in experience */
+@utility auth-grid {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.045) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom right, black, transparent 78%);
+}
+
+@utility auth-mobile-line {
+  background-image: linear-gradient(90deg, var(--brand), var(--brand-cyan), var(--brand-yellow));
+}
+
+@utility auth-reveal {
+  animation: auth-reveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility auth-delay-1 {
+  animation-delay: 0.1s;
+}
+
+@utility auth-delay-2 {
+  animation-delay: 0.2s;
+}
+
+@utility auth-delay-3 {
+  animation-delay: 0.3s;
+}
+
+@utility auth-panel {
+  animation: auth-panel 0.75s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility auth-submit {
+  box-shadow: 0 10px 24px -12px color-mix(in oklab, var(--brand) 70%, transparent);
+}
+
+@keyframes auth-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes auth-panel {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-reveal,
+  .auth-panel {
+    animation: none;
+  }
+}

@@ -107,7 +107,7 @@ function LoginPage() {
 
           {/* Insurance protection scene */}
           <div className="auth-reveal auth-delay-3 relative mt-10 grid h-[15rem] max-w-lg place-items-center">
-            <div className="guard-ring size-[13rem]" />
+            <div className="guard-ring absolute size-[13rem]" />
             <div className="guard-ring guard-ring-2 absolute size-[13rem]" />
             <div className="guard-ring guard-ring-3 absolute size-[13rem]" />
             <div className="radar-sweep absolute size-[13rem] rounded-full" />

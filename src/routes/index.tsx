@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {
   AlertCircle,
   ArrowRight,
-  Check,
   Eye,
   EyeOff,
   FileText,

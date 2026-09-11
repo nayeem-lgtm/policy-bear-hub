@@ -88,13 +88,6 @@ function LoginPage() {
         </div>
 
         <div className="relative z-10 my-auto max-w-xl py-12">
-          <div className="auth-reveal inline-flex items-center gap-2 rounded-full border border-brand-cyan/20 bg-brand-cyan/10 px-3 py-1.5 text-xs font-semibold text-brand-cyan">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-cyan opacity-60" />
-              <span className="relative inline-flex size-2 rounded-full bg-brand-cyan" />
-            </span>
-            Your floor is live
-          </div>
           <h2 className="auth-reveal auth-delay-1 mt-7 max-w-lg text-4xl leading-[1.12] font-semibold text-brand-ink-foreground xl:text-5xl">
             Every conversation.<br />Every customer.<br />One clear view.
           </h2>
@@ -149,18 +142,13 @@ function LoginPage() {
         </div>
 
         <div className="relative z-10 flex items-center justify-between border-t border-brand-ink-foreground/10 pt-5 text-[0.68rem] text-brand-ink-foreground/40">
-          <span>Private company workspace</span>
+          <span>A product of Ray Advertising</span>
           <span className="flex items-center gap-1.5"><ShieldCheck className="size-3.5" /> Secure access</span>
         </div>
       </section>
 
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10 sm:px-10">
         <div className="auth-mobile-line absolute inset-x-0 top-0 h-1 lg:hidden" />
-        <img
-          src={brandLogo.url}
-          alt="PolicyBear"
-          className="auth-reveal absolute top-6 left-6 h-auto w-36 object-contain sm:top-8 sm:left-10 sm:w-44"
-        />
         <div className="auth-panel w-full max-w-[27rem] pt-16 sm:pt-0">
           <img
             src={brandLogo.url}

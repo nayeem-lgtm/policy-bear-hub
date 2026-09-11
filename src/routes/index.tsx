@@ -6,10 +6,14 @@ import {
   Check,
   Eye,
   EyeOff,
+  FileText,
   Headphones,
+  HeartPulse,
   LockKeyhole,
+  PhoneCall,
   ShieldCheck,
   Sparkles,
+  Umbrella,
   User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -101,7 +105,37 @@ function LoginPage() {
             Calls, policies, callbacks and compliance—connected for a faster, more confident workday.
           </p>
 
-          <div className="auth-reveal auth-delay-3 mt-10 grid max-w-lg grid-cols-3 gap-px overflow-hidden rounded-lg border border-brand-ink-foreground/10 bg-brand-ink-foreground/10">
+          {/* Insurance protection scene */}
+          <div className="auth-reveal auth-delay-3 relative mt-10 grid h-[15rem] max-w-lg place-items-center">
+            <div className="guard-ring size-[13rem]" />
+            <div className="guard-ring guard-ring-2 absolute size-[13rem]" />
+            <div className="guard-ring guard-ring-3 absolute size-[13rem]" />
+            <div className="radar-sweep absolute size-[13rem] rounded-full" />
+
+            <div className="orbit-spin absolute size-[11.5rem]">
+              {[Umbrella, HeartPulse, FileText, PhoneCall].map((Icon, i) => (
+                <span
+                  key={i}
+                  className="absolute grid size-9 place-items-center rounded-xl border border-brand-ink-foreground/15 bg-brand-ink/85 backdrop-blur-sm"
+                  style={{
+                    top: `${50 - 50 * Math.cos((i * Math.PI) / 2)}%`,
+                    left: `${50 + 50 * Math.sin((i * Math.PI) / 2)}%`,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  <span className="orbit-counter grid place-items-center">
+                    <Icon className="size-4 text-brand-cyan" />
+                  </span>
+                </span>
+              ))}
+            </div>
+
+            <div className="shield-float relative grid size-24 place-items-center rounded-[1.6rem] border border-brand-cyan/25 bg-brand-cyan/10 shadow-brand backdrop-blur-sm">
+              <PolicyBearMark tone="inverse" className="size-11" />
+            </div>
+          </div>
+
+          <div className="auth-reveal auth-delay-3 mt-8 grid max-w-lg grid-cols-3 gap-px overflow-hidden rounded-lg border border-brand-ink-foreground/10 bg-brand-ink-foreground/10">
             {[
               ["Live", "Call activity"],
               ["Protected", "Customer data"],

@@ -159,7 +159,12 @@ function LoginPage() {
 
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10 sm:px-10">
         <div className="auth-mobile-line absolute inset-x-0 top-0 h-1 lg:hidden" />
-        <div className="auth-panel w-full max-w-[27rem]">
+        <img
+          src={brandLogo.url}
+          alt="PolicyBear"
+          className="auth-reveal absolute top-6 left-6 h-auto w-36 object-contain sm:top-8 sm:left-10 sm:w-44"
+        />
+        <div className="auth-panel w-full max-w-[27rem] pt-16 sm:pt-0">
           <img
             src={brandLogo.url}
             alt="PolicyBear"

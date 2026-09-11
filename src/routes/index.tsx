@@ -21,6 +21,7 @@ import { PolicyBearMark } from "@/components/brand/PolicyBearLogo";
 import { DEMO_ACCOUNTS } from "@/lib/rbac";
 import { useAuth } from "@/context/AuthContext";
 import brandLogo from "@/assets/policybear-brand-logo.png.asset.json";
+import wordmarkWhite from "@/assets/policybear-wordmark-white.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -73,11 +74,16 @@ function LoginPage() {
     <main className="auth-shell grid min-h-screen bg-background lg:grid-cols-[1.08fr_0.92fr]">
       <section className="auth-stage relative hidden min-h-screen overflow-hidden bg-brand-ink px-10 py-9 lg:flex lg:flex-col xl:px-16 xl:py-12">
         <div className="auth-grid absolute inset-0" aria-hidden="true" />
-        <div className="relative z-10 inline-flex items-center gap-3 self-start text-brand-ink-foreground">
-          <span className="grid size-10 place-items-center rounded-lg border border-brand-ink-foreground/15 bg-brand-ink-foreground/10">
-            <PolicyBearMark tone="inverse" className="size-6" />
+        <div className="relative z-10 flex items-center gap-3 self-start text-brand-ink-foreground">
+          <img
+            src={wordmarkWhite.url}
+            alt="PolicyBear"
+            className="h-6 w-auto object-contain"
+          />
+          <span className="h-5 w-px bg-brand-ink-foreground/20" />
+          <span className="text-[0.62rem] font-semibold tracking-[0.22em] uppercase text-brand-ink-foreground/60">
+            Operations CRM
           </span>
-          <span className="text-xs font-semibold tracking-[0.18em] uppercase">Operations CRM</span>
         </div>
 
         <div className="relative z-10 my-auto max-w-xl py-12">

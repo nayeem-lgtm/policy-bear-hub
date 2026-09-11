@@ -1,15 +1,26 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { AlertCircle, ArrowRight, Lock, ShieldCheck, User } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  Check,
+  Eye,
+  EyeOff,
+  Headphones,
+  LockKeyhole,
+  ShieldCheck,
+  Sparkles,
+  User,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PolicyBearLogo } from "@/components/brand/PolicyBearLogo";
+import { PolicyBearMark } from "@/components/brand/PolicyBearLogo";
 import { DEMO_ACCOUNTS } from "@/lib/rbac";
 import { useAuth } from "@/context/AuthContext";
+import brandLogo from "@/assets/policybear-brand-logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,6 +48,7 @@ function LoginPage() {
   const [email, setEmail] = useState("ceo@policybear.com");
   const [password, setPassword] = useState("Bear#CEO2026");
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (ready && user) void navigate({ to: user.landing, replace: true });
@@ -58,50 +70,73 @@ function LoginPage() {
   };
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-brand-navy p-10 lg:flex">
-        <div className="absolute -top-24 -right-24 size-80 rounded-full bg-brand/40 blur-3xl" />
-        <div className="absolute -bottom-32 -left-16 size-96 rounded-full bg-brand-cyan/20 blur-3xl" />
-        <PolicyBearLogo tone="inverse" className="relative" />
-        <div className="relative max-w-md">
-          <h2 className="text-3xl leading-tight font-semibold text-brand-ink-foreground">
-            One workspace for the whole floor.
-          </h2>
-          <p className="mt-3 text-sm text-brand-ink-foreground/70">
-            Every department signs in with its own account and sees only the modules its
-            role owns — from the sales floor to the CEO.
-          </p>
-          <ul className="mt-8 space-y-3 text-sm text-brand-ink-foreground/80">
-            {[
-              "Role-based access for Agents, QC, HR, Accounting, Operations",
-              "Executive and administrator accounts see every module",
-              "Break and lunch compliance with live escalation",
-              "Multi-carrier quoting with bot-assisted submissions",
-            ].map((item) => (
-              <li key={item} className="flex items-start gap-2">
-                <ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand-yellow" />
-                {item}
-              </li>
-            ))}
-          </ul>
+    <main className="auth-shell grid min-h-screen bg-background lg:grid-cols-[1.08fr_0.92fr]">
+      <section className="auth-stage relative hidden min-h-screen overflow-hidden bg-brand-ink px-10 py-9 lg:flex lg:flex-col xl:px-16 xl:py-12">
+        <div className="auth-grid absolute inset-0" aria-hidden="true" />
+        <div className="relative z-10 inline-flex items-center gap-3 self-start text-brand-ink-foreground">
+          <span className="grid size-10 place-items-center rounded-lg border border-brand-ink-foreground/15 bg-brand-ink-foreground/10">
+            <PolicyBearMark tone="inverse" className="size-6" />
+          </span>
+          <span className="text-xs font-semibold tracking-[0.18em] uppercase">Operations CRM</span>
         </div>
-        <p className="relative text-xs text-brand-ink-foreground/40">
-          Authorized use only. All sessions are recorded for compliance.
-        </p>
-      </div>
 
-      <div className="flex items-center justify-center px-5 py-12">
-        <div className="w-full max-w-sm">
-          <div className="mb-8 lg:hidden">
-            <PolicyBearLogo />
+        <div className="relative z-10 my-auto max-w-xl py-12">
+          <div className="auth-reveal inline-flex items-center gap-2 rounded-full border border-brand-cyan/20 bg-brand-cyan/10 px-3 py-1.5 text-xs font-semibold text-brand-cyan">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-cyan opacity-60" />
+              <span className="relative inline-flex size-2 rounded-full bg-brand-cyan" />
+            </span>
+            Your floor is live
           </div>
-          <h1 className="text-2xl font-semibold text-foreground">Sign in</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Use your Policy Bear department account to continue.
+          <h2 className="auth-reveal auth-delay-1 mt-7 max-w-lg text-4xl leading-[1.12] font-semibold text-brand-ink-foreground xl:text-5xl">
+            Every conversation.<br />Every customer.<br />One clear view.
+          </h2>
+          <p className="auth-reveal auth-delay-2 mt-5 max-w-md text-sm leading-6 text-brand-ink-foreground/65">
+            Calls, policies, callbacks and compliance—connected for a faster, more confident workday.
           </p>
 
-          <Card className="mt-6 gap-4 p-5 shadow-card">
-            <form className="space-y-4" onSubmit={(e) => void handleSubmit(e)}>
+          <div className="auth-reveal auth-delay-3 mt-10 grid max-w-lg grid-cols-3 gap-px overflow-hidden rounded-lg border border-brand-ink-foreground/10 bg-brand-ink-foreground/10">
+            {[
+              ["Live", "Call activity"],
+              ["Protected", "Customer data"],
+              ["Synced", "Team workflow"],
+            ].map(([value, label]) => (
+              <div key={label} className="bg-brand-ink/80 px-4 py-4">
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-brand-ink-foreground">
+                  <Check className="size-3.5 text-brand-cyan" /> {value}
+                </div>
+                <p className="mt-1 text-[0.68rem] text-brand-ink-foreground/45">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative z-10 flex items-center justify-between border-t border-brand-ink-foreground/10 pt-5 text-[0.68rem] text-brand-ink-foreground/40">
+          <span>Private company workspace</span>
+          <span className="flex items-center gap-1.5"><ShieldCheck className="size-3.5" /> Secure access</span>
+        </div>
+      </section>
+
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10 sm:px-10">
+        <div className="auth-mobile-line absolute inset-x-0 top-0 h-1 lg:hidden" />
+        <div className="auth-panel w-full max-w-[27rem]">
+          <img
+            src={brandLogo.url}
+            alt="PolicyBear"
+            className="mb-10 h-auto w-52 object-contain sm:w-60"
+          />
+
+          <div className="mb-7">
+            <div className="mb-3 flex items-center gap-2 text-xs font-semibold text-brand">
+              <Sparkles className="size-3.5" /> Welcome back
+            </div>
+            <h1 className="text-3xl font-semibold text-foreground">Sign in to your workspace</h1>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Enter your department credentials to continue.
+            </p>
+          </div>
+
+          <form className="space-y-5" onSubmit={(e) => void handleSubmit(e)}>
               <div className="space-y-1.5">
                 <Label htmlFor="email">Work email</Label>
                 <div className="relative">
@@ -110,9 +145,12 @@ function LoginPage() {
                     id="email"
                     type="email"
                     autoComplete="username"
-                    className="pl-9"
+                    className="h-11 bg-card pl-10 shadow-sm transition-shadow focus-visible:shadow-brand"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setError(null);
+                    }}
                   />
                 </div>
               </div>
@@ -120,23 +158,34 @@ function LoginPage() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link
-                    to="/"
-                    className="text-xs font-medium text-brand hover:underline"
-                  >
+                    <Link to="/" className="text-xs font-semibold text-brand hover:underline">
                     Forgot password?
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <LockKeyhole className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
-                    className="pl-9"
+                    className="h-11 bg-card pr-11 pl-10 shadow-sm transition-shadow focus-visible:shadow-brand"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setError(null);
+                    }}
                   />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-1/2 right-1 size-9 -translate-y-1/2 text-muted-foreground"
+                    onClick={() => setShowPassword((value) => !value)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff /> : <Eye />}
+                  </Button>
                 </div>
               </div>
 
@@ -146,56 +195,46 @@ function LoginPage() {
                 </p>
               )}
 
-              <label className="flex items-center gap-2 text-sm text-muted-foreground">
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
                 <Checkbox defaultChecked /> Keep me signed in on this device
               </label>
 
-              <Button type="submit" className="w-full" disabled={busy}>
-                {busy ? "Signing in…" : "Continue"} <ArrowRight className="size-4" />
+              <Button type="submit" size="lg" className="auth-submit group h-11 w-full" disabled={busy}>
+                {busy ? "Signing in…" : "Continue to workspace"}
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </Button>
-            </form>
-          </Card>
+          </form>
 
-          <div className="mt-5 rounded-lg border border-border bg-muted/40 p-4">
-            <p className="text-xs font-semibold tracking-wide text-foreground uppercase">
-              Department demo accounts
+          <div className="mt-8 border-t border-border pt-5">
+            <p className="flex items-center gap-2 text-xs font-semibold text-foreground">
+              <Headphones className="size-3.5 text-brand" /> Quick demo access
             </p>
-            <ul className="mt-2.5 space-y-1.5">
+            <div className="mt-3 flex flex-wrap gap-2">
               {DEMO_ACCOUNTS.map((account) => (
-                <li key={account.id}>
-                  <button
+                  <Button
+                    key={account.id}
                     type="button"
+                    variant={email === account.email ? "secondary" : "outline"}
+                    size="sm"
                     onClick={() => {
                       setEmail(account.email);
                       setPassword(account.password);
                       setError(null);
                     }}
-                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent"
                   >
-                    <Badge variant="secondary" className="shrink-0">
-                      {account.role}
-                    </Badge>
-                    <span className="min-w-0 flex-1 truncate text-muted-foreground">
-                      {account.email}
-                    </span>
-                    <span className="shrink-0 font-mono text-[0.65rem] text-muted-foreground">
-                      {account.password}
-                    </span>
-                  </button>
-                </li>
+                    {account.role}
+                    {email === account.email && <Badge className="size-1.5 rounded-full p-0" aria-label="Selected" />}
+                  </Button>
               ))}
-            </ul>
-            <p className="mt-2 text-[0.65rem] text-muted-foreground">
-              Demo credentials only — replace with the real identity API at launch.
-            </p>
+            </div>
           </div>
 
-          <p className="mt-5 text-center text-xs text-muted-foreground">
+          <p className="mt-8 text-center text-xs text-muted-foreground">
             Trouble signing in? Contact IT Support at ext. 210 or{" "}
             <span className="text-brand">it@policybear.com</span>
           </p>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

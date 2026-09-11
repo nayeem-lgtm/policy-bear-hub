@@ -125,9 +125,10 @@ function LoginPage() {
           </div>
 
           <div className="auth-reveal auth-delay-3 mt-8 max-w-lg">
-            <p className="text-sm font-medium tracking-[0.18em] text-brand-cyan/90">
+            <p className="text-base font-semibold tracking-[0.12em] text-brand-ink-foreground">
               Every Policy. Every Promise. Every Protection.
             </p>
+            <div className="mt-3 h-px w-20 bg-gradient-to-r from-brand-cyan/70 to-transparent" />
           </div>
         </div>
 

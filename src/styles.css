@@ -341,9 +341,87 @@
   }
 }
 
+/* Insurance protection scene */
+@utility guard-ring {
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--brand-cyan) 28%, transparent);
+  animation: guard-ring 3.6s ease-out infinite;
+}
+
+@utility guard-ring-2 {
+  animation-delay: 1.2s;
+}
+
+@utility guard-ring-3 {
+  animation-delay: 2.4s;
+}
+
+@utility radar-sweep {
+  background-image: conic-gradient(
+    from 0deg,
+    color-mix(in oklab, var(--brand-cyan) 22%, transparent) 0deg,
+    transparent 70deg,
+    transparent 360deg
+  );
+  mask-image: radial-gradient(circle, transparent 34%, black 36%, black 100%);
+  animation: orbit-spin 6s linear infinite;
+}
+
+@utility orbit-spin {
+  animation: orbit-spin 18s linear infinite;
+}
+
+@utility orbit-counter {
+  animation: orbit-spin 18s linear infinite reverse;
+}
+
+@utility shield-float {
+  animation: shield-float 4.5s ease-in-out infinite;
+}
+
+@keyframes guard-ring {
+  0% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+}
+
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shield-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 18px 42px -18px color-mix(in oklab, var(--brand-cyan) 55%, transparent);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 30px 56px -20px color-mix(in oklab, var(--brand-cyan) 70%, transparent);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .auth-reveal,
-  .auth-panel {
+  .auth-panel,
+  .guard-ring,
+  .radar-sweep,
+  .orbit-spin,
+  .orbit-counter,
+  .shield-float {
     animation: none;
   }
 }

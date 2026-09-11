@@ -90,8 +90,8 @@ function LoginPage() {
           <h2 className="auth-reveal auth-delay-1 mt-7 max-w-lg text-4xl leading-[1.12] font-semibold text-brand-ink-foreground xl:text-5xl">
             Every conversation.<br />Every customer.<br />One clear view.
           </h2>
-          <p className="auth-reveal auth-delay-2 mt-5 max-w-md text-sm leading-6 text-brand-ink-foreground/65">
-            Calls, policies, callbacks and compliance—connected for a faster, more confident workday.
+          <p className="auth-reveal auth-delay-2 mt-5 max-w-md text-base leading-7 font-medium text-brand-ink-foreground">
+            Protection for What Matters Most.
           </p>
 
           {/* Insurance protection scene */}

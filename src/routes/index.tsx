@@ -22,7 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { PolicyBearMark } from "@/components/brand/PolicyBearLogo";
 import { useAuth } from "@/context/AuthContext";
 import brandLogo from "@/assets/policybear-brand-logo.png.asset.json";
-import wordmarkWhite from "@/assets/policybear-wordmark-white.png.asset.json";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -77,9 +77,9 @@ function LoginPage() {
         <div className="auth-grid absolute inset-0" aria-hidden="true" />
         <div className="relative z-10 flex items-center gap-3 self-start text-brand-ink-foreground">
           <img
-            src={wordmarkWhite.url}
+            src={brandLogo.url}
             alt="PolicyBear"
-            className="h-6 w-auto object-contain"
+            className="h-8 w-auto object-contain brightness-0 invert"
           />
           <span className="h-5 w-px bg-brand-ink-foreground/20" />
           <span className="text-[0.62rem] font-semibold tracking-[0.22em] uppercase text-brand-ink-foreground/60">

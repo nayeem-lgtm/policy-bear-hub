@@ -125,19 +125,10 @@ function LoginPage() {
             </div>
           </div>
 
-          <div className="auth-reveal auth-delay-3 mt-8 grid max-w-lg grid-cols-3 gap-px overflow-hidden rounded-lg border border-brand-ink-foreground/10 bg-brand-ink-foreground/10">
-            {[
-              ["Live", "Call activity"],
-              ["Protected", "Customer data"],
-              ["Synced", "Team workflow"],
-            ].map(([value, label]) => (
-              <div key={label} className="bg-brand-ink/80 px-4 py-4">
-                <div className="flex items-center gap-1.5 text-sm font-semibold text-brand-ink-foreground">
-                  <Check className="size-3.5 text-brand-cyan" /> {value}
-                </div>
-                <p className="mt-1 text-[0.68rem] text-brand-ink-foreground/45">{label}</p>
-              </div>
-            ))}
+          <div className="auth-reveal auth-delay-3 mt-8 max-w-lg">
+            <p className="text-sm font-medium tracking-[0.18em] text-brand-cyan/90">
+              Every Policy. Every Promise. Every Protection.
+            </p>
           </div>
         </div>
 

@@ -147,83 +147,83 @@ function LoginPage() {
             className="mb-10 h-auto w-52 object-contain sm:w-60"
           />
 
-          <div className="mb-7">
-            <div className="mb-3 flex items-center gap-2 text-xs font-semibold text-brand">
-              <Sparkles className="size-3.5" /> Welcome back
-            </div>
-            <h1 className="text-3xl font-semibold text-foreground">Sign in to your workspace</h1>
+          <div className="mb-8">
+            <h1 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-foreground">
+              Sign in to your workspace
+            </h1>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Enter your department credentials to continue.
             </p>
           </div>
 
           <form className="space-y-5" onSubmit={(e) => void handleSubmit(e)}>
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Work email</Label>
-                <div className="relative">
-                  <User className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    autoComplete="username"
-                    className="h-11 bg-card pl-10 shadow-sm transition-shadow focus-visible:shadow-brand"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setError(null);
-                    }}
-                  />
-                </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="email">Work email</Label>
+              <div className="relative">
+                <User className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="username"
+                  className="h-11 bg-card pl-10 shadow-sm transition-shadow focus-visible:shadow-brand"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError(null);
+                  }}
+                />
               </div>
+            </div>
 
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                    <Link to="/" className="text-xs font-semibold text-brand hover:underline">
-                    Forgot password?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <LockKeyhole className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    className="h-11 bg-card pr-11 pl-10 shadow-sm transition-shadow focus-visible:shadow-brand"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      setError(null);
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-1/2 right-1 size-9 -translate-y-1/2 text-muted-foreground"
-                    onClick={() => setShowPassword((value) => !value)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    title={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? <EyeOff /> : <Eye />}
-                  </Button>
-                </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <LockKeyhole className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  className="h-11 bg-card pr-11 pl-10 shadow-sm transition-shadow focus-visible:shadow-brand"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError(null);
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-1/2 right-1 size-9 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword((value) => !value)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  title={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </Button>
               </div>
+              <div className="pt-0.5">
+                <Link to="/" className="text-xs font-semibold text-brand hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+            </div>
 
-              {error && (
-                <p className="flex items-center gap-1.5 text-xs font-medium text-destructive">
-                  <AlertCircle className="size-3.5" /> {error}
-                </p>
-              )}
+            {error && (
+              <p className="flex items-center gap-1.5 rounded-lg bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
+                <AlertCircle className="size-3.5" /> {error}
+              </p>
+            )}
 
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-                <Checkbox defaultChecked /> Keep me signed in on this device
-              </label>
+            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-muted-foreground">
+              <Checkbox defaultChecked className="size-4 rounded border-muted-foreground/30" />
+              <span>Keep me signed in for 30 days</span>
+            </label>
 
-              <Button type="submit" size="lg" className="auth-submit group h-11 w-full" disabled={busy}>
-                {busy ? "Signing in…" : "Continue to workspace"}
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </Button>
+            <Button type="submit" size="lg" className="auth-submit group h-11 w-full" disabled={busy}>
+              {busy ? "Signing in…" : "Continue to workspace"}
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+            </Button>
           </form>
 
         </div>

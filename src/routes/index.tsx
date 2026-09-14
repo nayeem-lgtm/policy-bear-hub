@@ -160,9 +160,6 @@ function LoginPage() {
               <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
                 Sign in to your workspace
               </h1>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Enter your department credentials to continue.
-              </p>
             </div>
 
             <form className="space-y-5" onSubmit={(e) => void handleSubmit(e)}>

@@ -91,10 +91,6 @@ function LoginPage() {
               alt="PolicyBear"
               className="h-8 w-auto object-contain brightness-0 invert"
             />
-            <span className="h-5 w-px bg-brand-ink-foreground/20" />
-            <span className="text-[0.62rem] font-semibold tracking-[0.22em] uppercase text-brand-ink-foreground/60">
-              Operations CRM
-            </span>
           </div>
 
           <div className="relative z-10 my-auto flex w-full flex-col items-center justify-center py-10">

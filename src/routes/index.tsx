@@ -91,10 +91,6 @@ function LoginPage() {
               alt="PolicyBear"
               className="h-8 w-auto object-contain brightness-0 invert"
             />
-            <span className="h-5 w-px bg-brand-ink-foreground/20" />
-            <span className="text-[0.62rem] font-semibold tracking-[0.22em] uppercase text-brand-ink-foreground/60">
-              Operations CRM
-            </span>
           </div>
 
           <div className="relative z-10 my-auto flex w-full flex-col items-center justify-center py-10">
@@ -152,24 +148,18 @@ function LoginPage() {
         <section className="relative flex flex-1 flex-col justify-center bg-white px-6 py-10 sm:px-10 lg:px-16">
           <div className="auth-panel w-full max-w-sm lg:mx-auto">
             {/* Mobile logo */}
-            <div className="mb-8 flex items-center gap-2 lg:hidden">
+            <div className="mb-8 lg:hidden">
               <img
                 src={brandLogo.url}
                 alt="PolicyBear"
                 className="h-7 w-auto object-contain"
               />
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Operations CRM
-              </span>
             </div>
 
             <div className="mb-8">
               <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
                 Sign in to your workspace
               </h1>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Enter your department credentials to continue.
-              </p>
             </div>
 
             <form className="space-y-5" onSubmit={(e) => void handleSubmit(e)}>
@@ -250,6 +240,13 @@ function LoginPage() {
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </form>
+
+            <p className="mt-8 text-center text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <a href="mailto:info@policybear.com" className="font-semibold text-brand hover:underline">
+                Contact info@policybear.com
+              </a>
+            </p>
           </div>
         </section>
       </div>

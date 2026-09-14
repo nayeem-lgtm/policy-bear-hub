@@ -119,7 +119,7 @@ function LoginPage() {
                 ))}
               </div>
 
-              <div className="shield-float relative grid size-24 place-items-center rounded-[1.6rem] border border-brand-cyan/25 bg-white/10 shadow-brand backdrop-blur-sm">
+              <div className="relative grid size-24 place-items-center rounded-[1.6rem] border border-brand-cyan/25 bg-white/10 shadow-brand backdrop-blur-sm">
                 <PolicyBearMark tone="inverse" className="size-11" />
               </div>
             </div>

@@ -148,15 +148,12 @@ function LoginPage() {
         <section className="relative flex flex-1 flex-col justify-center bg-white px-6 py-10 sm:px-10 lg:px-16">
           <div className="auth-panel w-full max-w-sm lg:mx-auto">
             {/* Mobile logo */}
-            <div className="mb-8 flex items-center gap-2 lg:hidden">
+            <div className="mb-8 lg:hidden">
               <img
                 src={brandLogo.url}
                 alt="PolicyBear"
                 className="h-7 w-auto object-contain"
               />
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Operations CRM
-              </span>
             </div>
 
             <div className="mb-8">

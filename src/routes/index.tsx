@@ -240,6 +240,13 @@ function LoginPage() {
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </form>
+
+            <p className="mt-8 text-center text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <a href="mailto:info@policybear.com" className="font-semibold text-brand hover:underline">
+                Contact info@policybear.com
+              </a>
+            </p>
           </div>
         </section>
       </div>

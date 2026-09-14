@@ -10,7 +10,6 @@ import {
   LockKeyhole,
   PhoneCall,
   ShieldCheck,
-  Sparkles,
   Umbrella,
   User,
 } from "lucide-react";

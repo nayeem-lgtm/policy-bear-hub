@@ -5,12 +5,8 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
-  FileText,
-  HeartPulse,
   LockKeyhole,
-  PhoneCall,
   ShieldCheck,
-  Umbrella,
   User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -44,8 +40,8 @@ export const Route = createFileRoute("/")({
 function LoginPage() {
   const navigate = useNavigate();
   const { user, ready, signIn } = useAuth();
-  const [email, setEmail] = useState("ceo@policybear.com");
-  const [password, setPassword] = useState("Bear#CEO2026");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -69,23 +65,24 @@ function LoginPage() {
   };
 
   return (
-    <main className="login-shell flex min-h-screen items-center justify-center bg-surface p-4 sm:p-6">
-      <div className="login-card flex w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl md:min-h-[640px] lg:h-[700px] lg:flex-row">
+    <main className="flex min-h-screen items-center justify-center bg-surface p-4 sm:p-6">
+      <div className="flex w-full max-w-5xl flex-col overflow-hidden rounded-[2.5rem] border border-white bg-white shadow-[0_32px_64px_-12px_oklch(0.227_0.086_281_/_0.16)] md:min-h-[620px] lg:h-[660px] lg:flex-row">
         {/* Left hero panel */}
-        <section className="login-hero relative hidden flex-1 overflow-hidden bg-brand-ink px-10 py-8 lg:flex lg:flex-col">
+        <section className="login-hero relative hidden flex-1 overflow-hidden bg-brand-ink px-10 py-10 md:flex md:flex-col">
           <div className="auth-grid absolute inset-0" aria-hidden="true" />
 
           {/* Ambient glows */}
           <div
-            className="pointer-events-none absolute -top-[10%] -right-[10%] size-[26rem] rounded-full bg-brand/20 blur-[120px]"
+            className="pointer-events-none absolute -top-[12%] -right-[12%] size-[26rem] rounded-full bg-brand/25 blur-[110px]"
             aria-hidden="true"
           />
           <div
-            className="pointer-events-none absolute -bottom-[10%] -left-[10%] size-[22rem] rounded-full bg-brand-cyan/15 blur-[100px]"
+            className="pointer-events-none absolute -bottom-[12%] -left-[12%] size-[22rem] rounded-full bg-brand-cyan/15 blur-[100px]"
             aria-hidden="true"
           />
 
-          <div className="relative z-10 flex items-center gap-3 self-start text-brand-ink-foreground">
+          {/* Top-left wordmark */}
+          <div className="relative z-10 self-start">
             <img
               src={brandLogo.url}
               alt="PolicyBear"
@@ -93,44 +90,37 @@ function LoginPage() {
             />
           </div>
 
-          <div className="relative z-10 my-auto flex w-full flex-col items-center justify-center py-10">
-            {/* Insurance protection scene */}
-            <div className="auth-reveal auth-delay-1 relative grid h-[16rem] w-full max-w-lg place-items-center">
-              <div className="guard-ring absolute size-[14rem]" />
-              <div className="guard-ring guard-ring-2 absolute size-[14rem]" />
-              <div className="guard-ring guard-ring-3 absolute size-[14rem]" />
-              <div className="radar-sweep absolute size-[14rem] rounded-full" />
+          <div className="relative z-10 my-auto flex w-full flex-col items-center justify-center py-8">
+            {/* Protection orbit scene */}
+            <div className="auth-reveal auth-delay-1 relative grid h-[18rem] w-full max-w-lg place-items-center">
+              {/* Concentric rotating rings */}
+              <div className="orbit-spin absolute size-72 rounded-full border border-brand-ink-foreground/10" />
+              <div className="orbit-spin-rev absolute size-56 rounded-full border border-brand-cyan/20" />
+              <div className="orbit-spin-slow absolute size-80 rounded-full border border-brand-ink-foreground/5" />
 
-              <div className="orbit-spin absolute size-[12rem]">
-                {[Umbrella, HeartPulse, FileText, PhoneCall].map((Icon, i) => (
-                  <span
-                    key={i}
-                    className="absolute grid size-9 place-items-center rounded-xl border border-brand-ink-foreground/15 bg-brand-ink/85 backdrop-blur-sm"
-                    style={{
-                      top: `${50 - 50 * Math.cos((i * Math.PI) / 2)}%`,
-                      left: `${50 + 50 * Math.sin((i * Math.PI) / 2)}%`,
-                      transform: "translate(-50%, -50%)",
-                    }}
-                  >
-                    <span className="orbit-counter grid place-items-center">
-                      <Icon className="size-4 text-brand-cyan" />
-                    </span>
-                  </span>
-                ))}
+              {/* Radar sweep */}
+              <div className="radar-sweep absolute size-72 rounded-full" />
+
+              {/* Orbiting beacon */}
+              <div className="orbit-node absolute size-72" aria-hidden="true">
+                <span className="absolute -top-1 left-1/2 -ml-1 size-2 rounded-full bg-brand-cyan shadow-[0_0_14px_4px_oklch(0.845_0.106_218_/_0.65)]" />
               </div>
 
-              <div className="relative grid size-24 place-items-center rounded-[1.6rem] border border-brand-cyan/25 bg-white/10 shadow-brand backdrop-blur-sm">
-                <PolicyBearMark tone="inverse" className="size-11" />
+              {/* Central shield */}
+              <div className="relative grid size-28 place-items-center overflow-hidden rounded-[1.6rem] border border-brand-cyan/25 bg-white/10 shadow-brand backdrop-blur-xl">
+                <div
+                  className="absolute inset-0 bg-linear-to-br from-brand/10 to-transparent"
+                  aria-hidden="true"
+                />
+                <PolicyBearMark tone="inverse" className="size-13" />
               </div>
             </div>
 
-            <div className="auth-reveal auth-delay-2 mt-8 text-center">
-              <h2 className="max-w-md text-3xl font-semibold leading-tight tracking-tight text-brand-ink-foreground xl:text-4xl">
-                Every conversation. Every customer.
-                <br />
-                One clear view.
+            <div className="auth-reveal auth-delay-2 mt-6 text-center">
+              <h2 className="text-2xl font-semibold leading-tight tracking-tight text-brand-ink-foreground xl:text-[1.75rem]">
+                Every Policy. Every Promise. Every Protection.
               </h2>
-              <p className="mx-auto mt-4 max-w-sm text-sm font-medium leading-6 text-brand-ink-foreground/70">
+              <p className="mt-4 text-sm font-medium leading-6 text-brand-cyan">
                 Protection for What Matters Most.
               </p>
             </div>
@@ -145,10 +135,10 @@ function LoginPage() {
         </section>
 
         {/* Right form panel */}
-        <section className="relative flex flex-1 flex-col justify-center bg-white px-6 py-10 sm:px-10 lg:px-16">
+        <section className="relative flex flex-1 flex-col justify-center bg-white px-6 py-10 sm:px-10 md:w-[460px] md:flex-none lg:px-14">
           <div className="auth-panel w-full max-w-sm lg:mx-auto">
             {/* Mobile logo */}
-            <div className="mb-8 lg:hidden">
+            <div className="mb-8 md:hidden">
               <img
                 src={brandLogo.url}
                 alt="PolicyBear"
@@ -173,6 +163,7 @@ function LoginPage() {
                     id="email"
                     type="email"
                     autoComplete="username"
+                    placeholder="name@policybear.com"
                     className="h-12 rounded-xl border-border bg-muted/40 pl-10 pr-4 text-sm transition-all focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10"
                     value={email}
                     onChange={(e) => {
@@ -193,6 +184,7 @@ function LoginPage() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
+                    placeholder="••••••••"
                     className="h-12 rounded-xl border-border bg-muted/40 pl-10 pr-11 text-sm transition-all focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10"
                     value={password}
                     onChange={(e) => {
@@ -233,7 +225,7 @@ function LoginPage() {
               <Button
                 type="submit"
                 size="lg"
-                className="auth-submit group h-12 w-full rounded-xl text-sm font-semibold"
+                className="auth-submit group h-12 w-full rounded-xl bg-brand-ink text-sm font-semibold text-brand-ink-foreground hover:bg-brand-ink/90"
                 disabled={busy}
               >
                 {busy ? "Signing in…" : "Continue to workspace"}

@@ -26,6 +26,7 @@ import {
   SlidersHorizontal,
   Sparkles,
   UserCog,
+  Video,
   Wallet,
 } from "lucide-react";
 
@@ -87,7 +88,8 @@ export const navSections: NavSection[] = [
           { title: "Customers & Sales", url: "/customers", icon: Contact, description: "Customer records, policies, payments and commission" },
           { title: "Quotes", url: "/quotes", icon: Sparkles, description: "Pull and compare quotes" },
           { title: "Callbacks", url: "/callbacks", icon: PhoneForwarded, description: "Callback queue and calendar in one book" },
-          { title: "Bear Team Chat", url: "/messages", icon: MessagesSquare, description: "One company room for the whole floor" },
+          { title: "Chat", url: "/messages", icon: MessagesSquare, description: "One company room for the whole floor" },
+          { title: "Meetings", url: "/meetings", icon: Video, description: "Schedule meetings, invite the team, join the video room" },
 
           { title: "DNC & Compliance", url: "/dnc", icon: ShieldOff, description: "Do-Not-Call list, add numbers and audit log" },
         ],

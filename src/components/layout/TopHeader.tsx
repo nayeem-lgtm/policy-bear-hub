@@ -116,6 +116,8 @@ export function TopHeader() {
 
         <Separator orientation="vertical" className="mx-1 hidden h-6 lg:block" />
 
+        <ChatIndicator />
+
         <Button asChild variant="ghost" size="icon" className="relative">
           <Link to="/notifications" aria-label="Notifications">
             <Bell className="size-4" />

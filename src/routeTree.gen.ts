@@ -64,6 +64,7 @@ import { Route as ShellAdminRulesRouteImport } from './routes/_shell.admin.rules
 import { Route as ShellAdminTelephonyRouteImport } from './routes/_shell.admin.telephony'
 import { Route as ShellAdminUsersRouteImport } from './routes/_shell.admin.users'
 import { Route as ShellCallbacksCalendarRouteImport } from './routes/_shell.callbacks.calendar'
+import { Route as ShellMeetingsMeetingIdRouteImport } from './routes/_shell.meetings.$meetingId'
 import { Route as ShellQaIndexRouteImport } from './routes/_shell.qa.index'
 import { Route as ShellQaDisputesRouteImport } from './routes/_shell.qa.disputes'
 import { Route as ShellQaEscalationsRouteImport } from './routes/_shell.qa.escalations'
@@ -349,6 +350,11 @@ const ShellCallbacksCalendarRoute = ShellCallbacksCalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => ShellCallbacksRoute,
 } as any)
+const ShellMeetingsMeetingIdRoute = ShellMeetingsMeetingIdRouteImport.update({
+  id: '/$meetingId',
+  path: '/$meetingId',
+  getParentRoute: () => ShellMeetingsRoute,
+} as any)
 const ShellQaIndexRoute = ShellQaIndexRouteImport.update({
   id: '/qa/',
   path: '/qa/',
@@ -422,7 +428,7 @@ export interface FileRoutesByFullPath {
   '/incidents': typeof ShellIncidentsRoute
   '/leave': typeof ShellLeaveRoute
   '/live-operations': typeof ShellLiveOperationsRoute
-  '/meetings': typeof ShellMeetingsRoute
+  '/meetings': typeof ShellMeetingsRouteWithChildren
   '/messages': typeof ShellMessagesRoute
   '/my-shift': typeof ShellMyShiftRoute
   '/my-work': typeof ShellMyWorkRoute
@@ -452,6 +458,7 @@ export interface FileRoutesByFullPath {
   '/admin/telephony': typeof ShellAdminTelephonyRoute
   '/admin/users': typeof ShellAdminUsersRoute
   '/callbacks/calendar': typeof ShellCallbacksCalendarRoute
+  '/meetings/$meetingId': typeof ShellMeetingsMeetingIdRoute
   '/qa/disputes': typeof ShellQaDisputesRoute
   '/qa/escalations': typeof ShellQaEscalationsRoute
   '/qa/import': typeof ShellQaImportRoute
@@ -487,7 +494,7 @@ export interface FileRoutesByTo {
   '/incidents': typeof ShellIncidentsRoute
   '/leave': typeof ShellLeaveRoute
   '/live-operations': typeof ShellLiveOperationsRoute
-  '/meetings': typeof ShellMeetingsRoute
+  '/meetings': typeof ShellMeetingsRouteWithChildren
   '/messages': typeof ShellMessagesRoute
   '/my-shift': typeof ShellMyShiftRoute
   '/my-work': typeof ShellMyWorkRoute
@@ -517,6 +524,7 @@ export interface FileRoutesByTo {
   '/admin/telephony': typeof ShellAdminTelephonyRoute
   '/admin/users': typeof ShellAdminUsersRoute
   '/callbacks/calendar': typeof ShellCallbacksCalendarRoute
+  '/meetings/$meetingId': typeof ShellMeetingsMeetingIdRoute
   '/qa/disputes': typeof ShellQaDisputesRoute
   '/qa/escalations': typeof ShellQaEscalationsRoute
   '/qa/import': typeof ShellQaImportRoute
@@ -554,7 +562,7 @@ export interface FileRoutesById {
   '/_shell/incidents': typeof ShellIncidentsRoute
   '/_shell/leave': typeof ShellLeaveRoute
   '/_shell/live-operations': typeof ShellLiveOperationsRoute
-  '/_shell/meetings': typeof ShellMeetingsRoute
+  '/_shell/meetings': typeof ShellMeetingsRouteWithChildren
   '/_shell/messages': typeof ShellMessagesRoute
   '/_shell/my-shift': typeof ShellMyShiftRoute
   '/_shell/my-work': typeof ShellMyWorkRoute
@@ -584,6 +592,7 @@ export interface FileRoutesById {
   '/_shell/admin/telephony': typeof ShellAdminTelephonyRoute
   '/_shell/admin/users': typeof ShellAdminUsersRoute
   '/_shell/callbacks/calendar': typeof ShellCallbacksCalendarRoute
+  '/_shell/meetings/$meetingId': typeof ShellMeetingsMeetingIdRoute
   '/_shell/qa/disputes': typeof ShellQaDisputesRoute
   '/_shell/qa/escalations': typeof ShellQaEscalationsRoute
   '/_shell/qa/import': typeof ShellQaImportRoute
@@ -651,6 +660,7 @@ export interface FileRouteTypes {
     | '/admin/telephony'
     | '/admin/users'
     | '/callbacks/calendar'
+    | '/meetings/$meetingId'
     | '/qa/disputes'
     | '/qa/escalations'
     | '/qa/import'
@@ -716,6 +726,7 @@ export interface FileRouteTypes {
     | '/admin/telephony'
     | '/admin/users'
     | '/callbacks/calendar'
+    | '/meetings/$meetingId'
     | '/qa/disputes'
     | '/qa/escalations'
     | '/qa/import'
@@ -782,6 +793,7 @@ export interface FileRouteTypes {
     | '/_shell/admin/telephony'
     | '/_shell/admin/users'
     | '/_shell/callbacks/calendar'
+    | '/_shell/meetings/$meetingId'
     | '/_shell/qa/disputes'
     | '/_shell/qa/escalations'
     | '/_shell/qa/import'
@@ -1188,6 +1200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellCallbacksCalendarRouteImport
       parentRoute: typeof ShellCallbacksRoute
     }
+    '/_shell/meetings/$meetingId': {
+      id: '/_shell/meetings/$meetingId'
+      path: '/$meetingId'
+      fullPath: '/meetings/$meetingId'
+      preLoaderRoute: typeof ShellMeetingsMeetingIdRouteImport
+      parentRoute: typeof ShellMeetingsRoute
+    }
     '/_shell/qa/': {
       id: '/_shell/qa/'
       path: '/qa'
@@ -1266,6 +1285,18 @@ const ShellCallbacksRouteWithChildren = ShellCallbacksRoute._addFileChildren(
   ShellCallbacksRouteChildren,
 )
 
+interface ShellMeetingsRouteChildren {
+  ShellMeetingsMeetingIdRoute: typeof ShellMeetingsMeetingIdRoute
+}
+
+const ShellMeetingsRouteChildren: ShellMeetingsRouteChildren = {
+  ShellMeetingsMeetingIdRoute: ShellMeetingsMeetingIdRoute,
+}
+
+const ShellMeetingsRouteWithChildren = ShellMeetingsRoute._addFileChildren(
+  ShellMeetingsRouteChildren,
+)
+
 interface ShellSalesRouteChildren {
   ShellSalesNewRoute: typeof ShellSalesNewRoute
 }
@@ -1302,7 +1333,7 @@ interface ShellRouteChildren {
   ShellIncidentsRoute: typeof ShellIncidentsRoute
   ShellLeaveRoute: typeof ShellLeaveRoute
   ShellLiveOperationsRoute: typeof ShellLiveOperationsRoute
-  ShellMeetingsRoute: typeof ShellMeetingsRoute
+  ShellMeetingsRoute: typeof ShellMeetingsRouteWithChildren
   ShellMessagesRoute: typeof ShellMessagesRoute
   ShellMyShiftRoute: typeof ShellMyShiftRoute
   ShellMyWorkRoute: typeof ShellMyWorkRoute
@@ -1362,7 +1393,7 @@ const ShellRouteChildren: ShellRouteChildren = {
   ShellIncidentsRoute: ShellIncidentsRoute,
   ShellLeaveRoute: ShellLeaveRoute,
   ShellLiveOperationsRoute: ShellLiveOperationsRoute,
-  ShellMeetingsRoute: ShellMeetingsRoute,
+  ShellMeetingsRoute: ShellMeetingsRouteWithChildren,
   ShellMessagesRoute: ShellMessagesRoute,
   ShellMyShiftRoute: ShellMyShiftRoute,
   ShellMyWorkRoute: ShellMyWorkRoute,

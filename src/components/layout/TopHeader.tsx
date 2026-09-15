@@ -25,6 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ChatIndicator } from "@/components/messaging/ChatIndicator";
 import { PresenceControl } from "@/components/layout/PresenceControl";
 import { notifications } from "@/lib/mock-data";
 import { useAuth } from "@/context/AuthContext";

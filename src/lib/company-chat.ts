@@ -67,7 +67,10 @@ export async function ensureCompanyMembership(userId: string) {
 
   const { data: created } = await supabase
     .from("conversation_members")
-    .insert({ conversation_id: COMPANY_ROOM_ID, user_id: userId, member_role: "member" })
+    .upsert(
+      { conversation_id: COMPANY_ROOM_ID, user_id: userId, member_role: "member" },
+      { onConflict: "conversation_id,user_id", ignoreDuplicates: true },
+    )
     .select("last_read_at")
     .maybeSingle();
   return (created?.last_read_at as string | undefined) ?? new Date(0).toISOString();

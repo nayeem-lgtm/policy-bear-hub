@@ -432,6 +432,9 @@
   .guard-ring,
   .radar-sweep,
   .orbit-spin,
+  .orbit-spin-rev,
+  .orbit-spin-slow,
+  .orbit-node,
   .orbit-counter,
   .shield-float {
     animation: none;

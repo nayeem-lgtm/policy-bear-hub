@@ -193,7 +193,10 @@ export async function createMeeting(input: CreateMeetingInput): Promise<MeetingR
     status: "scheduled",
   }));
 
-  const { data, error } = await supabase.from("meetings").insert(rows).select(MEETING_COLUMNS);
+  const { data, error } = await supabase
+    .from("meetings")
+    .insert(rows as never)
+    .select(MEETING_COLUMNS);
   if (error) throw error;
   const created = (data ?? []) as unknown as MeetingRecord[];
 
@@ -219,7 +222,10 @@ export async function createMeeting(input: CreateMeetingInput): Promise<MeetingR
 }
 
 export async function updateMeeting(id: string, patch: Record<string, unknown>) {
-  const { error } = await supabase.from("meetings").update(patch).eq("id", id);
+  const { error } = await supabase
+    .from("meetings")
+    .update(patch as never)
+    .eq("id", id);
   if (error) throw error;
 }
 

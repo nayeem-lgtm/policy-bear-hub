@@ -1182,6 +1182,160 @@ export type Database = {
         }
         Relationships: []
       }
+      meeting_attendance: {
+        Row: {
+          created_at: string
+          id: string
+          joined_at: string
+          left_at: string | null
+          meeting_id: string
+          seconds: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          meeting_id: string
+          seconds?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          meeting_id?: string
+          seconds?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_attendance_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meeting_participants: {
+        Row: {
+          created_at: string
+          email: string | null
+          email_sent_at: string | null
+          email_status: string
+          id: string
+          meeting_id: string
+          name: string | null
+          participant_role: string
+          response: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          email_sent_at?: string | null
+          email_status?: string
+          id?: string
+          meeting_id: string
+          name?: string | null
+          participant_role?: string
+          response?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          email_sent_at?: string | null
+          email_status?: string
+          id?: string
+          meeting_id?: string
+          name?: string | null
+          participant_role?: string
+          response?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_participants_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          action_items: Json
+          agenda: Json
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          ended_at: string | null
+          host_id: string | null
+          id: string
+          notes: string | null
+          recurrence: string
+          recurrence_until: string | null
+          room_code: string
+          started_at: string | null
+          starts_at: string
+          status: string
+          timezone: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          action_items?: Json
+          agenda?: Json
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          ended_at?: string | null
+          host_id?: string | null
+          id?: string
+          notes?: string | null
+          recurrence?: string
+          recurrence_until?: string | null
+          room_code?: string
+          started_at?: string | null
+          starts_at: string
+          status?: string
+          timezone?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          action_items?: Json
+          agenda?: Json
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          ended_at?: string | null
+          host_id?: string | null
+          id?: string
+          notes?: string | null
+          recurrence?: string
+          recurrence_until?: string | null
+          room_code?: string
+          started_at?: string | null
+          starts_at?: string
+          status?: string
+          timezone?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       message_reactions: {
         Row: {
           created_at: string

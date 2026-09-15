@@ -51,10 +51,21 @@ function LoginPage() {
 
   const [busy, setBusy] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Browser autofill can populate the inputs without firing React onChange,
+    // so read the live form values as the source of truth.
+    const form = new FormData(e.currentTarget);
+    const emailValue = String(form.get("email") ?? email).trim();
+    const passwordValue = String(form.get("password") ?? password);
+
+    if (!emailValue || !passwordValue) {
+      setError("Enter your work email and password.");
+      return;
+    }
+
     setBusy(true);
-    const result = await signIn(email, password);
+    const result = await signIn(emailValue, passwordValue);
     setBusy(false);
     if (!result.ok) {
       setError(result.error ?? "Sign in failed.");

@@ -266,7 +266,7 @@ export function CompanyChat() {
             <Hash className="h-4 w-4" />
           </span>
           <div className="min-w-0">
-            <h2 className="truncate font-sora text-[15px] font-semibold text-foreground">Company chat</h2>
+            <h2 className="truncate font-sora text-[15px] font-semibold text-foreground">Bear Team Chat</h2>
             <p className="truncate text-[11px] text-muted-foreground">
               Everyone on the floor · {online.length} online · {staff.length} people
             </p>
@@ -423,7 +423,7 @@ export function CompanyChat() {
             setFiles={setRootFiles}
             autoFocus
             onTyping={broadcastTyping}
-            placeholder="Message the whole company…"
+            placeholder="Message Bear Team Chat…"
             onSend={(body, files) => send(body, files, null)}
           />
         </div>
@@ -540,7 +540,7 @@ function EmptyState({ search }: { search: string }) {
           <Hash className="h-5 w-5" />
         </span>
         <h3 className="font-sora text-[15px] font-semibold text-foreground">
-          {search ? "Nothing matches that search" : "This is the start of the company chat"}
+          {search ? "Nothing matches that search" : "This is the start of Bear Team Chat"}
         </h3>
         <p className="text-[12.5px] text-muted-foreground">
           {search

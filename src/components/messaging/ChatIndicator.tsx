@@ -77,7 +77,7 @@ export function ChatIndicator() {
 
   return (
     <Button asChild variant="ghost" size="icon" className={cn("relative", onChatPage && "text-brand")}>
-      <Link to="/messages" aria-label="Team chat">
+      <Link to="/messages" aria-label="Bear Team Chat">
         <MessageSquare className="size-4" />
         {unread > 0 && !onChatPage && (
           <Badge

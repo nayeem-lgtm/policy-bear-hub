@@ -371,6 +371,18 @@
   animation: orbit-spin 18s linear infinite;
 }
 
+@utility orbit-spin-rev {
+  animation: orbit-spin 14s linear infinite reverse;
+}
+
+@utility orbit-spin-slow {
+  animation: orbit-spin 30s linear infinite;
+}
+
+@utility orbit-node {
+  animation: orbit-spin 12s linear infinite;
+}
+
 @utility orbit-counter {
   animation: orbit-spin 18s linear infinite reverse;
 }

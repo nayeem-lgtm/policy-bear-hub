@@ -1182,6 +1182,38 @@ export type Database = {
         }
         Relationships: []
       }
+      message_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           attachment_mime: string | null
@@ -1197,6 +1229,7 @@ export type Database = {
           edited_at: string | null
           id: string
           kind: string
+          parent_id: string | null
           sender_id: string | null
         }
         Insert: {
@@ -1213,6 +1246,7 @@ export type Database = {
           edited_at?: string | null
           id?: string
           kind?: string
+          parent_id?: string | null
           sender_id?: string | null
         }
         Update: {
@@ -1229,6 +1263,7 @@ export type Database = {
           edited_at?: string | null
           id?: string
           kind?: string
+          parent_id?: string | null
           sender_id?: string | null
         }
         Relationships: [
@@ -1237,6 +1272,13 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
         ]

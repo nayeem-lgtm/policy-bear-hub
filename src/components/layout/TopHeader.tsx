@@ -25,6 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ChatIndicator } from "@/components/messaging/ChatIndicator";
 import { PresenceControl } from "@/components/layout/PresenceControl";
 import { notifications } from "@/lib/mock-data";
 import { useAuth } from "@/context/AuthContext";
@@ -114,6 +115,8 @@ export function TopHeader() {
         <PresenceControl />
 
         <Separator orientation="vertical" className="mx-1 hidden h-6 lg:block" />
+
+        <ChatIndicator />
 
         <Button asChild variant="ghost" size="icon" className="relative">
           <Link to="/notifications" aria-label="Notifications">

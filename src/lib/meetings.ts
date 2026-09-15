@@ -127,7 +127,7 @@ function normaliseList<T>(value: unknown): T[] {
 
 export interface CreateMeetingInput {
   title: string;
-  description?: string;
+  description?: string | undefined;
   agenda: AgendaItem[];
   startsAt: Date;
   durationMinutes: number;

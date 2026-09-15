@@ -34,6 +34,7 @@ import { Route as ShellHrAutomationsRouteImport } from './routes/_shell.hr-autom
 import { Route as ShellIncidentsRouteImport } from './routes/_shell.incidents'
 import { Route as ShellLeaveRouteImport } from './routes/_shell.leave'
 import { Route as ShellLiveOperationsRouteImport } from './routes/_shell.live-operations'
+import { Route as ShellMeetingsRouteImport } from './routes/_shell.meetings'
 import { Route as ShellMessagesRouteImport } from './routes/_shell.messages'
 import { Route as ShellMyShiftRouteImport } from './routes/_shell.my-shift'
 import { Route as ShellMyWorkRouteImport } from './routes/_shell.my-work'
@@ -195,6 +196,11 @@ const ShellLeaveRoute = ShellLeaveRouteImport.update({
 const ShellLiveOperationsRoute = ShellLiveOperationsRouteImport.update({
   id: '/live-operations',
   path: '/live-operations',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellMeetingsRoute = ShellMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellMessagesRoute = ShellMessagesRouteImport.update({
@@ -416,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/incidents': typeof ShellIncidentsRoute
   '/leave': typeof ShellLeaveRoute
   '/live-operations': typeof ShellLiveOperationsRoute
+  '/meetings': typeof ShellMeetingsRoute
   '/messages': typeof ShellMessagesRoute
   '/my-shift': typeof ShellMyShiftRoute
   '/my-work': typeof ShellMyWorkRoute
@@ -480,6 +487,7 @@ export interface FileRoutesByTo {
   '/incidents': typeof ShellIncidentsRoute
   '/leave': typeof ShellLeaveRoute
   '/live-operations': typeof ShellLiveOperationsRoute
+  '/meetings': typeof ShellMeetingsRoute
   '/messages': typeof ShellMessagesRoute
   '/my-shift': typeof ShellMyShiftRoute
   '/my-work': typeof ShellMyWorkRoute
@@ -546,6 +554,7 @@ export interface FileRoutesById {
   '/_shell/incidents': typeof ShellIncidentsRoute
   '/_shell/leave': typeof ShellLeaveRoute
   '/_shell/live-operations': typeof ShellLiveOperationsRoute
+  '/_shell/meetings': typeof ShellMeetingsRoute
   '/_shell/messages': typeof ShellMessagesRoute
   '/_shell/my-shift': typeof ShellMyShiftRoute
   '/_shell/my-work': typeof ShellMyWorkRoute
@@ -612,6 +621,7 @@ export interface FileRouteTypes {
     | '/incidents'
     | '/leave'
     | '/live-operations'
+    | '/meetings'
     | '/messages'
     | '/my-shift'
     | '/my-work'
@@ -676,6 +686,7 @@ export interface FileRouteTypes {
     | '/incidents'
     | '/leave'
     | '/live-operations'
+    | '/meetings'
     | '/messages'
     | '/my-shift'
     | '/my-work'
@@ -741,6 +752,7 @@ export interface FileRouteTypes {
     | '/_shell/incidents'
     | '/_shell/leave'
     | '/_shell/live-operations'
+    | '/_shell/meetings'
     | '/_shell/messages'
     | '/_shell/my-shift'
     | '/_shell/my-work'
@@ -964,6 +976,13 @@ declare module '@tanstack/react-router' {
       path: '/live-operations'
       fullPath: '/live-operations'
       preLoaderRoute: typeof ShellLiveOperationsRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/meetings': {
+      id: '/_shell/meetings'
+      path: '/meetings'
+      fullPath: '/meetings'
+      preLoaderRoute: typeof ShellMeetingsRouteImport
       parentRoute: typeof ShellRoute
     }
     '/_shell/messages': {
@@ -1283,6 +1302,7 @@ interface ShellRouteChildren {
   ShellIncidentsRoute: typeof ShellIncidentsRoute
   ShellLeaveRoute: typeof ShellLeaveRoute
   ShellLiveOperationsRoute: typeof ShellLiveOperationsRoute
+  ShellMeetingsRoute: typeof ShellMeetingsRoute
   ShellMessagesRoute: typeof ShellMessagesRoute
   ShellMyShiftRoute: typeof ShellMyShiftRoute
   ShellMyWorkRoute: typeof ShellMyWorkRoute
@@ -1342,6 +1362,7 @@ const ShellRouteChildren: ShellRouteChildren = {
   ShellIncidentsRoute: ShellIncidentsRoute,
   ShellLeaveRoute: ShellLeaveRoute,
   ShellLiveOperationsRoute: ShellLiveOperationsRoute,
+  ShellMeetingsRoute: ShellMeetingsRoute,
   ShellMessagesRoute: ShellMessagesRoute,
   ShellMyShiftRoute: ShellMyShiftRoute,
   ShellMyWorkRoute: ShellMyWorkRoute,

@@ -423,7 +423,7 @@ export function CompanyChat() {
             setFiles={setRootFiles}
             autoFocus
             onTyping={broadcastTyping}
-            placeholder="Message the whole company…"
+            placeholder="Message Bear Team Chat…"
             onSend={(body, files) => send(body, files, null)}
           />
         </div>

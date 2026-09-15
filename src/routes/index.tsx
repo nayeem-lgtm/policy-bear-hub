@@ -57,7 +57,9 @@ function LoginPage() {
     // so read the live form values as the source of truth.
     const form = new FormData(e.currentTarget);
     const emailValue = String(form.get("email") ?? email).trim();
-    const passwordValue = String(form.get("password") ?? password);
+    // Password managers can occasionally inject surrounding whitespace into
+    // autofilled values. The staff credentials never intentionally use it.
+    const passwordValue = String(form.get("password") ?? password).trim();
 
     if (!emailValue || !passwordValue) {
       setError("Enter your work email and password.");

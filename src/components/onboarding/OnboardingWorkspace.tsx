@@ -16,7 +16,6 @@ import {
   ShieldCheck,
   SlidersHorizontal,
   X,
-  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 

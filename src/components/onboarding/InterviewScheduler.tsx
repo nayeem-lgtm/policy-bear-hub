@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarClock, CheckCircle2, Clock3, Copy, Link2, LockKeyhole, RefreshCw, XCircle } from "lucide-react";
@@ -117,8 +118,12 @@ export function InterviewScheduler({ candidate, actor, onChanged }: { candidate:
             <span className="min-w-0 flex-1 truncate text-xs">{bookingUrl || "Preparing link…"}</span>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            This link goes out automatically with the interview invitation email. Change the dates, hours or meeting
-            link for everyone from “Interview &amp; email setup” on the pipeline.
+            This link goes out automatically with the interview invitation email. Dates, hours, booking page and
+            emails are set once for everyone in{" "}
+            <Link to="/admin/hiring-setup" className="font-semibold text-primary underline">
+              Interview &amp; email setup
+            </Link>
+            .
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={refresh}><RefreshCw className="size-4" /> Refresh from shared settings</Button>

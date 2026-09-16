@@ -803,7 +803,7 @@ export function hiringSteps(candidate: Candidate): HiringStep[] {
       detail: hired
         ? `Approved ${stampLabel(candidate.hired_at)} — Stage 2 unlocked`
         : rejected
-          ? candidate.rejection_reason ?? "Closed"
+          ? candidate.not_hired_reason ?? "Closed"
           : "Approve to move the agent into Stage 2",
     },
   ];

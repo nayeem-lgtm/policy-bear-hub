@@ -26,6 +26,7 @@ import {
   SlidersHorizontal,
   Sparkles,
   UserCog,
+  UserPlus,
   Video,
   Wallet,
 } from "lucide-react";
@@ -90,6 +91,7 @@ export const navSections: NavSection[] = [
           { title: "Callbacks", url: "/callbacks", icon: PhoneForwarded, description: "Callback queue and calendar in one book" },
           { title: "Chat", url: "/messages", icon: MessagesSquare, description: "One company room for the whole floor" },
           { title: "Meetings", url: "/meetings", icon: Video, description: "Schedule meetings, invite the team, join the video room" },
+          { title: "My Onboarding", url: "/onboarding", icon: UserPlus, description: "Complete your agent onboarding: licensing, banking, documents" },
 
           { title: "DNC & Compliance", url: "/dnc", icon: ShieldOff, description: "Do-Not-Call list, add numbers and audit log" },
         ],
@@ -164,6 +166,12 @@ export const navSections: NavSection[] = [
             url: "/admin/users",
             icon: UserCog,
             description: "Accounts, roles and permissions",
+          },
+          {
+            title: "Agent Onboarding",
+            url: "/admin/onboarding",
+            icon: UserPlus,
+            description: "Hiring, onboarding form, offer letter, carrier approval and access",
           },
           {
             title: "Business Rules",

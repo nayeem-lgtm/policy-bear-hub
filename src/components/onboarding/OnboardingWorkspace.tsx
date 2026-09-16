@@ -492,7 +492,7 @@ function CandidateCard({ candidate, phase }: { candidate: Candidate; phase: Onbo
               <span
                 className={cn(
                   "mt-3 h-px flex-1",
-                  step.state === "done" || step.state === "current" ? "bg-console-accent/50" : "bg-console-line",
+                  step.state === "done" || step.state === "in-progress" ? "bg-console-accent/50" : "bg-console-line",
                 )}
               />
             )}
@@ -523,7 +523,7 @@ function CandidateCard({ candidate, phase }: { candidate: Candidate; phase: Onbo
                 className={cn(
                   "w-full text-center text-[0.58rem] leading-tight font-semibold",
                   step.state === "locked" ? "text-console-muted/60" : "text-console-muted",
-                  step.state === "current" && "text-console-accent",
+                  step.state === "in-progress" && "text-console-accent",
                 )}
               >
                 {step.label}

@@ -7,6 +7,7 @@ import {
   BadgeCheck,
   CheckCircle2,
   Circle,
+  ClipboardList,
   Clock,
   FileSignature,
   KeyRound,
@@ -372,7 +373,7 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
           </Panel>
 
           <Panel
-            title="02 · Carrier approval"
+            title="Step 2 · Carrier approval"
             icon={ShieldCheck}
             locked={candidate.offer_status !== "Signed"}
             lockReason="The offer letter must be signed first"
@@ -441,7 +442,7 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
           </Panel>
 
           <Panel
-            title="03 · Employment agreement"
+            title="Step 3 · Employment agreement"
             icon={FileSignature}
             locked={candidate.carrier_status !== "Approved"}
             lockReason="Carrier approval must be confirmed first"
@@ -488,7 +489,7 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
           </Panel>
 
           <Panel
-            title="04 · PolicyBear ARM access"
+            title="Step 4 · PolicyBear ARM access"
             icon={KeyRound}
             locked={candidate.agreement_status !== "Signed"}
             lockReason="The employment agreement must be signed first"
@@ -719,6 +720,67 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
 }
 
 /* --------------------------------------------------------------- fragments */
+
+function StageStrip({
+  eyebrow,
+  note,
+  done,
+  steps,
+}: {
+  eyebrow: string;
+  note: string;
+  done: boolean;
+  steps: { key: string; index: string; label: string; status: string; state: string; detail?: string }[];
+}) {
+  return (
+    <div className="rounded-2xl border border-border/60 bg-muted/25 p-3">
+      <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[0.62rem] font-bold tracking-[0.14em] uppercase text-brand">{eyebrow}</p>
+        <p
+          className={cn(
+            "text-[0.68rem] font-semibold",
+            done ? "text-success" : "text-muted-foreground",
+          )}
+        >
+          {note}
+        </p>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+        {steps.map((step) => (
+          <div
+            key={step.key}
+            className={cn(
+              "rounded-xl border p-2.5",
+              step.state === "done"
+                ? "border-success/30 bg-success/5"
+                : step.state === "locked"
+                  ? "border-border/60 bg-muted/40"
+                  : step.state === "blocked"
+                    ? "border-destructive/30 bg-destructive/5"
+                    : "border-brand/30 bg-brand/5",
+            )}
+          >
+            <p className="text-[0.58rem] font-bold tracking-[0.1em] uppercase text-muted-foreground">{step.index}</p>
+            <p className="mt-0.5 text-[0.8rem] font-semibold leading-tight">{step.label}</p>
+            <p className="mt-1 flex items-center gap-1.5 text-[0.7rem] font-semibold">
+              {step.state === "done" ? (
+                <CheckCircle2 className="size-3 text-success" />
+              ) : step.state === "locked" ? (
+                <Lock className="size-3 text-muted-foreground" />
+              ) : step.state === "blocked" ? (
+                <XCircle className="size-3 text-destructive" />
+              ) : (
+                <Circle className="size-3 text-brand" />
+              )}
+              {step.state === "locked" ? "Locked" : step.status}
+            </p>
+            {step.detail && <p className="mt-0.5 text-[0.65rem] text-muted-foreground">{step.detail}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function Panel({
   title,

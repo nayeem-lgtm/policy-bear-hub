@@ -156,6 +156,17 @@
   --brand-nebula: oklch(0.883 0.011 191); /* #d6dfde */
   --brand-tan: oklch(0.552 0.086 65); /* #a56e35 */
 
+  /* Operations console — deep navy + amber mission control */
+  --console: oklch(0.168 0.031 264); /* #0B1220 */
+  --console-panel: oklch(0.256 0.038 263); /* #152238 */
+  --console-inset: oklch(0.205 0.034 264);
+  --console-foreground: oklch(0.936 0.013 260); /* #E6EDF7 */
+  --console-muted: oklch(0.936 0.013 260 / 0.55);
+  --console-line: oklch(0.936 0.013 260 / 0.12);
+  --console-accent: oklch(0.795 0.149 74); /* #F5A524 */
+  --console-accent-foreground: oklch(0.168 0.031 264);
+
+
   /* Operational semantics */
   --success: oklch(0.58 0.13 155);
   --success-foreground: oklch(0.99 0.005 155);

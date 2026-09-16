@@ -725,3 +725,86 @@ export async function setSequencePaused(candidate: Candidate, paused: boolean, a
     actor,
   );
 }
+
+/* ------------------------------------------------- two-stage phase grouping */
+
+export type OnboardingPhase = "hiring" | "onboarding" | "completed" | "not-hired";
+
+/** Which of the two stages (or closed state) a candidate currently sits in. */
+export function phaseOf(candidate: Candidate): OnboardingPhase {
+  if (candidate.stage === "Not Hired") return "not-hired";
+  if (candidate.access_status === "Completed" || candidate.stage === "Onboarding Completed") return "completed";
+  return candidate.hired_at ? "onboarding" : "hiring";
+}
+
+export const PHASE_LABELS: Record<OnboardingPhase, string> = {
+  hiring: "Stage 1 · Hiring",
+  onboarding: "Stage 2 · Onboarding",
+  completed: "Completed",
+  "not-hired": "Not hired",
+};
+
+export interface HiringStep {
+  key: "added" | "interview" | "interviewed" | "form" | "decision";
+  index: string;
+  label: string;
+  status: string;
+  state: StepState;
+  detail?: string;
+}
+
+/** Stage 1 checklist: candidate added → interview → interview held → form → decision. */
+export function hiringSteps(candidate: Candidate): HiringStep[] {
+  const scheduled = !!candidate.interview_at;
+  const held = !!candidate.interview_completed_at;
+  const formDone = !!candidate.form_submitted_at;
+  const hired = !!candidate.hired_at;
+  const rejected = candidate.stage === "Not Hired";
+
+  return [
+    {
+      key: "added",
+      index: "01",
+      label: "Candidate added",
+      status: "Done",
+      state: "done",
+      detail: `${candidate.source ?? "Direct"} · ${dateLabel(candidate.created_at)}`,
+    },
+    {
+      key: "interview",
+      index: "02",
+      label: "Interview scheduled",
+      status: scheduled ? "Scheduled" : "Not scheduled",
+      state: scheduled ? "done" : "ready",
+      detail: scheduled ? stampLabel(candidate.interview_at) : "Pick a date to start the reminder emails",
+    },
+    {
+      key: "interviewed",
+      index: "03",
+      label: "Interview held",
+      status: held ? "Completed" : scheduled ? "Upcoming" : "Waiting",
+      state: held ? "done" : scheduled ? "in-progress" : "locked",
+      detail: held ? stampLabel(candidate.interview_completed_at) : "Mark it completed once the call happens",
+    },
+    {
+      key: "form",
+      index: "04",
+      label: "Onboarding form",
+      status: formDone ? "Submitted" : "Awaiting agent",
+      state: formDone ? "done" : "in-progress",
+      detail: formDone ? stampLabel(candidate.form_submitted_at) : "Send the form invite to the candidate",
+    },
+    {
+      key: "decision",
+      index: "05",
+      label: "Hiring decision",
+      status: hired ? "Approved" : rejected ? "Not hired" : "Pending",
+      state: hired ? "done" : rejected ? "blocked" : formDone ? "ready" : "in-progress",
+      detail: hired
+        ? `Approved ${stampLabel(candidate.hired_at)} — Stage 2 unlocked`
+        : rejected
+          ? candidate.rejection_reason ?? "Closed"
+          : "Approve to move the agent into Stage 2",
+    },
+  ];
+}

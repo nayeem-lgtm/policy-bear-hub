@@ -65,6 +65,16 @@
   --color-brand-nebula: var(--brand-nebula);
   --color-brand-tan: var(--brand-tan);
 
+  /* Operations console (mission-control surfaces) */
+  --color-console: var(--console);
+  --color-console-panel: var(--console-panel);
+  --color-console-inset: var(--console-inset);
+  --color-console-foreground: var(--console-foreground);
+  --color-console-muted: var(--console-muted);
+  --color-console-line: var(--console-line);
+  --color-console-accent: var(--console-accent);
+  --color-console-accent-foreground: var(--console-accent-foreground);
+
   /* Semantic operational states */
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);

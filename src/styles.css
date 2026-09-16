@@ -156,15 +156,15 @@
   --brand-nebula: oklch(0.883 0.011 191); /* #d6dfde */
   --brand-tan: oklch(0.552 0.086 65); /* #a56e35 */
 
-  /* Operations console — light + amber mission control */
-  --console: oklch(0.995 0.004 85); /* white card surface */
-  --console-panel: oklch(0.965 0.014 80); /* warm light panel */
-  --console-inset: oklch(0.94 0.016 80);
-  --console-foreground: oklch(0.26 0.045 264); /* deep navy text */
-  --console-muted: oklch(0.26 0.045 264 / 0.6);
-  --console-line: oklch(0.26 0.045 264 / 0.13);
-  --console-accent: oklch(0.58 0.135 62); /* deep amber, readable on white */
-  --console-accent-foreground: oklch(0.99 0.01 85);
+  /* Onboarding workspace — aligned to the shared CRM system */
+  --console: var(--card);
+  --console-panel: var(--secondary);
+  --console-inset: var(--muted);
+  --console-foreground: var(--foreground);
+  --console-muted: var(--muted-foreground);
+  --console-line: var(--border);
+  --console-accent: var(--primary);
+  --console-accent-foreground: var(--primary-foreground);
 
 
   /* Operational semantics */

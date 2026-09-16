@@ -1441,12 +1441,19 @@ export type Database = {
         Row: {
           auto_form_invite: boolean
           auto_interview_invite: boolean
+          available_weekdays: number[]
+          confirmation_note: string | null
           created_at: string
           daily_end: string
           daily_start: string
+          host_name: string | null
           id: string
           interview_days_ahead: number
+          location_label: string
           meeting_link: string | null
+          min_notice_hours: number
+          page_description: string | null
+          page_title: string
           singleton: boolean
           slot_minutes: number
           timezone: string
@@ -1456,12 +1463,19 @@ export type Database = {
         Insert: {
           auto_form_invite?: boolean
           auto_interview_invite?: boolean
+          available_weekdays?: number[]
+          confirmation_note?: string | null
           created_at?: string
           daily_end?: string
           daily_start?: string
+          host_name?: string | null
           id?: string
           interview_days_ahead?: number
+          location_label?: string
           meeting_link?: string | null
+          min_notice_hours?: number
+          page_description?: string | null
+          page_title?: string
           singleton?: boolean
           slot_minutes?: number
           timezone?: string
@@ -1471,12 +1485,19 @@ export type Database = {
         Update: {
           auto_form_invite?: boolean
           auto_interview_invite?: boolean
+          available_weekdays?: number[]
+          confirmation_note?: string | null
           created_at?: string
           daily_end?: string
           daily_start?: string
+          host_name?: string | null
           id?: string
           interview_days_ahead?: number
+          location_label?: string
           meeting_link?: string | null
+          min_notice_hours?: number
+          page_description?: string | null
+          page_title?: string
           singleton?: boolean
           slot_minutes?: number
           timezone?: string
@@ -1820,48 +1841,69 @@ export type Database = {
       }
       onboarding_interview_availability: {
         Row: {
+          available_weekdays: number[]
           booking_token: string
           candidate_id: string
+          confirmation_note: string | null
           created_at: string
           created_by: string | null
           daily_end: string
           daily_start: string
           ends_on: string
+          host_name: string | null
           id: string
           is_active: boolean
+          location_label: string
           meeting_link: string | null
+          min_notice_hours: number
+          page_description: string | null
+          page_title: string
           slot_minutes: number
           starts_on: string
           timezone: string
           updated_at: string
         }
         Insert: {
+          available_weekdays?: number[]
           booking_token?: string
           candidate_id: string
+          confirmation_note?: string | null
           created_at?: string
           created_by?: string | null
           daily_end: string
           daily_start: string
           ends_on: string
+          host_name?: string | null
           id?: string
           is_active?: boolean
+          location_label?: string
           meeting_link?: string | null
+          min_notice_hours?: number
+          page_description?: string | null
+          page_title?: string
           slot_minutes?: number
           starts_on: string
           timezone?: string
           updated_at?: string
         }
         Update: {
+          available_weekdays?: number[]
           booking_token?: string
           candidate_id?: string
+          confirmation_note?: string | null
           created_at?: string
           created_by?: string | null
           daily_end?: string
           daily_start?: string
           ends_on?: string
+          host_name?: string | null
           id?: string
           is_active?: boolean
+          location_label?: string
           meeting_link?: string | null
+          min_notice_hours?: number
+          page_description?: string | null
+          page_title?: string
           slot_minutes?: number
           starts_on?: string
           timezone?: string

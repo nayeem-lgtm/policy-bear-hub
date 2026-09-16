@@ -174,6 +174,12 @@ export const navSections: NavSection[] = [
             description: "Hiring, onboarding form, offer letter, carrier approval and access",
           },
           {
+            title: "Interview & Emails",
+            url: "/admin/hiring-setup",
+            icon: CalendarClock,
+            description: "One interview calendar, booking page and email sequence for every candidate",
+          },
+          {
             title: "Business Rules",
             url: "/admin/rules",
             icon: SlidersHorizontal,

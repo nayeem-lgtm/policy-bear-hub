@@ -104,6 +104,11 @@ export interface PublicBookingPage {
   slotMinutes: number;
   timezone: string;
   isActive: boolean;
+  pageTitle: string;
+  pageDescription: string | null;
+  hostName: string | null;
+  locationLabel: string | null;
+  confirmationNote: string | null;
   bookedStartsAt: string | null;
   meetingLink: string | null;
   availableSlots: string[];
@@ -144,6 +149,13 @@ export interface HiringAutomation {
   meeting_link: string | null;
   auto_interview_invite: boolean;
   auto_form_invite: boolean;
+  available_weekdays: number[];
+  min_notice_hours: number;
+  page_title: string;
+  page_description: string | null;
+  host_name: string | null;
+  location_label: string;
+  confirmation_note: string | null;
 }
 
 /** The one interview window + automation switches used for every candidate. */
@@ -164,6 +176,13 @@ const automationInput = z.object({
   meetingLink: z.string().url().or(z.literal("")),
   autoInterviewInvite: z.boolean(),
   autoFormInvite: z.boolean(),
+  availableWeekdays: z.array(z.number().int().min(1).max(7)).min(1),
+  minNoticeHours: z.number().int().min(0).max(168),
+  pageTitle: z.string().min(1).max(120),
+  pageDescription: z.string().max(600),
+  hostName: z.string().max(120),
+  locationLabel: z.string().max(120),
+  confirmationNote: z.string().max(600),
 });
 
 export const saveHiringAutomation = createServerFn({ method: "POST" })
@@ -185,6 +204,13 @@ export const saveHiringAutomation = createServerFn({ method: "POST" })
         meeting_link: data.meetingLink || null,
         auto_interview_invite: data.autoInterviewInvite,
         auto_form_invite: data.autoFormInvite,
+        available_weekdays: data.availableWeekdays,
+        min_notice_hours: data.minNoticeHours,
+        page_title: data.pageTitle,
+        page_description: data.pageDescription || null,
+        host_name: data.hostName || null,
+        location_label: data.locationLabel || "Google Meet",
+        confirmation_note: data.confirmationNote || null,
         updated_by: context.userId,
       })
       .eq("id", current.id);

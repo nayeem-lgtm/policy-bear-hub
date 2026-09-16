@@ -633,6 +633,7 @@ export function completionBlockers(candidate: Candidate): string[] {
 export type SequenceStep = Tables<"onboarding_sequence_steps">;
 
 export const SEQUENCE_ANCHORS = [
+  { value: "candidate_added", label: "As soon as the candidate is added" },
   { value: "interview_scheduled", label: "When the interview is scheduled" },
   { value: "interview_start", label: "Relative to the interview start" },
   { value: "interview_completed", label: "After the interview is completed" },

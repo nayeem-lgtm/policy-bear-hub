@@ -58,7 +58,7 @@ export function InterviewScheduler({ candidate, actor, onChanged }: { candidate:
             <h2 className="font-display text-sm font-bold">Interview</h2>
             <p className="text-xs text-muted-foreground">
               Set up once for everyone in{" "}
-              <Link to="/admin/hiring-setup" className="font-semibold text-primary underline">
+              <Link to="/admin/onboarding/setup" className="font-semibold text-primary underline">
                 Interview &amp; email setup
               </Link>
               .

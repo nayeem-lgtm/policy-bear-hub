@@ -184,7 +184,7 @@ export function OnboardingWorkspace() {
             variant="ghost"
             className="border border-console-line bg-console-panel text-console-foreground hover:bg-console-inset hover:text-console-foreground"
           >
-            <Link to="/admin/hiring-setup">
+            <Link to="/admin/onboarding/setup">
               <CalendarClock className="size-4" /> Interview &amp; email setup
             </Link>
           </Button>

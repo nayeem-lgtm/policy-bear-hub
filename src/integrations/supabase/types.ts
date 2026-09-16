@@ -1770,6 +1770,119 @@ export type Database = {
           },
         ]
       }
+      onboarding_interview_availability: {
+        Row: {
+          booking_token: string
+          candidate_id: string
+          created_at: string
+          created_by: string | null
+          daily_end: string
+          daily_start: string
+          ends_on: string
+          id: string
+          is_active: boolean
+          meeting_link: string | null
+          slot_minutes: number
+          starts_on: string
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          booking_token?: string
+          candidate_id: string
+          created_at?: string
+          created_by?: string | null
+          daily_end: string
+          daily_start: string
+          ends_on: string
+          id?: string
+          is_active?: boolean
+          meeting_link?: string | null
+          slot_minutes?: number
+          starts_on: string
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          booking_token?: string
+          candidate_id?: string
+          created_at?: string
+          created_by?: string | null
+          daily_end?: string
+          daily_start?: string
+          ends_on?: string
+          id?: string
+          is_active?: boolean
+          meeting_link?: string | null
+          slot_minutes?: number
+          starts_on?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_interview_availability_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_interview_bookings: {
+        Row: {
+          availability_id: string
+          candidate_id: string
+          created_at: string
+          ends_at: string
+          id: string
+          meeting_link: string | null
+          starts_at: string
+          status: string
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          availability_id: string
+          candidate_id: string
+          created_at?: string
+          ends_at: string
+          id?: string
+          meeting_link?: string | null
+          starts_at: string
+          status?: string
+          timezone: string
+          updated_at?: string
+        }
+        Update: {
+          availability_id?: string
+          candidate_id?: string
+          created_at?: string
+          ends_at?: string
+          id?: string
+          meeting_link?: string | null
+          starts_at?: string
+          status?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_interview_bookings_availability_id_fkey"
+            columns: ["availability_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_interview_availability"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "onboarding_interview_bookings_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       onboarding_notes: {
         Row: {
           author_id: string | null
@@ -3009,6 +3122,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      book_interview_slot: {
+        Args: { _starts_at: string; _token: string }
+        Returns: Json
+      }
       can_manage_onboarding: { Args: { _user_id: string }; Returns: boolean }
       can_read_attachment: {
         Args: { _path: string; _user_id: string }
@@ -3018,6 +3135,7 @@ export type Database = {
         Args: { _post_id: string; _user_id: string }
         Returns: boolean
       }
+      get_interview_booking_page: { Args: { _token: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

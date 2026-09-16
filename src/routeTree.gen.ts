@@ -55,6 +55,7 @@ import { Route as ShellTelephonyAttributionRouteImport } from './routes/_shell.t
 import { Route as ShellTelephonyFloorRouteImport } from './routes/_shell.telephony-floor'
 import { Route as ShellTelephonyMonitorRouteImport } from './routes/_shell.telephony-monitor'
 import { Route as ShellTextingRouteImport } from './routes/_shell.texting'
+import { Route as BookInterviewTokenRouteImport } from './routes/book-interview.$token'
 import { Route as ShellAdminAuditRouteImport } from './routes/_shell.admin.audit'
 import { Route as ShellAdminCalltoolsRouteImport } from './routes/_shell.admin.calltools'
 import { Route as ShellAdminHealthRouteImport } from './routes/_shell.admin.health'
@@ -309,6 +310,11 @@ const ShellTextingRoute = ShellTextingRouteImport.update({
   path: '/texting',
   getParentRoute: () => ShellRoute,
 } as any)
+const BookInterviewTokenRoute = BookInterviewTokenRouteImport.update({
+  id: '/book-interview/$token',
+  path: '/book-interview/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShellAdminAuditRoute = ShellAdminAuditRouteImport.update({
   id: '/admin/audit',
   path: '/admin/audit',
@@ -476,6 +482,7 @@ export interface FileRoutesByFullPath {
   '/telephony-floor': typeof ShellTelephonyFloorRoute
   '/telephony-monitor': typeof ShellTelephonyMonitorRoute
   '/texting': typeof ShellTextingRoute
+  '/book-interview/$token': typeof BookInterviewTokenRoute
   '/admin/audit': typeof ShellAdminAuditRoute
   '/admin/calltools': typeof ShellAdminCalltoolsRoute
   '/admin/health': typeof ShellAdminHealthRoute
@@ -546,6 +553,7 @@ export interface FileRoutesByTo {
   '/telephony-floor': typeof ShellTelephonyFloorRoute
   '/telephony-monitor': typeof ShellTelephonyMonitorRoute
   '/texting': typeof ShellTextingRoute
+  '/book-interview/$token': typeof BookInterviewTokenRoute
   '/admin/audit': typeof ShellAdminAuditRoute
   '/admin/calltools': typeof ShellAdminCalltoolsRoute
   '/admin/health': typeof ShellAdminHealthRoute
@@ -618,6 +626,7 @@ export interface FileRoutesById {
   '/_shell/telephony-floor': typeof ShellTelephonyFloorRoute
   '/_shell/telephony-monitor': typeof ShellTelephonyMonitorRoute
   '/_shell/texting': typeof ShellTextingRoute
+  '/book-interview/$token': typeof BookInterviewTokenRoute
   '/_shell/admin/audit': typeof ShellAdminAuditRoute
   '/_shell/admin/calltools': typeof ShellAdminCalltoolsRoute
   '/_shell/admin/health': typeof ShellAdminHealthRoute
@@ -690,6 +699,7 @@ export interface FileRouteTypes {
     | '/telephony-floor'
     | '/telephony-monitor'
     | '/texting'
+    | '/book-interview/$token'
     | '/admin/audit'
     | '/admin/calltools'
     | '/admin/health'
@@ -760,6 +770,7 @@ export interface FileRouteTypes {
     | '/telephony-floor'
     | '/telephony-monitor'
     | '/texting'
+    | '/book-interview/$token'
     | '/admin/audit'
     | '/admin/calltools'
     | '/admin/health'
@@ -831,6 +842,7 @@ export interface FileRouteTypes {
     | '/_shell/telephony-floor'
     | '/_shell/telephony-monitor'
     | '/_shell/texting'
+    | '/book-interview/$token'
     | '/_shell/admin/audit'
     | '/_shell/admin/calltools'
     | '/_shell/admin/health'
@@ -859,6 +871,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ShellRoute: typeof ShellRouteWithChildren
+  BookInterviewTokenRoute: typeof BookInterviewTokenRoute
   ApiPublicHooksCalltoolsRoute: typeof ApiPublicHooksCalltoolsRoute
   ApiPublicHooksCalltoolsQueueRoute: typeof ApiPublicHooksCalltoolsQueueRoute
   ApiPublicHooksOnboardingEmailsRoute: typeof ApiPublicHooksOnboardingEmailsRoute
@@ -1188,6 +1201,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/texting'
       preLoaderRoute: typeof ShellTextingRouteImport
       parentRoute: typeof ShellRoute
+    }
+    '/book-interview/$token': {
+      id: '/book-interview/$token'
+      path: '/book-interview/$token'
+      fullPath: '/book-interview/$token'
+      preLoaderRoute: typeof BookInterviewTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_shell/admin/audit': {
       id: '/_shell/admin/audit'
@@ -1520,6 +1540,7 @@ const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ShellRoute: ShellRouteWithChildren,
+  BookInterviewTokenRoute: BookInterviewTokenRoute,
   ApiPublicHooksCalltoolsRoute: ApiPublicHooksCalltoolsRoute,
   ApiPublicHooksCalltoolsQueueRoute: ApiPublicHooksCalltoolsQueueRoute,
   ApiPublicHooksOnboardingEmailsRoute: ApiPublicHooksOnboardingEmailsRoute,

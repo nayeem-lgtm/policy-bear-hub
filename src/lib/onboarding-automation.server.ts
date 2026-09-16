@@ -17,6 +17,13 @@ export interface AutomationSettings {
   meeting_link: string | null;
   auto_interview_invite: boolean;
   auto_form_invite: boolean;
+  available_weekdays: number[];
+  min_notice_hours: number;
+  page_title: string;
+  page_description: string | null;
+  host_name: string | null;
+  location_label: string;
+  confirmation_note: string | null;
 }
 
 export function appBaseUrl() {
@@ -89,6 +96,13 @@ export async function ensureCandidateBookingToken(
       slot_minutes: config.slot_minutes,
       timezone: config.timezone,
       meeting_link: config.meeting_link,
+      available_weekdays: config.available_weekdays,
+      min_notice_hours: config.min_notice_hours,
+      page_title: config.page_title,
+      page_description: config.page_description,
+      host_name: config.host_name,
+      location_label: config.location_label,
+      confirmation_note: config.confirmation_note,
       ...(createdBy ? { created_by: createdBy } : {}),
     })
     .select("booking_token")

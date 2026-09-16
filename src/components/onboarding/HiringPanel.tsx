@@ -140,17 +140,23 @@ export function HiringPanel({
                     {offsetLabel(step)} · {step.enabled ? "enabled" : "disabled"}
                   </p>
                 </div>
-                <p className="flex items-center gap-1.5 text-xs font-semibold">
+                <div className="text-right">
                   {sentAt ? (
                     <>
-                      <CheckCircle2 className="size-3.5 text-success" /> Sent {stampLabel(sentAt)}
+                      <Badge className="bg-success/15 text-success hover:bg-success/15">
+                        <CheckCircle2 className="size-3.5" /> Sent
+                      </Badge>
+                      <p className="mt-1 text-[0.68rem] text-muted-foreground">{stampLabel(sentAt)}</p>
                     </>
                   ) : (
                     <>
-                      <Clock className="size-3.5 text-muted-foreground" /> {dueAt}
+                      <Badge variant="secondary">
+                        <Clock className="size-3.5" /> Not sent
+                      </Badge>
+                      <p className="mt-1 text-[0.68rem] text-muted-foreground">{dueAt}</p>
                     </>
                   )}
-                </p>
+                </div>
                 <Button
                   size="sm"
                   variant="ghost"

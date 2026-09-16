@@ -1,38 +1,25 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CalendarClock, CheckCircle2, Clock, Mail, PauseCircle, PlayCircle, Send, Zap } from "lucide-react";
+import { CheckCircle2, Clock, Mail, PauseCircle, PlayCircle, Send, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { InterviewScheduler } from "@/components/onboarding/InterviewScheduler";
 import { cn } from "@/lib/utils";
 import { runHiringSequenceNow, sendOnboardingEmail } from "@/lib/onboarding.functions";
 import {
   fetchEmails,
   fetchSequenceSteps,
-  markInterviewCompleted,
   offsetLabel,
-  scheduleInterview,
   setSequencePaused,
   stampLabel,
   type Candidate,
   type SequenceStep,
 } from "@/lib/onboarding";
-
-const DURATIONS = ["15", "30", "45", "60"];
 
 /** Interview scheduling + the automated hiring email sequence for one candidate. */
 export function HiringPanel({
@@ -53,11 +40,6 @@ export function HiringPanel({
     queryKey: ["onboarding-emails", candidate.id],
     queryFn: () => fetchEmails(candidate.id),
   });
-
-  const [at, setAt] = useState(toLocalInput(candidate.interview_at));
-  const [duration, setDuration] = useState(String(candidate.interview_duration_minutes ?? 30));
-  const [link, setLink] = useState(candidate.interview_link ?? "");
-  const [notes, setNotes] = useState(candidate.interview_notes ?? "");
 
   const refresh = () => {
     onChanged();
@@ -111,102 +93,17 @@ export function HiringPanel({
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-2xl border-white/70 bg-card/70 p-4 shadow-card backdrop-blur-xl">
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-lg bg-brand/10 text-brand">
-            <CalendarClock className="size-4" />
-          </span>
-          <h2 className="font-display text-sm font-bold tracking-tight">Interview scheduling</h2>
-          {candidate.interview_at && (
-            <Badge variant="secondary">
-              {candidate.interview_completed_at ? "Interview completed" : "Interview scheduled"}
-            </Badge>
-          )}
-        </div>
+      <InterviewScheduler candidate={candidate} actor={actor} onChanged={refresh} />
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">Date & time</Label>
-            <Input type="datetime-local" value={at} onChange={(e) => setAt(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">Length</Label>
-            <Select value={duration} onValueChange={setDuration}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DURATIONS.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {value} minutes
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5 sm:col-span-2">
-            <Label className="text-xs font-semibold">Meeting link</Label>
-            <Input
-              placeholder="https://…"
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-            />
-          </div>
-          <div className="space-y-1.5 sm:col-span-2">
-            <Label className="text-xs font-semibold">Interview notes (internal)</Label>
-            <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
-          </div>
-        </div>
-
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <Button
-            size="sm"
-            disabled={!at || act.isPending}
-            onClick={() =>
-              void act.mutateAsync(() =>
-                scheduleInterview(
-                  candidate,
-                  { at, durationMinutes: Number(duration), link, notes },
-                  actor,
-                ),
-              )
-            }
-          >
-            <CalendarClock className="size-4" />
-            {candidate.interview_at ? "Reschedule interview" : "Schedule interview"}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={!candidate.interview_at || !!candidate.interview_completed_at}
-            onClick={() => void act.mutateAsync(() => markInterviewCompleted(candidate, actor, notes))}
-          >
-            <CheckCircle2 className="size-4" /> Mark interview completed
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() =>
-              void act.mutateAsync(() => setSequencePaused(candidate, !candidate.sequence_paused, actor))
-            }
-          >
-            {candidate.sequence_paused ? (
-              <>
-                <PlayCircle className="size-4" /> Resume automated emails
-              </>
-            ) : (
-              <>
-                <PauseCircle className="size-4" /> Pause automated emails
-              </>
-            )}
-          </Button>
-        </div>
-
-        <p className="mt-2 text-xs text-muted-foreground">
-          Scheduled for {stampLabel(candidate.interview_at)}
-          {candidate.interview_completed_at ? ` · completed ${stampLabel(candidate.interview_completed_at)}` : ""}
-        </p>
-      </Card>
+      <div className="flex justify-end">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => void act.mutateAsync(() => setSequencePaused(candidate, !candidate.sequence_paused, actor))}
+        >
+          {candidate.sequence_paused ? <><PlayCircle className="size-4" /> Resume automated emails</> : <><PauseCircle className="size-4" /> Pause automated emails</>}
+        </Button>
+      </div>
 
       <Card className="rounded-2xl border-white/70 bg-card/70 p-4 shadow-card backdrop-blur-xl">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -278,15 +175,6 @@ export function HiringPanel({
       </Card>
     </div>
   );
-}
-
-function toLocalInput(value: string | null) {
-  if (!value) return "";
-  const date = new Date(value);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(
-    date.getMinutes(),
-  )}`;
 }
 
 function dueTimeLabel(step: SequenceStep, candidate: Candidate) {

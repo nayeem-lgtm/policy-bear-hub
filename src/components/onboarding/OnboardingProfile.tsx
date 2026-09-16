@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/select";
 import { DocumentStatusBadge } from "@/components/onboarding/AgentOnboardingForm";
 import { StageChip } from "@/components/onboarding/OnboardingWorkspace";
+import { HiringPanel } from "@/components/onboarding/HiringPanel";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { sendOnboardingEmail } from "@/lib/onboarding.functions";
@@ -253,6 +254,9 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
 
         {/* ------------------------------------------------------- workflow */}
         <TabsContent value="workflow" className="mt-3 space-y-3">
+          {!candidate.hired_at && (
+            <HiringPanel candidate={candidate} actor={actor} onChanged={refresh} />
+          )}
           {!candidate.hired_at && (
             <Panel title="Hiring decision" icon={BadgeCheck}>
               <p className="text-sm text-muted-foreground">

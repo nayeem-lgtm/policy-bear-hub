@@ -76,6 +76,7 @@ import { Route as ShellAdminOnboardingIndexRouteImport } from './routes/_shell.a
 import { Route as ShellAdminOnboardingCandidateIdRouteImport } from './routes/_shell.admin.onboarding.$candidateId'
 import { Route as ApiPublicHooksCalltoolsRouteImport } from './routes/api.public.hooks.calltools'
 import { Route as ApiPublicHooksCalltoolsQueueRouteImport } from './routes/api.public.hooks.calltools-queue'
+import { Route as ApiPublicHooksOnboardingEmailsRouteImport } from './routes/api.public.hooks.onboarding-emails'
 import { Route as ApiPublicHooksTelephonySyncRouteImport } from './routes/api.public.hooks.telephony-sync'
 
 const IndexRoute = IndexRouteImport.update({
@@ -416,6 +417,12 @@ const ApiPublicHooksCalltoolsQueueRoute =
     path: '/api/public/hooks/calltools-queue',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksOnboardingEmailsRoute =
+  ApiPublicHooksOnboardingEmailsRouteImport.update({
+    id: '/api/public/hooks/onboarding-emails',
+    path: '/api/public/hooks/onboarding-emails',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksTelephonySyncRoute =
   ApiPublicHooksTelephonySyncRouteImport.update({
     id: '/api/public/hooks/telephony-sync',
@@ -489,6 +496,7 @@ export interface FileRoutesByFullPath {
   '/admin/onboarding/$candidateId': typeof ShellAdminOnboardingCandidateIdRoute
   '/api/public/hooks/calltools': typeof ApiPublicHooksCalltoolsRoute
   '/api/public/hooks/calltools-queue': typeof ApiPublicHooksCalltoolsQueueRoute
+  '/api/public/hooks/onboarding-emails': typeof ApiPublicHooksOnboardingEmailsRoute
   '/api/public/hooks/telephony-sync': typeof ApiPublicHooksTelephonySyncRoute
   '/admin/onboarding/': typeof ShellAdminOnboardingIndexRoute
 }
@@ -558,6 +566,7 @@ export interface FileRoutesByTo {
   '/admin/onboarding/$candidateId': typeof ShellAdminOnboardingCandidateIdRoute
   '/api/public/hooks/calltools': typeof ApiPublicHooksCalltoolsRoute
   '/api/public/hooks/calltools-queue': typeof ApiPublicHooksCalltoolsQueueRoute
+  '/api/public/hooks/onboarding-emails': typeof ApiPublicHooksOnboardingEmailsRoute
   '/api/public/hooks/telephony-sync': typeof ApiPublicHooksTelephonySyncRoute
   '/admin/onboarding': typeof ShellAdminOnboardingIndexRoute
 }
@@ -629,6 +638,7 @@ export interface FileRoutesById {
   '/_shell/admin/onboarding/$candidateId': typeof ShellAdminOnboardingCandidateIdRoute
   '/api/public/hooks/calltools': typeof ApiPublicHooksCalltoolsRoute
   '/api/public/hooks/calltools-queue': typeof ApiPublicHooksCalltoolsQueueRoute
+  '/api/public/hooks/onboarding-emails': typeof ApiPublicHooksOnboardingEmailsRoute
   '/api/public/hooks/telephony-sync': typeof ApiPublicHooksTelephonySyncRoute
   '/_shell/admin/onboarding/': typeof ShellAdminOnboardingIndexRoute
 }
@@ -700,6 +710,7 @@ export interface FileRouteTypes {
     | '/admin/onboarding/$candidateId'
     | '/api/public/hooks/calltools'
     | '/api/public/hooks/calltools-queue'
+    | '/api/public/hooks/onboarding-emails'
     | '/api/public/hooks/telephony-sync'
     | '/admin/onboarding/'
   fileRoutesByTo: FileRoutesByTo
@@ -769,6 +780,7 @@ export interface FileRouteTypes {
     | '/admin/onboarding/$candidateId'
     | '/api/public/hooks/calltools'
     | '/api/public/hooks/calltools-queue'
+    | '/api/public/hooks/onboarding-emails'
     | '/api/public/hooks/telephony-sync'
     | '/admin/onboarding'
   id:
@@ -839,6 +851,7 @@ export interface FileRouteTypes {
     | '/_shell/admin/onboarding/$candidateId'
     | '/api/public/hooks/calltools'
     | '/api/public/hooks/calltools-queue'
+    | '/api/public/hooks/onboarding-emails'
     | '/api/public/hooks/telephony-sync'
     | '/_shell/admin/onboarding/'
   fileRoutesById: FileRoutesById
@@ -848,6 +861,7 @@ export interface RootRouteChildren {
   ShellRoute: typeof ShellRouteWithChildren
   ApiPublicHooksCalltoolsRoute: typeof ApiPublicHooksCalltoolsRoute
   ApiPublicHooksCalltoolsQueueRoute: typeof ApiPublicHooksCalltoolsQueueRoute
+  ApiPublicHooksOnboardingEmailsRoute: typeof ApiPublicHooksOnboardingEmailsRoute
   ApiPublicHooksTelephonySyncRoute: typeof ApiPublicHooksTelephonySyncRoute
 }
 
@@ -1322,6 +1336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksCalltoolsQueueRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/onboarding-emails': {
+      id: '/api/public/hooks/onboarding-emails'
+      path: '/api/public/hooks/onboarding-emails'
+      fullPath: '/api/public/hooks/onboarding-emails'
+      preLoaderRoute: typeof ApiPublicHooksOnboardingEmailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/telephony-sync': {
       id: '/api/public/hooks/telephony-sync'
       path: '/api/public/hooks/telephony-sync'
@@ -1501,6 +1522,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShellRoute: ShellRouteWithChildren,
   ApiPublicHooksCalltoolsRoute: ApiPublicHooksCalltoolsRoute,
   ApiPublicHooksCalltoolsQueueRoute: ApiPublicHooksCalltoolsQueueRoute,
+  ApiPublicHooksOnboardingEmailsRoute: ApiPublicHooksOnboardingEmailsRoute,
   ApiPublicHooksTelephonySyncRoute: ApiPublicHooksTelephonySyncRoute,
 }
 export const routeTree = rootRouteImport

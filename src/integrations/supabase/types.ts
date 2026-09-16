@@ -1468,6 +1468,10 @@ export type Database = {
           hired_at: string | null
           id: string
           interview_at: string | null
+          interview_completed_at: string | null
+          interview_duration_minutes: number
+          interview_link: string | null
+          interview_notes: string | null
           last_activity_at: string
           last_name: string
           licensing: Json
@@ -1485,6 +1489,7 @@ export type Database = {
           offer_viewed_at: string | null
           phone: string | null
           preferred_name: string | null
+          sequence_paused: boolean
           source: string | null
           stage: string
           state: string | null
@@ -1522,6 +1527,10 @@ export type Database = {
           hired_at?: string | null
           id?: string
           interview_at?: string | null
+          interview_completed_at?: string | null
+          interview_duration_minutes?: number
+          interview_link?: string | null
+          interview_notes?: string | null
           last_activity_at?: string
           last_name?: string
           licensing?: Json
@@ -1539,6 +1548,7 @@ export type Database = {
           offer_viewed_at?: string | null
           phone?: string | null
           preferred_name?: string | null
+          sequence_paused?: boolean
           source?: string | null
           stage?: string
           state?: string | null
@@ -1576,6 +1586,10 @@ export type Database = {
           hired_at?: string | null
           id?: string
           interview_at?: string | null
+          interview_completed_at?: string | null
+          interview_duration_minutes?: number
+          interview_link?: string | null
+          interview_notes?: string | null
           last_activity_at?: string
           last_name?: string
           licensing?: Json
@@ -1593,6 +1607,7 @@ export type Database = {
           offer_viewed_at?: string | null
           phone?: string | null
           preferred_name?: string | null
+          sequence_paused?: boolean
           source?: string | null
           stage?: string
           state?: string | null
@@ -1789,6 +1804,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      onboarding_sequence_steps: {
+        Row: {
+          anchor: string
+          enabled: boolean
+          id: string
+          name: string
+          offset_minutes: number
+          sort_order: number
+          step_key: string
+          template_key: string
+          updated_at: string
+        }
+        Insert: {
+          anchor: string
+          enabled?: boolean
+          id?: string
+          name: string
+          offset_minutes?: number
+          sort_order?: number
+          step_key: string
+          template_key: string
+          updated_at?: string
+        }
+        Update: {
+          anchor?: string
+          enabled?: boolean
+          id?: string
+          name?: string
+          offset_minutes?: number
+          sort_order?: number
+          step_key?: string
+          template_key?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       onboarding_templates: {
         Row: {

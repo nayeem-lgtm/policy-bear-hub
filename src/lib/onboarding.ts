@@ -627,3 +627,101 @@ export function completionBlockers(candidate: Candidate): string[] {
   if (candidate.agreement_status !== "Signed") blockers.push("Employment agreement not signed");
   return blockers;
 }
+
+/* ------------------------------------------- hiring email sequence config */
+
+export type SequenceStep = Tables<"onboarding_sequence_steps">;
+
+export const SEQUENCE_ANCHORS = [
+  { value: "interview_scheduled", label: "When the interview is scheduled" },
+  { value: "interview_start", label: "Relative to the interview start" },
+  { value: "interview_completed", label: "After the interview is completed" },
+] as const;
+
+export function anchorLabel(anchor: string) {
+  return SEQUENCE_ANCHORS.find((item) => item.value === anchor)?.label ?? anchor;
+}
+
+export function offsetLabel(step: SequenceStep) {
+  const minutes = step.offset_minutes ?? 0;
+  if (step.anchor === "interview_scheduled") return "Immediately";
+  const abs = Math.abs(minutes);
+  const text =
+    abs === 0
+      ? "at the same time"
+      : abs % 1440 === 0
+        ? `${abs / 1440} day${abs / 1440 === 1 ? "" : "s"}`
+        : abs % 60 === 0
+          ? `${abs / 60} hour${abs / 60 === 1 ? "" : "s"}`
+          : `${abs} minutes`;
+  if (abs === 0) return "At the anchor time";
+  return minutes < 0 ? `${text} before` : `${text} after`;
+}
+
+export async function fetchSequenceSteps(): Promise<SequenceStep[]> {
+  const { data, error } = await supabase
+    .from("onboarding_sequence_steps")
+    .select("*")
+    .order("sort_order");
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function updateSequenceStep(id: string, patch: Partial<SequenceStep>) {
+  const { error } = await supabase.from("onboarding_sequence_steps").update(patch).eq("id", id);
+  if (error) throw error;
+}
+
+export async function updateTemplate(
+  templateKey: string,
+  patch: { subject?: string; body?: string; name?: string },
+) {
+  const { error } = await supabase
+    .from("onboarding_templates")
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq("template_key", templateKey);
+  if (error) throw error;
+}
+
+/* --------------------------------------------------- interview scheduling */
+
+export async function scheduleInterview(
+  candidate: Candidate,
+  input: { at: string; durationMinutes: number; link?: string; notes?: string },
+  actor: string,
+) {
+  const reschedule = !!candidate.interview_at;
+  await updateCandidate(candidate.id, {
+    interview_at: new Date(input.at).toISOString(),
+    interview_duration_minutes: input.durationMinutes,
+    interview_link: input.link?.trim() || null,
+    interview_notes: input.notes?.trim() || null,
+    interview_completed_at: null,
+    stage: candidate.hired_at ? candidate.stage : "Interview Scheduled",
+  });
+  await logEvent(
+    candidate.id,
+    reschedule ? "Interview rescheduled" : "Interview scheduled",
+    new Date(input.at).toLocaleString(),
+    actor,
+  );
+}
+
+export async function markInterviewCompleted(candidate: Candidate, actor: string, notes?: string) {
+  await updateCandidate(candidate.id, {
+    interview_completed_at: new Date().toISOString(),
+    stage: candidate.hired_at ? candidate.stage : "Interview Completed",
+    ...(notes?.trim() ? { interview_notes: notes.trim() } : {}),
+  });
+  await logEvent(candidate.id, "Interview completed", notes?.trim() || undefined, actor);
+}
+
+export async function setSequencePaused(candidate: Candidate, paused: boolean, actor: string) {
+  await updateCandidate(candidate.id, { sequence_paused: paused });
+  await logEvent(
+    candidate.id,
+    paused ? "Automated emails paused" : "Automated emails resumed",
+    undefined,
+    actor,
+  );
+}

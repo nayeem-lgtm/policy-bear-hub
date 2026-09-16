@@ -56,7 +56,10 @@ export async function sendOnboardingTemplate(
   // shared interview window — no per-candidate setup needed.
   let bookingLink = "";
   try {
-    bookingLink = await candidateBookingLink(supabase, candidate.id);
+    // Uses the privileged client so the link exists even when the send is
+    // triggered by an automated run rather than a signed-in manager.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    bookingLink = await candidateBookingLink(supabaseAdmin, candidate.id);
   } catch {
     bookingLink = "";
   }

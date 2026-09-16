@@ -167,7 +167,9 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
     );
   }
 
-  const steps = onboardingSteps(candidate);
+  const steps = onboardingSteps(candidate).filter((step) => step.key !== "form");
+  const stage1 = hiringSteps(candidate);
+  const hired = !!candidate.hired_at;
   const licensing = readLicensing(candidate);
   const banking = readBanking(candidate);
   const auth = readAuthorizations(candidate);

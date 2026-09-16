@@ -157,89 +157,112 @@ export function OnboardingWorkspace() {
   const activeTab = PHASE_TABS.find((tab) => tab.value === phase)!;
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="rounded-[1.4rem] border border-console-line bg-console p-5 text-console-foreground shadow-raised">
+      {/* ------------------------------------------------------------ header */}
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-xl font-bold tracking-tight">Agent onboarding</h1>
-          <p className="text-xs text-muted-foreground">
+          <h1 className="font-display text-2xl font-bold tracking-tight">Agent pipeline control</h1>
+          <p className="text-sm text-console-muted">
             Two stages — hiring first, then the locked onboarding steps once a candidate is approved.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button size="sm" variant="outline" onClick={() => setAutomation(true)}>
+        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span className="flex items-center gap-2 rounded-md border border-console-line bg-console-panel px-3 py-1.5 tracking-[0.14em] uppercase">
+            <span className="size-2 rounded-full bg-success shadow-[0_0_8px_var(--success)]" />
+            Live
+          </span>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="border border-console-line bg-console-panel text-console-foreground hover:bg-console-inset hover:text-console-foreground"
+            onClick={() => setAutomation(true)}
+          >
             <Zap className="size-4" /> Email automation
           </Button>
-          <Button size="sm" onClick={() => setCreating(true)}>
+          <Button
+            size="sm"
+            className="bg-console-accent tracking-wider text-console-accent-foreground uppercase hover:bg-console-accent/90"
+            onClick={() => setCreating(true)}
+          >
             <Plus className="size-4" /> Add candidate
           </Button>
         </div>
       </div>
 
-      {/* ----------------------------------------------------- stage overview */}
-      <div className="grid gap-3 lg:grid-cols-2">
-        <StageSummary
-          eyebrow="Stage 1"
-          title="Hiring"
-          description="Add candidates, schedule the interview, let the automated emails run, then approve or decline."
-          count={stats.hiring}
-          active={phase === "hiring"}
-          onClick={() => viewStage("hiring")}
-          rows={[
-            ["Interviews upcoming", stats.interviews],
-            ["Awaiting hiring decision", stats.awaitingDecision],
-          ]}
-          icon={<ClipboardList className="size-4" />}
-        />
-        <StageSummary
-          eyebrow="Stage 2"
-          title="Onboarding"
-          description="Offer letter → carrier approval → employment agreement → PolicyBear access. Each step unlocks the next."
-          count={stats.onboarding}
-          active={phase === "onboarding"}
-          onClick={() => viewStage("onboarding")}
-          rows={[
-            ["Awaiting signature", stats.awaitingSignature],
-            ["Carrier approval pending", stats.carrier],
-          ]}
-          icon={<ShieldCheck className="size-4" />}
-        />
+      {/* -------------------------------------------------- stages + metrics */}
+      <div className="mt-5 grid grid-cols-12 gap-3">
+        <div className="col-span-12 grid gap-3 sm:grid-cols-2 lg:col-span-5">
+          <StageSummary
+            eyebrow="Stage 01"
+            title="Hiring"
+            count={stats.hiring}
+            active={phase === "hiring"}
+            onClick={() => viewStage("hiring")}
+            rows={[
+              ["Interviews upcoming", stats.interviews],
+              ["Awaiting decision", stats.awaitingDecision],
+            ]}
+            icon={<ClipboardList className="size-3.5" />}
+          />
+          <StageSummary
+            eyebrow="Stage 02"
+            title="Onboarding"
+            count={stats.onboarding}
+            active={phase === "onboarding"}
+            onClick={() => viewStage("onboarding")}
+            rows={[
+              ["Awaiting signature", stats.awaitingSignature],
+              ["Carrier pending", stats.carrier],
+            ]}
+            icon={<ShieldCheck className="size-3.5" />}
+            muted
+          />
+        </div>
+
+        <div className="col-span-12 grid grid-cols-2 gap-3 lg:col-span-7 lg:grid-cols-4">
+          <ConsoleTile label="In hiring" value={stats.hiring} />
+          <ConsoleTile label="In onboarding" value={stats.onboarding} />
+          <ConsoleTile label="Action required" value={stats.action} alert />
+          <ConsoleTile label="Completed" value={stats.completed} />
+        </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="In hiring" value={stats.hiring} tone="info" icon={<Users />} />
-        <StatCard label="In onboarding" value={stats.onboarding} tone="brand" icon={<FileSignature />} />
-        <StatCard label="Action required" value={stats.action} tone="danger" icon={<AlertTriangle />} />
-        <StatCard label="Completed" value={stats.completed} tone="success" icon={<CheckCircle2 />} />
-      </div>
-
-      {/* -------------------------------------------------------- stage lists */}
-      <div ref={stageListRef} className="scroll-mt-4">
-      <Tabs value={phase} onValueChange={(value) => setPhase(value as OnboardingPhase)}>
-        <TabsList className="flex-wrap">
-          {PHASE_TABS.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value}>
-              {tab.label}
-              <Badge variant="secondary" className="ml-1.5 rounded-md text-[0.6rem]">
-                {byPhase[tab.value].length}
-              </Badge>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <Card className="mt-3 rounded-2xl border-white/70 bg-card/70 p-3.5 shadow-card backdrop-blur-xl">
-          <p className="mb-2.5 text-xs text-muted-foreground">{activeTab.hint}</p>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative min-w-[13rem] flex-1">
-              <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+      {/* ----------------------------------------------------- pipeline board */}
+      <div
+        ref={stageListRef}
+        className="mt-4 scroll-mt-4 overflow-hidden rounded-xl border border-console-line bg-console-panel"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-console-line px-4">
+          <div className="flex flex-wrap gap-5">
+            {PHASE_TABS.map((tab) => (
+              <button
+                key={tab.value}
+                type="button"
+                onClick={() => setPhase(tab.value)}
+                className={cn(
+                  "-mb-px border-b-2 px-1 py-4 text-[0.68rem] font-bold tracking-[0.16em] whitespace-nowrap uppercase transition-colors",
+                  phase === tab.value
+                    ? "border-console-accent text-console-foreground"
+                    : "border-transparent text-console-muted hover:text-console-foreground",
+                )}
+              >
+                {tab.label} ({byPhase[tab.value].length})
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 py-3">
+            <div className="relative">
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-console-muted" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search name, email, phone or assigned admin"
-                className="h-9 pl-9"
+                placeholder="Search candidates…"
+                className="h-8 w-56 border-console-line bg-console pl-8 text-xs text-console-foreground placeholder:text-console-muted focus-visible:border-console-accent/60 focus-visible:ring-0"
               />
             </div>
             <Select value={flag} onValueChange={setFlag}>
-              <SelectTrigger className="h-9 w-[14rem]">
+              <SelectTrigger className="h-8 w-[12.5rem] border-console-line bg-console text-xs text-console-foreground">
+                <SlidersHorizontal className="size-3.5 text-console-muted" />
                 <SelectValue placeholder="Filter" />
               </SelectTrigger>
               <SelectContent>
@@ -252,46 +275,62 @@ export function OnboardingWorkspace() {
               </SelectContent>
             </Select>
           </div>
-        </Card>
+        </div>
 
-        {PHASE_TABS.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value} className="mt-3">
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {visible.map((candidate) => (
-                <CandidateCard key={candidate.id} candidate={candidate} phase={tab.value} />
-              ))}
-            </div>
-            {visible.length === 0 && (
-              <Card className="rounded-2xl border-dashed border-border/70 bg-card/60 p-8 text-center">
-                <p className="text-sm font-semibold">
-                  {candidatesQuery.isLoading ? "Loading records…" : "Nobody in this stage right now."}
+        <p className="border-b border-console-line px-4 py-2 text-[0.7rem] text-console-muted">{activeTab.hint}</p>
+
+        <div className="grid gap-3 p-4 md:grid-cols-2">
+          {visible.map((candidate) => (
+            <CandidateCard key={candidate.id} candidate={candidate} phase={phase} />
+          ))}
+        </div>
+
+        {visible.length === 0 && (
+          <div className="px-4 pb-8 text-center">
+            <p className="text-sm font-semibold">
+              {candidatesQuery.isLoading ? "Loading records…" : "Nobody in this stage right now."}
+            </p>
+            {!candidatesQuery.isLoading && phase === "onboarding" && (
+              <>
+                <p className="mx-auto mt-1.5 max-w-md text-xs text-console-muted">
+                  People land here only after you approve their hiring decision in Stage 1. Open a candidate in Stage 1
+                  and choose “Approve &amp; move to Stage 2”.
                 </p>
-                {!candidatesQuery.isLoading && tab.value === "onboarding" && (
-                  <>
-                    <p className="mx-auto mt-1.5 max-w-md text-xs text-muted-foreground">
-                      People land here only after you approve their hiring decision in Stage 1. Open a candidate in
-                      Stage 1 and choose “Approve &amp; move to Stage 2”.
-                    </p>
-                    <Button size="sm" variant="outline" className="mx-auto mt-3" onClick={() => setPhase("hiring")}>
-                      Go to Stage 1 · Hiring
-                    </Button>
-                  </>
-                )}
-                {!candidatesQuery.isLoading && tab.value === "completed" && (
-                  <p className="mx-auto mt-1.5 max-w-md text-xs text-muted-foreground">
-                    Candidates appear here once all four Stage 2 steps are finished and PolicyBear access is granted.
-                  </p>
-                )}
-                {tab.value === "hiring" && !candidatesQuery.isLoading && (
-                  <Button size="sm" className="mx-auto mt-3" onClick={() => setCreating(true)}>
-                    <Plus className="size-4" /> Add your first candidate
-                  </Button>
-                )}
-              </Card>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="mx-auto mt-3 border border-console-line bg-console text-console-foreground hover:bg-console-inset hover:text-console-foreground"
+                  onClick={() => setPhase("hiring")}
+                >
+                  Go to Stage 1 · Hiring
+                </Button>
+              </>
             )}
-          </TabsContent>
-        ))}
-      </Tabs>
+            {!candidatesQuery.isLoading && phase === "completed" && (
+              <p className="mx-auto mt-1.5 max-w-md text-xs text-console-muted">
+                Candidates appear here once all four Stage 2 steps are finished and PolicyBear access is granted.
+              </p>
+            )}
+            {!candidatesQuery.isLoading && phase === "hiring" && (
+              <Button
+                size="sm"
+                className="mx-auto mt-3 bg-console-accent text-console-accent-foreground hover:bg-console-accent/90"
+                onClick={() => setCreating(true)}
+              >
+                <Plus className="size-4" /> Add your first candidate
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 px-1 text-[0.65rem] tracking-[0.12em] text-console-muted uppercase">
+        <span>
+          {candidates.length} records tracked · {visible.length} shown
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="size-1 rounded-full bg-console-accent" /> PolicyBear hiring pipeline
+        </span>
       </div>
 
       <CreateCandidateDialog
@@ -308,53 +347,87 @@ export function OnboardingWorkspace() {
 
 /* -------------------------------------------------------------- fragments */
 
+function ConsoleTile({ label, value, alert }: { label: string; value: number; alert?: boolean }) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col justify-between gap-2 rounded-lg border p-3",
+        alert
+          ? "border-console-accent/40 bg-console-panel ring-1 ring-console-accent/20"
+          : "border-console-line bg-console-panel/60",
+      )}
+    >
+      <span
+        className={cn(
+          "text-[0.62rem] font-bold tracking-[0.1em] uppercase",
+          alert ? "text-console-accent" : "text-console-muted",
+        )}
+      >
+        {label}
+      </span>
+      <span
+        className={cn(
+          "font-display text-2xl font-bold tabular-nums",
+          alert ? "text-console-accent" : "text-console-foreground",
+        )}
+      >
+        {String(value).padStart(2, "0")}
+      </span>
+    </div>
+  );
+}
+
 function StageSummary({
   eyebrow,
   title,
-  description,
   count,
   rows,
   active,
   onClick,
   icon,
+  muted,
 }: {
   eyebrow: string;
   title: string;
-  description: string;
   count: number;
   rows: [string, number][];
   active: boolean;
   onClick: () => void;
   icon: React.ReactNode;
+  muted?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-2xl border p-4 text-left shadow-card backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:shadow-raised",
-        active ? "border-brand/40 bg-brand/5" : "border-white/70 bg-card/70",
+        "group relative overflow-hidden rounded-r-lg border-l-4 bg-console-panel p-4 text-left transition-all hover:-translate-y-0.5",
+        muted ? "border-l-console-foreground/30" : "border-l-console-accent",
+        active && "ring-1 ring-console-accent/40",
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="flex items-center gap-1.5 text-[0.62rem] font-bold tracking-[0.14em] uppercase text-brand">
-            {icon} {eyebrow}
-          </p>
-          <p className="mt-1 font-display text-lg font-bold tracking-tight">{title}</p>
-        </div>
-        <p className="font-display text-2xl font-bold tracking-tight">{count}</p>
-      </div>
-      <p className="mt-1.5 text-xs text-muted-foreground">{description}</p>
+      <span className="pointer-events-none absolute -top-4 -right-4 size-16 rounded-full bg-console-foreground/5 transition-transform duration-700 group-hover:scale-150" />
+      <p
+        className={cn(
+          "flex items-center gap-1.5 text-[0.62rem] font-bold tracking-[0.16em] uppercase",
+          muted ? "text-console-muted" : "text-console-accent",
+        )}
+      >
+        {icon} {eyebrow}
+      </p>
+      <p className="mt-1 font-display text-lg font-semibold">{title}</p>
+      <p className="mt-1.5 font-display text-3xl font-bold tabular-nums">
+        {count} <span className="text-[0.62rem] font-normal tracking-[0.14em] text-console-muted uppercase">People</span>
+      </p>
       <div className="mt-3 space-y-1">
         {rows.map(([label, value]) => (
-          <div key={label} className="flex items-center justify-between border-b border-dashed border-border/50 py-1">
-            <span className="text-xs text-muted-foreground">{label}</span>
-            <span className="text-xs font-semibold">{value}</span>
+          <div key={label} className="flex items-center justify-between border-b border-console-line py-1">
+            <span className="text-[0.7rem] text-console-muted">{label}</span>
+            <span className="text-[0.7rem] font-semibold tabular-nums">{value}</span>
           </div>
         ))}
       </div>
-      <p className="mt-2.5 flex items-center gap-1 text-xs font-semibold text-brand">
+      <p className="mt-2.5 flex items-center gap-1 text-[0.68rem] font-bold tracking-[0.12em] text-console-accent uppercase">
         View this stage <ArrowRight className="size-3.5" />
       </p>
     </button>
@@ -374,68 +447,102 @@ function CandidateCard({ candidate, phase }: { candidate: Candidate; phase: Onbo
     <Link
       to="/admin/onboarding/$candidateId"
       params={{ candidateId: candidate.id }}
-      className="block rounded-2xl border border-white/70 bg-card/70 p-4 shadow-card backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:shadow-raised"
+      className={cn(
+        "block rounded-lg border bg-console p-4 transition-all duration-300 hover:border-console-accent/40",
+        next ? "border-l-4 border-console-line border-l-console-accent ring-1 ring-console-accent/10" : "border-console-line",
+      )}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-sm font-bold">{fullName(candidate)}</p>
-          <p className="truncate text-xs text-muted-foreground">{candidate.email}</p>
+          <p className="truncate font-display text-sm font-bold">{fullName(candidate)}</p>
+          <p className="truncate text-[0.68rem] text-console-muted">
+            {candidate.email} · updated {dateLabel(candidate.last_activity_at)}
+          </p>
         </div>
-        <ChevronRight className="mt-1 size-4 shrink-0 text-muted-foreground" />
+        <span
+          className={cn(
+            "shrink-0 rounded border px-2 py-0.5 text-[0.6rem] font-bold tracking-tight uppercase",
+            next
+              ? "border-console-accent/30 bg-console-accent/10 text-console-accent"
+              : "border-console-line bg-console-panel text-console-muted",
+          )}
+        >
+          {next ?? candidate.stage}
+        </span>
       </div>
 
-      <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-        <StageChip stage={candidate.stage} />
-        {candidate.interview_at && phase === "hiring" && (
-          <Badge variant="secondary" className="rounded-md text-[0.62rem]">
-            <CalendarClock className="mr-1 size-3" />
-            {stampLabel(candidate.interview_at)}
-          </Badge>
-        )}
-        {candidate.sequence_paused && phase === "hiring" && (
-          <Badge variant="secondary" className="rounded-md text-[0.62rem]">
-            Emails paused
-          </Badge>
-        )}
-      </div>
-
-      <div className="mt-3 space-y-1.5">
-        {steps.map((step) => (
-          <div key={step.key} className="flex items-center gap-2">
-            {step.state === "done" ? (
-              <CheckCircle2 className="size-3.5 shrink-0 text-success" />
-            ) : step.state === "locked" ? (
-              <Lock className="size-3.5 shrink-0 text-muted-foreground" />
-            ) : step.state === "blocked" ? (
-              <XCircle className="size-3.5 shrink-0 text-destructive" />
-            ) : (
-              <BadgeCheck className="size-3.5 shrink-0 text-brand" />
-            )}
-            <span
-              className={cn(
-                "truncate text-xs",
-                step.state === "done"
-                  ? "text-muted-foreground line-through"
-                  : step.state === "locked"
-                    ? "text-muted-foreground"
-                    : "font-semibold",
-              )}
-            >
-              {step.label}
+      {phase === "hiring" && (candidate.interview_at || candidate.sequence_paused) && (
+        <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[0.62rem] text-console-muted">
+          {candidate.interview_at && (
+            <span className="flex items-center gap-1 rounded border border-console-line px-1.5 py-0.5">
+              <CalendarClock className="size-3" /> {stampLabel(candidate.interview_at)}
             </span>
+          )}
+          {candidate.sequence_paused && (
+            <span className="rounded border border-console-line px-1.5 py-0.5">Emails paused</span>
+          )}
+        </div>
+      )}
+
+      {/* step rail */}
+      <div className="mt-5 flex items-start justify-between">
+        {steps.map((step, index) => (
+          <div key={step.key} className="flex min-w-0 flex-1 items-start">
+            {index > 0 && (
+              <span
+                className={cn(
+                  "mt-3 h-px flex-1",
+                  step.state === "done" || step.state === "current" ? "bg-console-accent/50" : "bg-console-line",
+                )}
+              />
+            )}
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
+              <span
+                className={cn(
+                  "flex size-6 shrink-0 items-center justify-center rounded-full border",
+                  step.state === "done"
+                    ? "border-console-accent bg-console-accent text-console-accent-foreground"
+                    : step.state === "blocked"
+                      ? "border-destructive bg-console text-destructive"
+                      : step.state === "locked"
+                        ? "border-console-line bg-console-panel text-console-muted"
+                        : "border-2 border-console-accent bg-console ring-4 ring-console-accent/20",
+                )}
+              >
+                {step.state === "done" ? (
+                  <Check className="size-3" strokeWidth={3} />
+                ) : step.state === "blocked" ? (
+                  <X className="size-3" strokeWidth={3} />
+                ) : step.state === "locked" ? (
+                  <Lock className="size-3" />
+                ) : (
+                  <span className="size-1.5 rounded-full bg-console-accent" />
+                )}
+              </span>
+              <span
+                className={cn(
+                  "w-full text-center text-[0.58rem] leading-tight font-semibold",
+                  step.state === "locked" ? "text-console-muted/60" : "text-console-muted",
+                  step.state === "current" && "text-console-accent",
+                )}
+              >
+                {step.label}
+              </span>
+            </div>
+            {index < steps.length - 1 && (
+              <span
+                className={cn(
+                  "mt-3 h-px flex-1",
+                  step.state === "done" ? "bg-console-accent/50" : "bg-console-line",
+                )}
+              />
+            )}
           </div>
         ))}
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-2 border-t border-border/50 pt-2.5">
-        <p className="truncate text-[0.68rem] text-muted-foreground">
-          Updated {dateLabel(candidate.last_activity_at)}
-        </p>
-        {next && (
-          <span className="truncate rounded-md bg-destructive/10 px-1.5 py-0.5 text-[0.62rem] font-semibold text-destructive">
-            {next}
-          </span>
-        )}
+      <div className="mt-3 flex items-center justify-end border-t border-console-line pt-2.5 text-[0.62rem] font-bold tracking-[0.12em] text-console-muted uppercase">
+        Open record <ChevronRight className="size-3.5" />
       </div>
     </Link>
   );

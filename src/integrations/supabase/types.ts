@@ -1437,6 +1437,389 @@ export type Database = {
           },
         ]
       }
+      onboarding_candidates: {
+        Row: {
+          access_completed_at: string | null
+          access_sent_at: string | null
+          access_status: string
+          address_line1: string | null
+          address_line2: string | null
+          agreement_sent_at: string | null
+          agreement_signed_at: string | null
+          agreement_status: string
+          agreement_template: string | null
+          agreement_viewed_at: string | null
+          assigned_admin: string | null
+          authorizations: Json
+          banking: Json
+          carrier: string | null
+          carrier_decided_at: string | null
+          carrier_notes: string | null
+          carrier_requested_at: string | null
+          carrier_status: string
+          city: string | null
+          completed_at: string | null
+          created_at: string
+          date_of_birth: string | null
+          email: string
+          first_name: string
+          form_progress: Json
+          form_submitted_at: string | null
+          hired_at: string | null
+          id: string
+          interview_at: string | null
+          last_activity_at: string
+          last_name: string
+          licensing: Json
+          mailing_address_line1: string | null
+          mailing_city: string | null
+          mailing_same: boolean
+          mailing_state: string | null
+          mailing_zip: string | null
+          middle_name: string | null
+          not_hired_reason: string | null
+          offer_sent_at: string | null
+          offer_signed_at: string | null
+          offer_status: string
+          offer_template: string | null
+          offer_viewed_at: string | null
+          phone: string | null
+          preferred_name: string | null
+          source: string | null
+          stage: string
+          state: string | null
+          updated_at: string
+          user_id: string | null
+          zip: string | null
+        }
+        Insert: {
+          access_completed_at?: string | null
+          access_sent_at?: string | null
+          access_status?: string
+          address_line1?: string | null
+          address_line2?: string | null
+          agreement_sent_at?: string | null
+          agreement_signed_at?: string | null
+          agreement_status?: string
+          agreement_template?: string | null
+          agreement_viewed_at?: string | null
+          assigned_admin?: string | null
+          authorizations?: Json
+          banking?: Json
+          carrier?: string | null
+          carrier_decided_at?: string | null
+          carrier_notes?: string | null
+          carrier_requested_at?: string | null
+          carrier_status?: string
+          city?: string | null
+          completed_at?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email: string
+          first_name?: string
+          form_progress?: Json
+          form_submitted_at?: string | null
+          hired_at?: string | null
+          id?: string
+          interview_at?: string | null
+          last_activity_at?: string
+          last_name?: string
+          licensing?: Json
+          mailing_address_line1?: string | null
+          mailing_city?: string | null
+          mailing_same?: boolean
+          mailing_state?: string | null
+          mailing_zip?: string | null
+          middle_name?: string | null
+          not_hired_reason?: string | null
+          offer_sent_at?: string | null
+          offer_signed_at?: string | null
+          offer_status?: string
+          offer_template?: string | null
+          offer_viewed_at?: string | null
+          phone?: string | null
+          preferred_name?: string | null
+          source?: string | null
+          stage?: string
+          state?: string | null
+          updated_at?: string
+          user_id?: string | null
+          zip?: string | null
+        }
+        Update: {
+          access_completed_at?: string | null
+          access_sent_at?: string | null
+          access_status?: string
+          address_line1?: string | null
+          address_line2?: string | null
+          agreement_sent_at?: string | null
+          agreement_signed_at?: string | null
+          agreement_status?: string
+          agreement_template?: string | null
+          agreement_viewed_at?: string | null
+          assigned_admin?: string | null
+          authorizations?: Json
+          banking?: Json
+          carrier?: string | null
+          carrier_decided_at?: string | null
+          carrier_notes?: string | null
+          carrier_requested_at?: string | null
+          carrier_status?: string
+          city?: string | null
+          completed_at?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string
+          first_name?: string
+          form_progress?: Json
+          form_submitted_at?: string | null
+          hired_at?: string | null
+          id?: string
+          interview_at?: string | null
+          last_activity_at?: string
+          last_name?: string
+          licensing?: Json
+          mailing_address_line1?: string | null
+          mailing_city?: string | null
+          mailing_same?: boolean
+          mailing_state?: string | null
+          mailing_zip?: string | null
+          middle_name?: string | null
+          not_hired_reason?: string | null
+          offer_sent_at?: string | null
+          offer_signed_at?: string | null
+          offer_status?: string
+          offer_template?: string | null
+          offer_viewed_at?: string | null
+          phone?: string | null
+          preferred_name?: string | null
+          source?: string | null
+          stage?: string
+          state?: string | null
+          updated_at?: string
+          user_id?: string | null
+          zip?: string | null
+        }
+        Relationships: []
+      }
+      onboarding_documents: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          name: string
+          required: boolean
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          uploaded_at: string | null
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          name: string
+          required?: boolean
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          uploaded_at?: string | null
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          name?: string
+          required?: boolean
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_documents_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_emails: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          email_type: string
+          error: string | null
+          id: string
+          opened_at: string | null
+          recipient: string
+          sender: string | null
+          sent_at: string | null
+          stage: string | null
+          status: string
+          subject: string | null
+          template_key: string
+          trigger: string | null
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          email_type: string
+          error?: string | null
+          id?: string
+          opened_at?: string | null
+          recipient: string
+          sender?: string | null
+          sent_at?: string | null
+          stage?: string | null
+          status?: string
+          subject?: string | null
+          template_key: string
+          trigger?: string | null
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          email_type?: string
+          error?: string | null
+          id?: string
+          opened_at?: string | null
+          recipient?: string
+          sender?: string | null
+          sent_at?: string | null
+          stage?: string | null
+          status?: string
+          subject?: string | null
+          template_key?: string
+          trigger?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_emails_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_events: {
+        Row: {
+          actor: string | null
+          candidate_id: string
+          created_at: string
+          detail: string | null
+          event: string
+          id: string
+          source: string
+        }
+        Insert: {
+          actor?: string | null
+          candidate_id: string
+          created_at?: string
+          detail?: string | null
+          event: string
+          id?: string
+          source?: string
+        }
+        Update: {
+          actor?: string | null
+          candidate_id?: string
+          created_at?: string
+          detail?: string | null
+          event?: string
+          id?: string
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_events_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_notes: {
+        Row: {
+          author_id: string | null
+          author_name: string | null
+          body: string
+          candidate_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          body: string
+          candidate_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string | null
+          body?: string
+          candidate_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_notes_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_templates: {
+        Row: {
+          body: string
+          category: string
+          id: string
+          name: string
+          subject: string
+          template_key: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          category?: string
+          id?: string
+          name: string
+          subject: string
+          template_key: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          id?: string
+          name?: string
+          subject?: string
+          template_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       outbound_webhooks: {
         Row: {
           created_at: string
@@ -2575,6 +2958,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_manage_onboarding: { Args: { _user_id: string }; Returns: boolean }
       can_read_attachment: {
         Args: { _path: string; _user_id: string }
         Returns: boolean
@@ -2601,6 +2985,10 @@ export type Database = {
         Returns: boolean
       }
       is_ops: { Args: { _user_id: string }; Returns: boolean }
+      owns_onboarding: {
+        Args: { _candidate_id: string; _user_id: string }
+        Returns: boolean
+      }
       shift_close_stale_sessions: {
         Args: { _max_hours?: number }
         Returns: number

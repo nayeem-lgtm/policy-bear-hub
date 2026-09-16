@@ -260,8 +260,24 @@ export function OnboardingWorkspace() {
                 <p className="text-sm font-semibold">
                   {candidatesQuery.isLoading ? "Loading records…" : "Nobody in this stage right now."}
                 </p>
+                {!candidatesQuery.isLoading && tab.value === "onboarding" && (
+                  <>
+                    <p className="mx-auto mt-1.5 max-w-md text-xs text-muted-foreground">
+                      People land here only after you approve their hiring decision in Stage 1. Open a candidate in
+                      Stage 1 and choose “Approve &amp; move to Stage 2”.
+                    </p>
+                    <Button size="sm" variant="outline" className="mx-auto mt-3" onClick={() => setPhase("hiring")}>
+                      Go to Stage 1 · Hiring
+                    </Button>
+                  </>
+                )}
+                {!candidatesQuery.isLoading && tab.value === "completed" && (
+                  <p className="mx-auto mt-1.5 max-w-md text-xs text-muted-foreground">
+                    Candidates appear here once all four Stage 2 steps are finished and PolicyBear access is granted.
+                  </p>
+                )}
                 {tab.value === "hiring" && !candidatesQuery.isLoading && (
-                  <Button size="sm" className="mt-3" onClick={() => setCreating(true)}>
+                  <Button size="sm" className="mx-auto mt-3" onClick={() => setCreating(true)}>
                     <Plus className="size-4" /> Add your first candidate
                   </Button>
                 )}

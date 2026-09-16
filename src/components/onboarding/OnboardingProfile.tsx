@@ -730,7 +730,7 @@ function StageStrip({
   eyebrow: string;
   note: string;
   done: boolean;
-  steps: { key: string; index: string; label: string; status: string; state: string; detail?: string }[];
+  steps: { key: string; index: string; label: string; status: string; state: string; detail?: string | undefined }[];
 }) {
   return (
     <div className="rounded-2xl border border-border/60 bg-muted/25 p-3">

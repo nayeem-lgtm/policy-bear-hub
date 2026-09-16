@@ -210,44 +210,43 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
           </p>
         </div>
 
-        <div className="grid gap-2.5 px-5 py-5 sm:px-6 md:grid-cols-5">
-          {steps.map((step) => (
-            <div
-              key={step.key}
-              className={cn(
-                "rounded-xl border p-3",
-                step.state === "done"
-                  ? "border-success/30 bg-success/5"
-                  : step.state === "locked"
-                    ? "border-border/60 bg-muted/40"
-                    : step.state === "blocked"
-                      ? "border-destructive/30 bg-destructive/5"
-                      : "border-brand/30 bg-brand/5",
-              )}
-            >
-              <p className="text-[0.6rem] font-bold tracking-[0.1em] uppercase text-muted-foreground">{step.index}</p>
-              <p className="mt-0.5 text-sm font-semibold">{step.label}</p>
-              <p className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold">
-                {step.state === "done" ? (
-                  <CheckCircle2 className="size-3.5 text-success" />
-                ) : step.state === "locked" ? (
-                  <Lock className="size-3.5 text-muted-foreground" />
-                ) : step.state === "blocked" ? (
-                  <XCircle className="size-3.5 text-destructive" />
-                ) : (
-                  <Circle className="size-3.5 text-brand" />
-                )}
-                {step.state === "locked" ? "Locked" : step.status}
-              </p>
-              <p className="mt-1 text-[0.68rem] text-muted-foreground">{step.lockReason ?? step.detail}</p>
-            </div>
-          ))}
+        <div className="space-y-3 px-5 py-5 sm:px-6">
+          <StageStrip
+            eyebrow="Stage 1 · Hiring"
+            note={hired ? "Approved — Stage 2 unlocked" : "In progress"}
+            done={hired}
+            steps={stage1.map((step) => ({
+              key: step.key,
+              index: step.index,
+              label: step.label,
+              status: step.status,
+              state: step.state,
+              detail: step.detail,
+            }))}
+          />
+          <StageStrip
+            eyebrow="Stage 2 · Onboarding"
+            note={hired ? "Unlocked" : "Locked until the hiring decision is approved"}
+            done={candidate.access_status === "Completed"}
+            steps={steps.map((step) => ({
+              key: step.key,
+              index: step.index,
+              label: step.label,
+              status: step.status,
+              state: step.state,
+              detail: step.lockReason ?? step.detail,
+            }))}
+          />
         </div>
       </Card>
 
-      <Tabs defaultValue="workflow">
+      <Tabs defaultValue={hired ? "stage2" : "stage1"}>
         <TabsList className="flex-wrap">
-          <TabsTrigger value="workflow">Workflow</TabsTrigger>
+          <TabsTrigger value="stage1">Stage 1 · Hiring</TabsTrigger>
+          <TabsTrigger value="stage2">
+            Stage 2 · Onboarding
+            {!hired && <Lock className="ml-1 size-3" />}
+          </TabsTrigger>
           <TabsTrigger value="submission">Submitted form</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
@@ -255,49 +254,85 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
           <TabsTrigger value="emails">Email log</TabsTrigger>
         </TabsList>
 
-        {/* ------------------------------------------------------- workflow */}
-        <TabsContent value="workflow" className="mt-3 space-y-3">
-          {!candidate.hired_at && (
-            <HiringPanel candidate={candidate} actor={actor} onChanged={refresh} />
-          )}
-          {!candidate.hired_at && (
-            <Panel title="Hiring decision" icon={BadgeCheck}>
-              <p className="text-sm text-muted-foreground">
-                {candidate.form_submitted_at
-                  ? "The candidate has submitted their onboarding form. Hire to unlock the formal onboarding steps."
-                  : "Send the onboarding form invitation, then hire once the form has been submitted."}
+        {/* -------------------------------------------------- stage 1 hiring */}
+        <TabsContent value="stage1" className="mt-3 space-y-3">
+          <HiringPanel candidate={candidate} actor={actor} onChanged={refresh} />
+
+          <Panel title="Onboarding form invite" icon={ClipboardList}>
+            <StatusLine
+              rows={[
+                ["Form submitted", stampLabel(candidate.form_submitted_at)],
+                ["Interview held", stampLabel(candidate.interview_completed_at)],
+              ]}
+            />
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Button size="sm" variant="outline" onClick={() => void email("onboarding_form_invitation", "Hiring")}>
+                <Mail className="size-4" /> Send onboarding form invite
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => void email("interview_invitation", "Hiring")}>
+                <Mail className="size-4" /> Send interview invite
+              </Button>
+            </div>
+          </Panel>
+
+          <Panel title="Hiring decision" icon={BadgeCheck}>
+            {hired ? (
+              <p className="flex items-center gap-2 text-sm font-semibold text-success">
+                <CheckCircle2 className="size-4" /> Approved on {stampLabel(candidate.hired_at)} — Stage 2 is unlocked.
               </p>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Button size="sm" variant="outline" onClick={() => void email("onboarding_form_invitation", "Hiring")}>
-                  <Mail className="size-4" /> Send onboarding form invite
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => void email("interview_invitation", "Hiring")}>
-                  <Mail className="size-4" /> Send interview invite
-                </Button>
-                <Button size="sm" onClick={() => void act.mutateAsync(() => hireCandidate(candidate, actor))}>
-                  Hire / finalize
-                </Button>
-              </div>
-              <Separator className="my-4" />
-              <div className="flex flex-wrap items-end gap-2">
-                <div className="min-w-[16rem] flex-1 space-y-1.5">
-                  <Label className="text-xs font-semibold">Not hired — reason</Label>
-                  <Input value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} />
+            ) : candidate.stage === "Not Hired" ? (
+              <p className="flex items-center gap-2 text-sm font-semibold text-destructive">
+                <XCircle className="size-4" /> Not hired
+                {candidate.not_hired_reason ? ` — ${candidate.not_hired_reason}` : ""}
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  {candidate.form_submitted_at
+                    ? "The candidate finished Stage 1. Approving moves them into Stage 2 onboarding."
+                    : "Interview and onboarding form come first — you can still approve early if you are ready."}
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Button size="sm" onClick={() => void act.mutateAsync(() => hireCandidate(candidate, actor))}>
+                    <CheckCircle2 className="size-4" /> Approve & move to Stage 2
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-destructive"
-                  disabled={!rejectReason.trim()}
-                  onClick={() => void act.mutateAsync(() => rejectCandidate(candidate, rejectReason.trim(), actor))}
-                >
-                  Mark not hired
-                </Button>
-              </div>
-            </Panel>
+                <Separator className="my-4" />
+                <div className="flex flex-wrap items-end gap-2">
+                  <div className="min-w-[16rem] flex-1 space-y-1.5">
+                    <Label className="text-xs font-semibold">Not hired — reason</Label>
+                    <Input value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} />
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-destructive"
+                    disabled={!rejectReason.trim()}
+                    onClick={() => void act.mutateAsync(() => rejectCandidate(candidate, rejectReason.trim(), actor))}
+                  >
+                    Mark not hired
+                  </Button>
+                </div>
+              </>
+            )}
+          </Panel>
+        </TabsContent>
+
+        {/* ---------------------------------------------- stage 2 onboarding */}
+        <TabsContent value="stage2" className="mt-3 space-y-3">
+          {!hired && (
+            <Card className="rounded-2xl border-dashed border-border/70 bg-card/60 p-6 text-center">
+              <span className="mx-auto grid size-10 place-items-center rounded-xl bg-muted text-muted-foreground">
+                <Lock className="size-4" />
+              </span>
+              <p className="mt-2.5 text-sm font-bold">Stage 2 is locked</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Approve the hiring decision in Stage 1 to unlock the offer letter and the steps that follow.
+              </p>
+            </Card>
           )}
 
-          <Panel title="01 · Offer letter" icon={FileSignature} locked={!candidate.hired_at} lockReason="Hire the candidate first">
+          <Panel title="Step 1 · Offer letter" icon={FileSignature} locked={!hired} lockReason="Approve the hiring decision first">
             <StatusLine
               rows={[
                 ["Status", candidate.offer_status],

@@ -50,6 +50,17 @@ export async function sendOnboardingTemplate(
       }) + " (ET)"
     : "";
 
+  const { appBaseUrl, candidateBookingLink } = await import("./onboarding-automation.server");
+
+  // Every candidate gets a booking link automatically, generated from the
+  // shared interview window — no per-candidate setup needed.
+  let bookingLink = "";
+  try {
+    bookingLink = await candidateBookingLink(supabase, candidate.id);
+  } catch {
+    bookingLink = "";
+  }
+
   const variables: Record<string, string> = {
     agent_first_name: candidate.first_name || "there",
     agent_last_name: candidate.last_name || "",
@@ -58,7 +69,9 @@ export async function sendOnboardingTemplate(
     interview_time: interviewTime,
     interview_link: (candidate.interview_link as string | null) ?? "",
     interview_length: String(candidate.interview_duration_minutes ?? 30),
-    onboarding_form_link: options.links?.["onboarding_form_link"] ?? "",
+    booking_link: bookingLink,
+    interview_booking_link: bookingLink,
+    onboarding_form_link: options.links?.["onboarding_form_link"] ?? `${appBaseUrl()}/onboarding`,
     offer_letter_link: options.links?.["offer_letter_link"] ?? "",
     employment_agreement_link: options.links?.["employment_agreement_link"] ?? "",
   };

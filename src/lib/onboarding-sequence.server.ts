@@ -7,6 +7,7 @@
  */
 
 import { sendOnboardingTemplate } from "./onboarding-email.server";
+import { getAutomationSettings, type AutomationSettings } from "./onboarding-automation.server";
 
 export interface SequenceRunResult {
   checked: number;
@@ -17,6 +18,7 @@ export interface SequenceRunResult {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export async function runHiringSequences(supabase: any): Promise<SequenceRunResult> {
+  const settings = await getAutomationSettings(supabase);
   const [{ data: steps }, { data: candidates }] = await Promise.all([
     supabase
       .from("onboarding_sequence_steps")
@@ -25,7 +27,7 @@ export async function runHiringSequences(supabase: any): Promise<SequenceRunResu
       .order("sort_order"),
     supabase
       .from("onboarding_candidates")
-      .select("id,stage,interview_at,interview_completed_at,sequence_paused")
+      .select("id,stage,created_at,interview_at,interview_completed_at,sequence_paused")
       .eq("sequence_paused", false)
       .in("stage", ["Candidate", "Interview Scheduled", "Interview Completed", "Pending Hiring Decision"]),
   ]);
@@ -46,6 +48,10 @@ export async function runHiringSequences(supabase: any): Promise<SequenceRunResu
 
     for (const step of steps) {
       result.checked += 1;
+      if (!automationAllows(step, settings)) {
+        result.skipped += 1;
+        continue;
+      }
       const due = dueTime(step, candidate);
       if (due === null || due > now || alreadySent.has(step.template_key)) {
         result.skipped += 1;
@@ -76,8 +82,18 @@ export async function runHiringSequences(supabase: any): Promise<SequenceRunResu
   return result;
 }
 
+/** Shared switches decide whether the invite steps may fire at all. */
+function automationAllows(step: any, settings: AutomationSettings) {
+  if (step.template_key === "onboarding_form_invitation") return settings.auto_form_invite;
+  if (step.anchor === "candidate_added") return settings.auto_interview_invite;
+  return true;
+}
+
 function dueTime(step: any, candidate: any): number | null {
   const offset = (step.offset_minutes ?? 0) * 60_000;
+  if (step.anchor === "candidate_added") {
+    return new Date(candidate.created_at).getTime() + offset;
+  }
   if (step.anchor === "interview_scheduled") {
     if (!candidate.interview_at) return null;
     return Date.now() + offset;

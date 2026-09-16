@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -41,6 +41,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EmailAutomationDialog } from "@/components/onboarding/EmailAutomationDialog";
+import { HiringAutomationDialog } from "@/components/onboarding/HiringAutomationDialog";
+import { useServerFn } from "@tanstack/react-start";
+import { runHiringSequenceNow } from "@/lib/onboarding.functions";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import {
@@ -72,6 +75,7 @@ export function OnboardingWorkspace() {
   const [flag, setFlag] = useState("all");
   const [creating, setCreating] = useState(false);
   const [automation, setAutomation] = useState(false);
+  const [automationSetup, setAutomationSetup] = useState(false);
   const stageListRef = useRef<HTMLDivElement>(null);
 
   const viewStage = (nextPhase: OnboardingPhase) => {
@@ -135,6 +139,13 @@ export function OnboardingWorkspace() {
     [byPhase, candidates],
   );
 
+  // Runs every due automated email for every candidate, so nothing needs to be
+  // sent by hand when the pipeline is opened or a candidate is added.
+  const runSequence = useServerFn(runHiringSequenceNow);
+  useEffect(() => {
+    void runSequence({ data: undefined as never }).catch(() => undefined);
+  }, [runSequence]);
+
   const create = useMutation({
     mutationFn: (input: { first: string; last: string; email: string; phone: string; source: string }) =>
       createCandidate({
@@ -150,6 +161,7 @@ export function OnboardingWorkspace() {
       setCreating(false);
       setPhase("hiring");
       void queryClient.invalidateQueries({ queryKey: ["onboarding-candidates"] });
+      void runSequence({ data: undefined as never }).catch(() => undefined);
     },
     onError: () => toast.error("The candidate could not be added."),
   });
@@ -177,7 +189,15 @@ export function OnboardingWorkspace() {
             className="border border-console-line bg-console-panel text-console-foreground hover:bg-console-inset hover:text-console-foreground"
             onClick={() => setAutomation(true)}
           >
-            <Zap className="size-4" /> Email automation
+            <Zap className="size-4" /> Email templates
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="border border-console-line bg-console-panel text-console-foreground hover:bg-console-inset hover:text-console-foreground"
+            onClick={() => setAutomationSetup(true)}
+          >
+            <CalendarClock className="size-4" /> Interview & email setup
           </Button>
           <Button
             size="sm"
@@ -341,6 +361,8 @@ export function OnboardingWorkspace() {
       />
 
       <EmailAutomationDialog open={automation} onOpenChange={setAutomation} />
+
+      <HiringAutomationDialog open={automationSetup} onOpenChange={setAutomationSetup} />
     </div>
   );
 }

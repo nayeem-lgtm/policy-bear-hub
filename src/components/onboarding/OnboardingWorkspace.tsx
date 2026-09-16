@@ -335,6 +335,8 @@ export function OnboardingWorkspace() {
         busy={create.isPending}
         onSubmit={(input) => void create.mutateAsync(input)}
       />
+
+      <EmailAutomationDialog open={automation} onOpenChange={setAutomation} />
     </div>
   );
 }

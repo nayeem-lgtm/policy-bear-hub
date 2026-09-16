@@ -255,7 +255,7 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
         {/* ------------------------------------------------------- workflow */}
         <TabsContent value="workflow" className="mt-3 space-y-3">
           {!candidate.hired_at && (
-            <HiringPanel candidate={candidate} actor={actor} onChanged={refreshAll} />
+            <HiringPanel candidate={candidate} actor={actor} onChanged={refresh} />
           )}
           {!candidate.hired_at && (
             <Panel title="Hiring decision" icon={BadgeCheck}>

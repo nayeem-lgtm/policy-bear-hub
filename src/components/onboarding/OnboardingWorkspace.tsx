@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -75,6 +75,14 @@ export function OnboardingWorkspace() {
   const [flag, setFlag] = useState("all");
   const [creating, setCreating] = useState(false);
   const [automation, setAutomation] = useState(false);
+  const stageListRef = useRef<HTMLDivElement>(null);
+
+  const viewStage = (nextPhase: OnboardingPhase) => {
+    setPhase(nextPhase);
+    window.requestAnimationFrame(() => {
+      stageListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
 
   const candidatesQuery = useQuery({ queryKey: ["onboarding-candidates"], queryFn: fetchCandidates });
   const candidates = candidatesQuery.data ?? [];
@@ -178,7 +186,7 @@ export function OnboardingWorkspace() {
           description="Add candidates, schedule the interview, let the automated emails run, then approve or decline."
           count={stats.hiring}
           active={phase === "hiring"}
-          onClick={() => setPhase("hiring")}
+          onClick={() => viewStage("hiring")}
           rows={[
             ["Interviews upcoming", stats.interviews],
             ["Awaiting hiring decision", stats.awaitingDecision],
@@ -191,7 +199,7 @@ export function OnboardingWorkspace() {
           description="Offer letter → carrier approval → employment agreement → PolicyBear access. Each step unlocks the next."
           count={stats.onboarding}
           active={phase === "onboarding"}
-          onClick={() => setPhase("onboarding")}
+          onClick={() => viewStage("onboarding")}
           rows={[
             ["Awaiting signature", stats.awaitingSignature],
             ["Carrier approval pending", stats.carrier],
@@ -208,6 +216,7 @@ export function OnboardingWorkspace() {
       </div>
 
       {/* -------------------------------------------------------- stage lists */}
+      <div ref={stageListRef} className="scroll-mt-4">
       <Tabs value={phase} onValueChange={(value) => setPhase(value as OnboardingPhase)}>
         <TabsList className="flex-wrap">
           {PHASE_TABS.map((tab) => (
@@ -286,6 +295,7 @@ export function OnboardingWorkspace() {
           </TabsContent>
         ))}
       </Tabs>
+      </div>
 
       <CreateCandidateDialog
         open={creating}

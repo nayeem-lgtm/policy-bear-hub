@@ -71,6 +71,8 @@ import { Route as ShellQaEscalationsRouteImport } from './routes/_shell.qa.escal
 import { Route as ShellQaImportRouteImport } from './routes/_shell.qa.import'
 import { Route as ShellQaReportingRouteImport } from './routes/_shell.qa.reporting'
 import { Route as ShellSalesNewRouteImport } from './routes/_shell.sales.new'
+import { Route as ShellAdminOnboardingIndexRouteImport } from './routes/_shell.admin.onboarding.index'
+import { Route as ShellAdminOnboardingCandidateIdRouteImport } from './routes/_shell.admin.onboarding.$candidateId'
 import { Route as ApiPublicHooksCalltoolsRouteImport } from './routes/api.public.hooks.calltools'
 import { Route as ApiPublicHooksCalltoolsQueueRouteImport } from './routes/api.public.hooks.calltools-queue'
 import { Route as ApiPublicHooksTelephonySyncRouteImport } from './routes/api.public.hooks.telephony-sync'
@@ -385,6 +387,18 @@ const ShellSalesNewRoute = ShellSalesNewRouteImport.update({
   path: '/new',
   getParentRoute: () => ShellSalesRoute,
 } as any)
+const ShellAdminOnboardingIndexRoute =
+  ShellAdminOnboardingIndexRouteImport.update({
+    id: '/admin/onboarding/',
+    path: '/admin/onboarding/',
+    getParentRoute: () => ShellRoute,
+  } as any)
+const ShellAdminOnboardingCandidateIdRoute =
+  ShellAdminOnboardingCandidateIdRouteImport.update({
+    id: '/admin/onboarding/$candidateId',
+    path: '/admin/onboarding/$candidateId',
+    getParentRoute: () => ShellRoute,
+  } as any)
 const ApiPublicHooksCalltoolsRoute = ApiPublicHooksCalltoolsRouteImport.update({
   id: '/api/public/hooks/calltools',
   path: '/api/public/hooks/calltools',
@@ -465,9 +479,11 @@ export interface FileRoutesByFullPath {
   '/qa/reporting': typeof ShellQaReportingRoute
   '/sales/new': typeof ShellSalesNewRoute
   '/qa/': typeof ShellQaIndexRoute
+  '/admin/onboarding/$candidateId': typeof ShellAdminOnboardingCandidateIdRoute
   '/api/public/hooks/calltools': typeof ApiPublicHooksCalltoolsRoute
   '/api/public/hooks/calltools-queue': typeof ApiPublicHooksCalltoolsQueueRoute
   '/api/public/hooks/telephony-sync': typeof ApiPublicHooksTelephonySyncRoute
+  '/admin/onboarding/': typeof ShellAdminOnboardingIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -531,9 +547,11 @@ export interface FileRoutesByTo {
   '/qa/reporting': typeof ShellQaReportingRoute
   '/sales/new': typeof ShellSalesNewRoute
   '/qa': typeof ShellQaIndexRoute
+  '/admin/onboarding/$candidateId': typeof ShellAdminOnboardingCandidateIdRoute
   '/api/public/hooks/calltools': typeof ApiPublicHooksCalltoolsRoute
   '/api/public/hooks/calltools-queue': typeof ApiPublicHooksCalltoolsQueueRoute
   '/api/public/hooks/telephony-sync': typeof ApiPublicHooksTelephonySyncRoute
+  '/admin/onboarding': typeof ShellAdminOnboardingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -599,9 +617,11 @@ export interface FileRoutesById {
   '/_shell/qa/reporting': typeof ShellQaReportingRoute
   '/_shell/sales/new': typeof ShellSalesNewRoute
   '/_shell/qa/': typeof ShellQaIndexRoute
+  '/_shell/admin/onboarding/$candidateId': typeof ShellAdminOnboardingCandidateIdRoute
   '/api/public/hooks/calltools': typeof ApiPublicHooksCalltoolsRoute
   '/api/public/hooks/calltools-queue': typeof ApiPublicHooksCalltoolsQueueRoute
   '/api/public/hooks/telephony-sync': typeof ApiPublicHooksTelephonySyncRoute
+  '/_shell/admin/onboarding/': typeof ShellAdminOnboardingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -667,9 +687,11 @@ export interface FileRouteTypes {
     | '/qa/reporting'
     | '/sales/new'
     | '/qa/'
+    | '/admin/onboarding/$candidateId'
     | '/api/public/hooks/calltools'
     | '/api/public/hooks/calltools-queue'
     | '/api/public/hooks/telephony-sync'
+    | '/admin/onboarding/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -733,9 +755,11 @@ export interface FileRouteTypes {
     | '/qa/reporting'
     | '/sales/new'
     | '/qa'
+    | '/admin/onboarding/$candidateId'
     | '/api/public/hooks/calltools'
     | '/api/public/hooks/calltools-queue'
     | '/api/public/hooks/telephony-sync'
+    | '/admin/onboarding'
   id:
     | '__root__'
     | '/'
@@ -800,9 +824,11 @@ export interface FileRouteTypes {
     | '/_shell/qa/reporting'
     | '/_shell/sales/new'
     | '/_shell/qa/'
+    | '/_shell/admin/onboarding/$candidateId'
     | '/api/public/hooks/calltools'
     | '/api/public/hooks/calltools-queue'
     | '/api/public/hooks/telephony-sync'
+    | '/_shell/admin/onboarding/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1249,6 +1275,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellSalesNewRouteImport
       parentRoute: typeof ShellSalesRoute
     }
+    '/_shell/admin/onboarding/': {
+      id: '/_shell/admin/onboarding/'
+      path: '/admin/onboarding'
+      fullPath: '/admin/onboarding/'
+      preLoaderRoute: typeof ShellAdminOnboardingIndexRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/admin/onboarding/$candidateId': {
+      id: '/_shell/admin/onboarding/$candidateId'
+      path: '/admin/onboarding/$candidateId'
+      fullPath: '/admin/onboarding/$candidateId'
+      preLoaderRoute: typeof ShellAdminOnboardingCandidateIdRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/api/public/hooks/calltools': {
       id: '/api/public/hooks/calltools'
       path: '/api/public/hooks/calltools'
@@ -1367,6 +1407,8 @@ interface ShellRouteChildren {
   ShellQaImportRoute: typeof ShellQaImportRoute
   ShellQaReportingRoute: typeof ShellQaReportingRoute
   ShellQaIndexRoute: typeof ShellQaIndexRoute
+  ShellAdminOnboardingCandidateIdRoute: typeof ShellAdminOnboardingCandidateIdRoute
+  ShellAdminOnboardingIndexRoute: typeof ShellAdminOnboardingIndexRoute
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
@@ -1427,6 +1469,8 @@ const ShellRouteChildren: ShellRouteChildren = {
   ShellQaImportRoute: ShellQaImportRoute,
   ShellQaReportingRoute: ShellQaReportingRoute,
   ShellQaIndexRoute: ShellQaIndexRoute,
+  ShellAdminOnboardingCandidateIdRoute: ShellAdminOnboardingCandidateIdRoute,
+  ShellAdminOnboardingIndexRoute: ShellAdminOnboardingIndexRoute,
 }
 
 const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)

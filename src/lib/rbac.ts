@@ -148,6 +148,7 @@ export const ROUTE_ACCESS: { prefix: string; roles: Role[] }[] = [
   { prefix: "/announcements", roles: ALL },
   { prefix: "/my-shift", roles: ALL },
   { prefix: "/unauthorized", roles: ALL },
+  { prefix: "/onboarding", roles: ALL },
 
   // Attendance & floor control
   { prefix: "/live-operations", roles: ["Operations", "HR", "QC"] },
@@ -200,6 +201,9 @@ export const ROUTE_ACCESS: { prefix: string; roles: Role[] }[] = [
   { prefix: "/tasks", roles: ["Operations", "HR", "QC", "Accounting"] },
   { prefix: "/incidents", roles: ["Operations", "HR"] },
   { prefix: "/documents", roles: ["Operations", "HR", "QC", "Accounting"] },
+
+  // Agent onboarding workspace — people teams manage it too
+  { prefix: "/admin/onboarding", roles: ["HR", "Operations"] },
 
   // Administration — locked to super roles by default rule
   { prefix: "/admin", roles: [] },

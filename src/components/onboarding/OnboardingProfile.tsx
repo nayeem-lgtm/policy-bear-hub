@@ -144,7 +144,7 @@ export function OnboardingProfile({ candidateId }: { candidateId: string }) {
   });
 
   const noteMutation = useMutation({
-    mutationFn: () => addNote(candidateId, note.trim(), { id: user?.id, name: actor }),
+    mutationFn: () => addNote(candidateId, note.trim(), { ...(user?.id ? { id: user.id } : {}), name: actor }),
     onSuccess: () => {
       setNote("");
       void queryClient.invalidateQueries({ queryKey: ["onboarding-notes", candidateId] });

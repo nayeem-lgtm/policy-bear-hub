@@ -40,8 +40,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { EmailAutomationDialog } from "@/components/onboarding/EmailAutomationDialog";
-import { HiringAutomationDialog } from "@/components/onboarding/HiringAutomationDialog";
 import { useServerFn } from "@tanstack/react-start";
 import { runHiringSequenceNow } from "@/lib/onboarding.functions";
 import { useAuth } from "@/context/AuthContext";
@@ -74,8 +72,6 @@ export function OnboardingWorkspace() {
   const [phase, setPhase] = useState<OnboardingPhase>("hiring");
   const [flag, setFlag] = useState("all");
   const [creating, setCreating] = useState(false);
-  const [automation, setAutomation] = useState(false);
-  const [automationSetup, setAutomationSetup] = useState(false);
   const stageListRef = useRef<HTMLDivElement>(null);
 
   const viewStage = (nextPhase: OnboardingPhase) => {
@@ -184,20 +180,14 @@ export function OnboardingWorkspace() {
             Live
           </span>
           <Button
+            asChild
             size="sm"
             variant="ghost"
             className="border border-console-line bg-console-panel text-console-foreground hover:bg-console-inset hover:text-console-foreground"
-            onClick={() => setAutomation(true)}
           >
-            <Zap className="size-4" /> Email templates
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="border border-console-line bg-console-panel text-console-foreground hover:bg-console-inset hover:text-console-foreground"
-            onClick={() => setAutomationSetup(true)}
-          >
-            <CalendarClock className="size-4" /> Interview & email setup
+            <Link to="/admin/hiring-setup">
+              <CalendarClock className="size-4" /> Interview &amp; email setup
+            </Link>
           </Button>
           <Button
             size="sm"
@@ -360,9 +350,7 @@ export function OnboardingWorkspace() {
         onSubmit={(input) => void create.mutateAsync(input)}
       />
 
-      <EmailAutomationDialog open={automation} onOpenChange={setAutomation} />
 
-      <HiringAutomationDialog open={automationSetup} onOpenChange={setAutomationSetup} />
     </div>
   );
 }

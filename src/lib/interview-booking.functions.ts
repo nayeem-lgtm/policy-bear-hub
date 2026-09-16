@@ -132,3 +132,72 @@ export const bookPublicInterviewSlot = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return result as unknown as { startsAt: string; endsAt: string; timezone: string; meetingLink: string | null };
   });
+/* --------------------------------------------- shared hiring automation setup */
+
+export interface HiringAutomation {
+  id: string;
+  interview_days_ahead: number;
+  daily_start: string;
+  daily_end: string;
+  slot_minutes: number;
+  timezone: string;
+  meeting_link: string | null;
+  auto_interview_invite: boolean;
+  auto_form_invite: boolean;
+}
+
+/** The one interview window + automation switches used for every candidate. */
+export const getHiringAutomation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<HiringAutomation> => {
+    await requireOnboardingManager(context.supabase, context.userId);
+    const { getAutomationSettings } = await import("./onboarding-automation.server");
+    return (await getAutomationSettings(context.supabase)) as HiringAutomation;
+  });
+
+const automationInput = z.object({
+  interviewDaysAhead: z.number().int().min(1).max(120),
+  dailyStart: z.string().regex(/^\d{2}:\d{2}$/),
+  dailyEnd: z.string().regex(/^\d{2}:\d{2}$/),
+  slotMinutes: z.number().int().min(15).max(120),
+  timezone: z.string().min(1).max(100),
+  meetingLink: z.string().url().or(z.literal("")),
+  autoInterviewInvite: z.boolean(),
+  autoFormInvite: z.boolean(),
+});
+
+export const saveHiringAutomation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: z.infer<typeof automationInput>) => automationInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await requireOnboardingManager(context.supabase, context.userId);
+    if (data.dailyEnd <= data.dailyStart) throw new Error("The end time must be after the start time.");
+    const { getAutomationSettings } = await import("./onboarding-automation.server");
+    const current = await getAutomationSettings(context.supabase);
+    const { error } = await context.supabase
+      .from("onboarding_automation_settings")
+      .update({
+        interview_days_ahead: data.interviewDaysAhead,
+        daily_start: data.dailyStart,
+        daily_end: data.dailyEnd,
+        slot_minutes: data.slotMinutes,
+        timezone: data.timezone,
+        meeting_link: data.meetingLink || null,
+        auto_interview_invite: data.autoInterviewInvite,
+        auto_form_invite: data.autoFormInvite,
+        updated_by: context.userId,
+      })
+      .eq("id", current.id);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+/** Booking link for one candidate, created automatically from the shared window. */
+export const ensureCandidateBookingLink = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { candidateId: string }) => ({ candidateId: uuid.parse(input.candidateId) }))
+  .handler(async ({ data, context }) => {
+    await requireOnboardingManager(context.supabase, context.userId);
+    const { candidateBookingLink } = await import("./onboarding-automation.server");
+    return { url: await candidateBookingLink(context.supabase, data.candidateId, undefined, context.userId) };
+  });

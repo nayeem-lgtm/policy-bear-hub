@@ -1437,6 +1437,54 @@ export type Database = {
           },
         ]
       }
+      onboarding_automation_settings: {
+        Row: {
+          auto_form_invite: boolean
+          auto_interview_invite: boolean
+          created_at: string
+          daily_end: string
+          daily_start: string
+          id: string
+          interview_days_ahead: number
+          meeting_link: string | null
+          singleton: boolean
+          slot_minutes: number
+          timezone: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          auto_form_invite?: boolean
+          auto_interview_invite?: boolean
+          created_at?: string
+          daily_end?: string
+          daily_start?: string
+          id?: string
+          interview_days_ahead?: number
+          meeting_link?: string | null
+          singleton?: boolean
+          slot_minutes?: number
+          timezone?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          auto_form_invite?: boolean
+          auto_interview_invite?: boolean
+          created_at?: string
+          daily_end?: string
+          daily_start?: string
+          id?: string
+          interview_days_ahead?: number
+          meeting_link?: string | null
+          singleton?: boolean
+          slot_minutes?: number
+          timezone?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       onboarding_candidates: {
         Row: {
           access_completed_at: string | null

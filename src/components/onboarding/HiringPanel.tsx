@@ -179,6 +179,7 @@ export function HiringPanel({
 
 function dueTimeLabel(step: SequenceStep, candidate: Candidate) {
   const offset = (step.offset_minutes ?? 0) * 60_000;
+  if (step.anchor === "candidate_added") return "Sends automatically";
   if (step.anchor === "interview_scheduled")
     return candidate.interview_at ? "Due now" : "Waiting for interview date";
   if (step.anchor === "interview_start") {

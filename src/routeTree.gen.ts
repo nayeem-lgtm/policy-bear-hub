@@ -39,6 +39,7 @@ import { Route as ShellMessagesRouteImport } from './routes/_shell.messages'
 import { Route as ShellMyShiftRouteImport } from './routes/_shell.my-shift'
 import { Route as ShellMyWorkRouteImport } from './routes/_shell.my-work'
 import { Route as ShellNotificationsRouteImport } from './routes/_shell.notifications'
+import { Route as ShellOnboardingRouteImport } from './routes/_shell.onboarding'
 import { Route as ShellOperationsRouteImport } from './routes/_shell.operations'
 import { Route as ShellPayrollRouteImport } from './routes/_shell.payroll'
 import { Route as ShellPublishersRouteImport } from './routes/_shell.publishers'
@@ -224,6 +225,11 @@ const ShellMyWorkRoute = ShellMyWorkRouteImport.update({
 const ShellNotificationsRoute = ShellNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellOnboardingRoute = ShellOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellOperationsRoute = ShellOperationsRouteImport.update({
@@ -447,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/my-shift': typeof ShellMyShiftRoute
   '/my-work': typeof ShellMyWorkRoute
   '/notifications': typeof ShellNotificationsRoute
+  '/onboarding': typeof ShellOnboardingRoute
   '/operations': typeof ShellOperationsRoute
   '/payroll': typeof ShellPayrollRoute
   '/publishers': typeof ShellPublishersRoute
@@ -515,6 +522,7 @@ export interface FileRoutesByTo {
   '/my-shift': typeof ShellMyShiftRoute
   '/my-work': typeof ShellMyWorkRoute
   '/notifications': typeof ShellNotificationsRoute
+  '/onboarding': typeof ShellOnboardingRoute
   '/operations': typeof ShellOperationsRoute
   '/payroll': typeof ShellPayrollRoute
   '/publishers': typeof ShellPublishersRoute
@@ -585,6 +593,7 @@ export interface FileRoutesById {
   '/_shell/my-shift': typeof ShellMyShiftRoute
   '/_shell/my-work': typeof ShellMyWorkRoute
   '/_shell/notifications': typeof ShellNotificationsRoute
+  '/_shell/onboarding': typeof ShellOnboardingRoute
   '/_shell/operations': typeof ShellOperationsRoute
   '/_shell/payroll': typeof ShellPayrollRoute
   '/_shell/publishers': typeof ShellPublishersRoute
@@ -655,6 +664,7 @@ export interface FileRouteTypes {
     | '/my-shift'
     | '/my-work'
     | '/notifications'
+    | '/onboarding'
     | '/operations'
     | '/payroll'
     | '/publishers'
@@ -723,6 +733,7 @@ export interface FileRouteTypes {
     | '/my-shift'
     | '/my-work'
     | '/notifications'
+    | '/onboarding'
     | '/operations'
     | '/payroll'
     | '/publishers'
@@ -792,6 +803,7 @@ export interface FileRouteTypes {
     | '/_shell/my-shift'
     | '/_shell/my-work'
     | '/_shell/notifications'
+    | '/_shell/onboarding'
     | '/_shell/operations'
     | '/_shell/payroll'
     | '/_shell/publishers'
@@ -1049,6 +1061,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof ShellNotificationsRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/onboarding': {
+      id: '/_shell/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof ShellOnboardingRouteImport
       parentRoute: typeof ShellRoute
     }
     '/_shell/operations': {
@@ -1378,6 +1397,7 @@ interface ShellRouteChildren {
   ShellMyShiftRoute: typeof ShellMyShiftRoute
   ShellMyWorkRoute: typeof ShellMyWorkRoute
   ShellNotificationsRoute: typeof ShellNotificationsRoute
+  ShellOnboardingRoute: typeof ShellOnboardingRoute
   ShellOperationsRoute: typeof ShellOperationsRoute
   ShellPayrollRoute: typeof ShellPayrollRoute
   ShellPublishersRoute: typeof ShellPublishersRoute
@@ -1440,6 +1460,7 @@ const ShellRouteChildren: ShellRouteChildren = {
   ShellMyShiftRoute: ShellMyShiftRoute,
   ShellMyWorkRoute: ShellMyWorkRoute,
   ShellNotificationsRoute: ShellNotificationsRoute,
+  ShellOnboardingRoute: ShellOnboardingRoute,
   ShellOperationsRoute: ShellOperationsRoute,
   ShellPayrollRoute: ShellPayrollRoute,
   ShellPublishersRoute: ShellPublishersRoute,

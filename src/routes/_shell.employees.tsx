@@ -51,12 +51,12 @@ export const Route = createFileRoute("/_shell/employees")({
       { title: "Employee Directory — Policy Bear CRM" },
       {
         name: "description",
-        content: "HR employee directory with profiles, onboarding progress and documents.",
+        content: "HR employee directory with profiles, training progress and documents.",
       },
       { property: "og:title", content: "Employee Directory — Policy Bear CRM" },
       {
         property: "og:description",
-        content: "HR employee directory with profiles, onboarding progress and documents.",
+        content: "HR employee directory with profiles, training progress and documents.",
       },
     ],
   }),
@@ -82,7 +82,7 @@ function EmployeesPage() {
     },
   });
 
-  const onboardingCount = employees.filter((e) => e.trainingProgress < 100).length;
+  const inTrainingCount = employees.filter((e) => e.trainingProgress < 100).length;
 
   const columns: Column<Employee>[] = [
     {
@@ -106,7 +106,7 @@ function EmployeesPage() {
     { key: "status", header: "Status", cell: (e) => <StatusBadge status={e.status} /> },
     {
       key: "training",
-      header: "Onboarding",
+      header: "Training",
       cell: (e) => (
         <div className="flex w-28 items-center gap-2">
           <Progress value={e.trainingProgress} className="h-1.5" />
@@ -122,7 +122,7 @@ function EmployeesPage() {
       <PageHeader
         eyebrow="People"
         title="Employee Directory"
-        description="Every employee record, onboarding progress and access to profile, documents, attendance, payroll and coaching."
+        description="Every employee record, training progress and access to profile, documents, attendance, payroll and coaching."
         actions={
           <Button onClick={() => setAddOpen(true)}>
             <UserPlus className="size-4" /> Add employee
@@ -138,14 +138,14 @@ function EmployeesPage() {
           icon={<Building2 className="size-4" />}
         />
         <StatCard
-          label="Onboarding In Progress"
-          value={onboardingCount}
+          label="Training In Progress"
+          value={inTrainingCount}
           tone="warning"
           icon={<GraduationCap className="size-4" />}
         />
         <StatCard
-          label="Fully Onboarded"
-          value={employees.length - onboardingCount}
+          label="Training Complete"
+          value={employees.length - inTrainingCount}
           tone="success"
           icon={<BadgeCheck className="size-4" />}
         />
@@ -201,7 +201,7 @@ function EmployeesPage() {
                   <TabsContent value="profile" className="space-y-3 pt-4 text-sm">
                     <div className="space-y-2 rounded-md border border-border p-3">
                       <p className="text-xs font-semibold text-muted-foreground uppercase">
-                        Onboarding Progress
+                        Training Progress
                       </p>
                       <Progress value={selected.trainingProgress} />
                       <p className="text-xs text-muted-foreground">
@@ -293,7 +293,7 @@ function EmployeesPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add employee</DialogTitle>
-            <DialogDescription>Create a new employee record and assign onboarding.</DialogDescription>
+            <DialogDescription>Create a new employee record and assign training.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-3">
             <div className="grid gap-1.5">

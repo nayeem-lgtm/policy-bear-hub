@@ -59,6 +59,7 @@ import {
   fetchNotes,
   fullName,
   hireCandidate,
+  hiringSteps,
   licensing as readLicensing,
   markAccessSent,
   markAgreementSent,

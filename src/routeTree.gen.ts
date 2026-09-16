@@ -59,7 +59,6 @@ import { Route as BookInterviewTokenRouteImport } from './routes/book-interview.
 import { Route as ShellAdminAuditRouteImport } from './routes/_shell.admin.audit'
 import { Route as ShellAdminCalltoolsRouteImport } from './routes/_shell.admin.calltools'
 import { Route as ShellAdminHealthRouteImport } from './routes/_shell.admin.health'
-import { Route as ShellAdminHiringSetupRouteImport } from './routes/_shell.admin.hiring-setup'
 import { Route as ShellAdminImportsRouteImport } from './routes/_shell.admin.imports'
 import { Route as ShellAdminIntegrationsRouteImport } from './routes/_shell.admin.integrations'
 import { Route as ShellAdminPhoneSystemRouteImport } from './routes/_shell.admin.phone-system'
@@ -76,6 +75,7 @@ import { Route as ShellQaReportingRouteImport } from './routes/_shell.qa.reporti
 import { Route as ShellSalesNewRouteImport } from './routes/_shell.sales.new'
 import { Route as ShellAdminOnboardingIndexRouteImport } from './routes/_shell.admin.onboarding.index'
 import { Route as ShellAdminOnboardingCandidateIdRouteImport } from './routes/_shell.admin.onboarding.$candidateId'
+import { Route as ShellAdminOnboardingSetupRouteImport } from './routes/_shell.admin.onboarding.setup'
 import { Route as ApiPublicHooksCalltoolsRouteImport } from './routes/api.public.hooks.calltools'
 import { Route as ApiPublicHooksCalltoolsQueueRouteImport } from './routes/api.public.hooks.calltools-queue'
 import { Route as ApiPublicHooksOnboardingEmailsRouteImport } from './routes/api.public.hooks.onboarding-emails'
@@ -331,11 +331,6 @@ const ShellAdminHealthRoute = ShellAdminHealthRouteImport.update({
   path: '/admin/health',
   getParentRoute: () => ShellRoute,
 } as any)
-const ShellAdminHiringSetupRoute = ShellAdminHiringSetupRouteImport.update({
-  id: '/admin/hiring-setup',
-  path: '/admin/hiring-setup',
-  getParentRoute: () => ShellRoute,
-} as any)
 const ShellAdminImportsRoute = ShellAdminImportsRouteImport.update({
   id: '/admin/imports',
   path: '/admin/imports',
@@ -418,6 +413,12 @@ const ShellAdminOnboardingCandidateIdRoute =
     path: '/admin/onboarding/$candidateId',
     getParentRoute: () => ShellRoute,
   } as any)
+const ShellAdminOnboardingSetupRoute =
+  ShellAdminOnboardingSetupRouteImport.update({
+    id: '/admin/onboarding/setup',
+    path: '/admin/onboarding/setup',
+    getParentRoute: () => ShellRoute,
+  } as any)
 const ApiPublicHooksCalltoolsRoute = ApiPublicHooksCalltoolsRouteImport.update({
   id: '/api/public/hooks/calltools',
   path: '/api/public/hooks/calltools',
@@ -492,7 +493,6 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof ShellAdminAuditRoute
   '/admin/calltools': typeof ShellAdminCalltoolsRoute
   '/admin/health': typeof ShellAdminHealthRoute
-  '/admin/hiring-setup': typeof ShellAdminHiringSetupRoute
   '/admin/imports': typeof ShellAdminImportsRoute
   '/admin/integrations': typeof ShellAdminIntegrationsRoute
   '/admin/phone-system': typeof ShellAdminPhoneSystemRoute
@@ -508,6 +508,7 @@ export interface FileRoutesByFullPath {
   '/sales/new': typeof ShellSalesNewRoute
   '/qa/': typeof ShellQaIndexRoute
   '/admin/onboarding/$candidateId': typeof ShellAdminOnboardingCandidateIdRoute
+  '/admin/onboarding/setup': typeof ShellAdminOnboardingSetupRoute
   '/api/public/hooks/calltools': typeof ApiPublicHooksCalltoolsRoute
   '/api/public/hooks/calltools-queue': typeof ApiPublicHooksCalltoolsQueueRoute
   '/api/public/hooks/onboarding-emails': typeof ApiPublicHooksOnboardingEmailsRoute
@@ -564,7 +565,6 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof ShellAdminAuditRoute
   '/admin/calltools': typeof ShellAdminCalltoolsRoute
   '/admin/health': typeof ShellAdminHealthRoute
-  '/admin/hiring-setup': typeof ShellAdminHiringSetupRoute
   '/admin/imports': typeof ShellAdminImportsRoute
   '/admin/integrations': typeof ShellAdminIntegrationsRoute
   '/admin/phone-system': typeof ShellAdminPhoneSystemRoute
@@ -580,6 +580,7 @@ export interface FileRoutesByTo {
   '/sales/new': typeof ShellSalesNewRoute
   '/qa': typeof ShellQaIndexRoute
   '/admin/onboarding/$candidateId': typeof ShellAdminOnboardingCandidateIdRoute
+  '/admin/onboarding/setup': typeof ShellAdminOnboardingSetupRoute
   '/api/public/hooks/calltools': typeof ApiPublicHooksCalltoolsRoute
   '/api/public/hooks/calltools-queue': typeof ApiPublicHooksCalltoolsQueueRoute
   '/api/public/hooks/onboarding-emails': typeof ApiPublicHooksOnboardingEmailsRoute
@@ -638,7 +639,6 @@ export interface FileRoutesById {
   '/_shell/admin/audit': typeof ShellAdminAuditRoute
   '/_shell/admin/calltools': typeof ShellAdminCalltoolsRoute
   '/_shell/admin/health': typeof ShellAdminHealthRoute
-  '/_shell/admin/hiring-setup': typeof ShellAdminHiringSetupRoute
   '/_shell/admin/imports': typeof ShellAdminImportsRoute
   '/_shell/admin/integrations': typeof ShellAdminIntegrationsRoute
   '/_shell/admin/phone-system': typeof ShellAdminPhoneSystemRoute
@@ -654,6 +654,7 @@ export interface FileRoutesById {
   '/_shell/sales/new': typeof ShellSalesNewRoute
   '/_shell/qa/': typeof ShellQaIndexRoute
   '/_shell/admin/onboarding/$candidateId': typeof ShellAdminOnboardingCandidateIdRoute
+  '/_shell/admin/onboarding/setup': typeof ShellAdminOnboardingSetupRoute
   '/api/public/hooks/calltools': typeof ApiPublicHooksCalltoolsRoute
   '/api/public/hooks/calltools-queue': typeof ApiPublicHooksCalltoolsQueueRoute
   '/api/public/hooks/onboarding-emails': typeof ApiPublicHooksOnboardingEmailsRoute
@@ -712,7 +713,6 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/calltools'
     | '/admin/health'
-    | '/admin/hiring-setup'
     | '/admin/imports'
     | '/admin/integrations'
     | '/admin/phone-system'
@@ -728,6 +728,7 @@ export interface FileRouteTypes {
     | '/sales/new'
     | '/qa/'
     | '/admin/onboarding/$candidateId'
+    | '/admin/onboarding/setup'
     | '/api/public/hooks/calltools'
     | '/api/public/hooks/calltools-queue'
     | '/api/public/hooks/onboarding-emails'
@@ -784,7 +785,6 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/calltools'
     | '/admin/health'
-    | '/admin/hiring-setup'
     | '/admin/imports'
     | '/admin/integrations'
     | '/admin/phone-system'
@@ -800,6 +800,7 @@ export interface FileRouteTypes {
     | '/sales/new'
     | '/qa'
     | '/admin/onboarding/$candidateId'
+    | '/admin/onboarding/setup'
     | '/api/public/hooks/calltools'
     | '/api/public/hooks/calltools-queue'
     | '/api/public/hooks/onboarding-emails'
@@ -857,7 +858,6 @@ export interface FileRouteTypes {
     | '/_shell/admin/audit'
     | '/_shell/admin/calltools'
     | '/_shell/admin/health'
-    | '/_shell/admin/hiring-setup'
     | '/_shell/admin/imports'
     | '/_shell/admin/integrations'
     | '/_shell/admin/phone-system'
@@ -873,6 +873,7 @@ export interface FileRouteTypes {
     | '/_shell/sales/new'
     | '/_shell/qa/'
     | '/_shell/admin/onboarding/$candidateId'
+    | '/_shell/admin/onboarding/setup'
     | '/api/public/hooks/calltools'
     | '/api/public/hooks/calltools-queue'
     | '/api/public/hooks/onboarding-emails'
@@ -1242,13 +1243,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellAdminHealthRouteImport
       parentRoute: typeof ShellRoute
     }
-    '/_shell/admin/hiring-setup': {
-      id: '/_shell/admin/hiring-setup'
-      path: '/admin/hiring-setup'
-      fullPath: '/admin/hiring-setup'
-      preLoaderRoute: typeof ShellAdminHiringSetupRouteImport
-      parentRoute: typeof ShellRoute
-    }
     '/_shell/admin/imports': {
       id: '/_shell/admin/imports'
       path: '/admin/imports'
@@ -1359,6 +1353,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/onboarding/$candidateId'
       fullPath: '/admin/onboarding/$candidateId'
       preLoaderRoute: typeof ShellAdminOnboardingCandidateIdRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/admin/onboarding/setup': {
+      id: '/_shell/admin/onboarding/setup'
+      path: '/admin/onboarding/setup'
+      fullPath: '/admin/onboarding/setup'
+      preLoaderRoute: typeof ShellAdminOnboardingSetupRouteImport
       parentRoute: typeof ShellRoute
     }
     '/api/public/hooks/calltools': {
@@ -1476,7 +1477,6 @@ interface ShellRouteChildren {
   ShellAdminAuditRoute: typeof ShellAdminAuditRoute
   ShellAdminCalltoolsRoute: typeof ShellAdminCalltoolsRoute
   ShellAdminHealthRoute: typeof ShellAdminHealthRoute
-  ShellAdminHiringSetupRoute: typeof ShellAdminHiringSetupRoute
   ShellAdminImportsRoute: typeof ShellAdminImportsRoute
   ShellAdminIntegrationsRoute: typeof ShellAdminIntegrationsRoute
   ShellAdminPhoneSystemRoute: typeof ShellAdminPhoneSystemRoute
@@ -1489,6 +1489,7 @@ interface ShellRouteChildren {
   ShellQaReportingRoute: typeof ShellQaReportingRoute
   ShellQaIndexRoute: typeof ShellQaIndexRoute
   ShellAdminOnboardingCandidateIdRoute: typeof ShellAdminOnboardingCandidateIdRoute
+  ShellAdminOnboardingSetupRoute: typeof ShellAdminOnboardingSetupRoute
   ShellAdminOnboardingIndexRoute: typeof ShellAdminOnboardingIndexRoute
 }
 
@@ -1540,7 +1541,6 @@ const ShellRouteChildren: ShellRouteChildren = {
   ShellAdminAuditRoute: ShellAdminAuditRoute,
   ShellAdminCalltoolsRoute: ShellAdminCalltoolsRoute,
   ShellAdminHealthRoute: ShellAdminHealthRoute,
-  ShellAdminHiringSetupRoute: ShellAdminHiringSetupRoute,
   ShellAdminImportsRoute: ShellAdminImportsRoute,
   ShellAdminIntegrationsRoute: ShellAdminIntegrationsRoute,
   ShellAdminPhoneSystemRoute: ShellAdminPhoneSystemRoute,
@@ -1553,6 +1553,7 @@ const ShellRouteChildren: ShellRouteChildren = {
   ShellQaReportingRoute: ShellQaReportingRoute,
   ShellQaIndexRoute: ShellQaIndexRoute,
   ShellAdminOnboardingCandidateIdRoute: ShellAdminOnboardingCandidateIdRoute,
+  ShellAdminOnboardingSetupRoute: ShellAdminOnboardingSetupRoute,
   ShellAdminOnboardingIndexRoute: ShellAdminOnboardingIndexRoute,
 }
 

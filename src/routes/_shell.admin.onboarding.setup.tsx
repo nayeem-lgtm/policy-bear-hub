@@ -16,7 +16,7 @@ import { EmailSequenceEditor } from "@/components/onboarding/EmailSequenceEditor
 import { getHiringAutomation, saveHiringAutomation } from "@/lib/interview-booking.functions";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_shell/admin/hiring-setup")({
+export const Route = createFileRoute("/_shell/admin/onboarding/setup")({
   head: () => ({
     meta: [
       { title: "Interview & Email Setup — PolicyBear Hiring" },

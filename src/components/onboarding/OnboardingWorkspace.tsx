@@ -12,6 +12,7 @@ import {
   Search,
   ShieldCheck,
   Users,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -37,6 +38,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatCard } from "@/components/crm/StatCard";
+import { EmailAutomationDialog } from "@/components/onboarding/EmailAutomationDialog";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import {
@@ -60,6 +62,7 @@ export function OnboardingWorkspace() {
   const [column, setColumn] = useState("all");
   const [flag, setFlag] = useState("all");
   const [creating, setCreating] = useState(false);
+  const [automation, setAutomation] = useState(false);
 
   const candidatesQuery = useQuery({ queryKey: ["onboarding-candidates"], queryFn: fetchCandidates });
   const candidates = candidatesQuery.data ?? [];
@@ -127,9 +130,14 @@ export function OnboardingWorkspace() {
             Hiring → onboarding form → offer letter → carrier approval → employment agreement → PolicyBear access
           </p>
         </div>
-        <Button size="sm" onClick={() => setCreating(true)}>
-          <Plus className="size-4" /> Add candidate
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setAutomation(true)}>
+            <Zap className="size-4" /> Email automation
+          </Button>
+          <Button size="sm" onClick={() => setCreating(true)}>
+            <Plus className="size-4" /> Add candidate
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">

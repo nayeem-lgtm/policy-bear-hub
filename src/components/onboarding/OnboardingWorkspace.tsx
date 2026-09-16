@@ -4,19 +4,18 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   ArrowRight,
-  BadgeCheck,
   CalendarClock,
+  Check,
   CheckCircle2,
   ChevronRight,
   ClipboardList,
-  FileSignature,
   KeyRound,
   Lock,
   Plus,
   Search,
   ShieldCheck,
-  Users,
-  XCircle,
+  SlidersHorizontal,
+  X,
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -41,8 +40,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StatCard } from "@/components/crm/StatCard";
 import { EmailAutomationDialog } from "@/components/onboarding/EmailAutomationDialog";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";

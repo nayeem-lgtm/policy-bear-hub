@@ -715,8 +715,8 @@ export function RealtimeDialer() {
       ) : null}
 
       <div className="grid min-h-[720px] gap-3 xl:grid-cols-[minmax(230px,270px)_minmax(0,1fr)_minmax(300px,350px)]">
-        <aside className="space-y-4">
-          <Card className="overflow-hidden rounded-xl border-border/70 bg-card shadow-card">
+        <aside className="space-y-3">
+          <Card className="overflow-hidden rounded-lg border-border/70 bg-card shadow-card">
             <div className="border-b border-border/60 px-4 py-3">
               <div className="flex items-center justify-between gap-2">
                 <div>
@@ -737,7 +737,7 @@ export function RealtimeDialer() {
                   (data?.queue ?? []).slice(0, 4).map((c, i) => {
                     const waited = secondsSince(c.queued_at);
                     return (
-                      <div key={c.id} className="rounded-lg border border-border/60 bg-surface/40 p-3">
+                       <div key={c.id} className={cn("rounded-lg border bg-card p-3 shadow-sm", i === 0 ? "border-brand/35 border-l-4 border-l-brand" : "border-border/60")}>
                         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                           <div className="min-w-0">
                             <p className="truncate text-sm font-semibold text-foreground">{c.contact_name ?? formatPhone(c.phone_e164)}</p>
@@ -761,7 +761,7 @@ export function RealtimeDialer() {
             </div>
           </Card>
 
-          <Card className="rounded-xl border-border/70 bg-card p-4 shadow-card">
+          <Card className="rounded-lg border-border/70 bg-card p-4 shadow-card">
             <div className="mb-3 flex items-center justify-between gap-2">
               <div>
                 <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Agent Status</p>
@@ -794,7 +794,7 @@ export function RealtimeDialer() {
             </div>
           </Card>
 
-          <Card className="rounded-xl border-border/70 bg-card p-4 shadow-card">
+          <Card className="rounded-lg border-border/70 bg-card p-4 shadow-card">
             <div className="mb-3 flex items-center justify-between gap-2">
               <div>
                 <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Callbacks</p>
@@ -823,7 +823,7 @@ export function RealtimeDialer() {
           </Card>
         </aside>
 
-        <Card className="min-w-0 overflow-hidden rounded-xl border-border/70 bg-card shadow-card">
+        <Card className="min-w-0 overflow-hidden rounded-lg border-border/70 bg-card shadow-card">
           <Tabs value={deskTab} onValueChange={(value) => setDeskTab(value as DeskTab)}>
             <div className="border-b border-border/60 bg-card px-4 py-3">
               <div className="overflow-x-auto pb-1">
@@ -1180,12 +1180,12 @@ export function RealtimeDialer() {
           </Tabs>
         </Card>
 
-        <aside className="space-y-4">
-          <Card className="overflow-hidden rounded-2xl border-brand-ink/80 bg-brand-ink text-brand-ink-foreground shadow-raised">
+        <aside className="space-y-3">
+          <Card className="overflow-hidden rounded-lg border-brand-ink/80 bg-brand-ink text-brand-ink-foreground shadow-raised">
             <div className="border-b border-brand-ink-foreground/10 p-4">
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
                 <div className="min-w-0">
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-brand-ink-foreground/55">Professional Softphone</p>
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-brand-ink-foreground/55">Live call controls</p>
                   <p className="truncate font-display text-lg font-semibold">{active ? formatPhone(active.phone_e164) : digits ? formatPhone(digits) : "Ready to dial"}</p>
                 </div>
                 <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", active ? "bg-brand-orange text-primary-foreground" : "bg-success text-success-foreground")}>
@@ -1282,11 +1282,11 @@ export function RealtimeDialer() {
             )}
           </Card>
 
-          <Card className="rounded-2xl border-border/70 bg-card shadow-card">
+           <Card className="rounded-lg border-border/70 bg-card shadow-card">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border/60 p-4">
               <div className="min-w-0">
-                <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Call Outcome</p>
-                <h2 className="truncate font-display text-base font-semibold">Disposition notes</h2>
+                 <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Wrap-up workspace</p>
+                 <h2 className="truncate font-display text-base font-semibold">Disposition & smart notes</h2>
               </div>
               <Badge variant="outline">{inWrap ? "Wrap-up" : "Drafting"}</Badge>
             </div>

@@ -219,12 +219,12 @@ function BuiltInScriptContent({
             </ul>
           </div>
 
-          <p className="flex gap-2 rounded-lg border border-warning/40 bg-warning/10 p-3 text-xs text-foreground">
+          <div className="flex gap-2 rounded-lg border border-warning/40 bg-warning/10 p-3 text-xs text-foreground">
             <Lock className="mt-0.5 size-3.5 shrink-0" />
             <span>
               <span className="font-semibold">Why this payment rule exists — internal note.</span> {SCRIPT_INTERNAL_WHY}
             </span>
-          </p>
+          </div>
 
           {SCRIPT_PHASES.map((phase) => (
             <section key={phase.id} id={`${idPrefix}-${phase.id}`} className="space-y-3">
@@ -237,19 +237,19 @@ function BuiltInScriptContent({
               {phase.steps.map((step) => (
                 <div key={step.id} className="space-y-2">
                   {step.stop ? (
-                    <p className="flex gap-2 rounded-lg border border-warning/40 bg-warning/10 p-2.5 text-xs font-medium">
+                    <div className="flex gap-2 rounded-lg border border-warning/40 bg-warning/10 p-2.5 text-xs font-medium">
                       <OctagonAlert className="mt-0.5 size-3.5 shrink-0 text-brand-tan" />
                       {step.stop}
-                    </p>
+                    </div>
                   ) : null}
 
                   {(step.say ?? []).map((line) => (
-                    <p key={line} className="rounded-lg border border-brand/25 bg-brand/8 p-2.5 text-sm italic">
+                    <div key={line} className="rounded-lg border border-brand/25 bg-brand/8 p-2.5 text-sm italic">
                       <Badge variant="secondary" className="mr-2 align-middle text-[0.6rem]">
                         SAY
                       </Badge>
                       {line}
-                    </p>
+                    </div>
                   ))}
 
                   {step.bullets?.length ? (
@@ -266,12 +266,12 @@ function BuiltInScriptContent({
                   {step.note ? <p className="rounded-lg bg-muted/60 p-2 text-xs text-muted-foreground">{step.note}</p> : null}
 
                   {step.internal ? (
-                    <p className="flex gap-2 rounded-lg border border-warning/40 bg-warning/10 p-2 text-xs">
+                    <div className="flex gap-2 rounded-lg border border-warning/40 bg-warning/10 p-2 text-xs">
                       <Badge variant="secondary" className="h-4 shrink-0 text-[0.6rem]">
                         INTERNAL
                       </Badge>
                       {step.internal}
-                    </p>
+                    </div>
                   ) : null}
                 </div>
               ))}

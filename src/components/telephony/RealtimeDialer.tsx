@@ -126,7 +126,7 @@ const QUICK_DISPOSITIONS: Disposition[] = ["Sold", "Interested", "Not Interested
 const SPEED_DIAL_KEY = "pb.dialer.speedDial";
 const WRAP_ALLOWANCE = 45;
 
-type DeskTab = "lead" | "quotes" | "queue" | "callbacks" | "power" | "history" | "compliance";
+type DeskTab = "lead" | "script" | "quotes" | "queue" | "callbacks" | "power" | "history" | "compliance";
 
 const SHORTCUTS: { keys: string; label: string }[] = [
   { keys: "0-9 * #", label: "Type digits" },
@@ -218,7 +218,6 @@ export function RealtimeDialer() {
   const [liveNotes, setLiveNotes] = useState("");
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [speedDial, setSpeedDial] = useState<{ phone: string; name: string }[]>([]);
-  const [leftPanel, setLeftPanel] = useState<"dialer" | "script">("dialer");
   const [deskTab, setDeskTab] = useState<DeskTab>("lead");
   const [quoteZip, setQuoteZip] = useState("77042");
   const [quoteIncome, setQuoteIncome] = useState("38400");
@@ -582,109 +581,119 @@ export function RealtimeDialer() {
 
 
   return (
-    <div className="space-y-3">
-      {/* ------------------------------------------------------------ compact command bar */}
-      <Card className="sticky top-0 z-20 rounded-xl border-border/70 bg-card/95 p-2.5 shadow-card backdrop-blur">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
-            {[
-              {
-                label: "Queue",
-                value: stats?.waiting ?? 0,
-                icon: PhoneIncoming,
-                tone: "bg-success/15 text-success",
-                live: (stats?.waiting ?? 0) > 0,
-              },
-              { label: "Calls", value: stats?.calls ?? 0, icon: PhoneCall, tone: "bg-brand/12 text-brand" },
-              { label: "Connected", value: stats?.connected ?? 0, icon: Users, tone: "bg-info/15 text-info" },
-              { label: "Talk", value: clock(stats?.talkSeconds ?? 0), icon: Timer, tone: "bg-warning/20 text-brand-tan" },
-              { label: "Sales", value: stats?.sales ?? 0, icon: Rocket, tone: "bg-success/15 text-success" },
-            ].map((s) => (
-              <div key={s.label} className="flex h-8 items-center gap-1.5 rounded-full bg-surface/70 px-2.5 text-xs text-muted-foreground">
-                <span className={cn("relative grid size-5 place-items-center rounded-full", s.tone)}>
-                  <s.icon className="size-3.5" />
-                  {s.live ? <span className="absolute -right-0.5 -top-0.5 size-1.5 animate-pulse rounded-full bg-success" /> : null}
-                </span>
-                <span>{s.label}</span>
-                <strong className="font-semibold tabular-nums text-foreground">{s.value}</strong>
+    <div className="mx-auto flex max-w-[1500px] flex-col gap-4 text-foreground">
+      <Card className="overflow-hidden rounded-2xl border-border/70 bg-card shadow-raised">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-border/60 bg-surface/35 px-4 py-3 sm:flex sm:flex-wrap sm:justify-between lg:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className={cn("relative grid size-11 shrink-0 place-items-center rounded-xl", active ? "bg-success/15 text-success" : ready ? "bg-brand-teal/15 text-brand-teal" : "bg-muted text-muted-foreground")}>
+              <Phone className="size-5" />
+              {ready ? <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-success ring-2 ring-card" /> : null}
+            </span>
+            <div className="min-w-0">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <h1 className="truncate font-display text-xl font-semibold text-foreground sm:text-2xl">
+                  {activeContactName ?? lead?.contact_name ?? "Active Agent Desk"}
+                </h1>
+                <Badge className="border-0 bg-success/12 text-success">{active ? "Verified call" : ready ? "Ready" : "Paused"}</Badge>
+                <Badge className="border-0 bg-brand-orange/12 text-brand-orange">High intent</Badge>
               </div>
-            ))}
+              <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className="tabular">{activePhone ? formatPhone(activePhone) : "No active caller"}</span>
+                <span className="size-1 rounded-full bg-border" />
+                <span>Policy Bear agent cockpit</span>
+                <span className="size-1 rounded-full bg-border" />
+                <span className="font-semibold text-brand-teal">{active ? `${active.direction} · ${active.state}` : "Standing by"}</span>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <div className="hidden rounded-xl border border-border/60 bg-card px-3 py-2 text-right sm:block">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Call Duration</p>
+              <p className="font-display text-lg font-semibold text-brand-orange tabular-nums">{active ? clock(liveSeconds) : clock(stats?.talkSeconds ?? 0)}</p>
+            </div>
             <Button
               variant={deskTab === "lead" ? "default" : "outline"}
               size="sm"
-              className="h-8 gap-1.5 rounded-full"
+              className="h-9 gap-1.5 rounded-xl"
               onClick={() => setDeskTab("lead")}
             >
-              <ClipboardList className="size-3.5" /> Lead card
+              <ClipboardList className="size-4" /> Lead
+            </Button>
+            <Button
+              variant={deskTab === "script" ? "default" : "outline"}
+              size="sm"
+              className="h-9 gap-1.5 rounded-xl"
+              onClick={() => setDeskTab("script")}
+            >
+              <BookOpenText className="size-4" /> Script
             </Button>
             <Button
               variant={deskTab === "quotes" ? "default" : "outline"}
               size="sm"
-              className="h-8 gap-1.5 rounded-full"
+              className="h-9 gap-1.5 rounded-xl"
               onClick={() => setDeskTab("quotes")}
             >
-              <Star className="size-3.5" /> Quotes
+              <Star className="size-4" /> Quotes
             </Button>
-            <Button
-              variant={leftPanel === "script" ? "default" : "outline"}
-              size="sm"
-              className="h-8 gap-1.5 rounded-full"
-              onClick={() => setLeftPanel((panel) => (panel === "script" ? "dialer" : "script"))}
-            >
-              {leftPanel === "script" ? <Phone className="size-3.5" /> : <BookOpenText className="size-3.5" />}
-              {leftPanel === "script" ? "Show dialer" : "Agent script"}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1.5 rounded-full"
-              onClick={() => setDeskTab("queue")}
-            >
-              <PhoneIncoming className="size-3.5" /> Queue
-            </Button>
+            <CallScriptDialog
+              phone={activePhone}
+              contactName={activeContactName}
+              trigger={
+                <Button variant="outline" size="icon" className="size-9 rounded-xl" aria-label="Pop out agent script" title="Pop out agent script">
+                  <BookOpenText className="size-4" />
+                </Button>
+              }
+            />
             <Button
               variant="outline"
               size="icon"
-              className="size-8 rounded-full"
+              className="size-9 rounded-xl"
               title={sound ? "Mute desk audio" : "Enable desk audio"}
               aria-label={sound ? "Mute desk audio" : "Enable desk audio"}
               onClick={() => setSound((s) => !s)}
             >
-              {sound ? <Bell className="size-3.5" /> : <BellOff className="size-3.5 text-muted-foreground" />}
+              {sound ? <Bell className="size-4" /> : <BellOff className="size-4 text-muted-foreground" />}
             </Button>
-            <label className="flex h-8 items-center gap-2 rounded-full bg-surface/70 px-2.5 text-xs font-medium">
-              <Switch checked={ready} onCheckedChange={setReady} />
-              Ready
-            </label>
-            <label className="flex h-8 items-center gap-2 rounded-full bg-surface/70 px-2.5 text-xs font-medium">
-              <Switch checked={autoAnswer} onCheckedChange={setAutoAnswer} />
-              Auto-answer
-            </label>
-            <Button
-              variant="outline"
-              size="icon"
-              className="size-8 rounded-full"
-              title="Keyboard shortcuts"
-              aria-label="Keyboard shortcuts"
-              onClick={() => setShowShortcuts((v) => !v)}
-            >
-              <Keyboard className="size-3.5" />
-            </Button>
-            <div className="hidden min-w-[130px] md:block">
-              <div className="mb-1 flex justify-between text-[0.65rem] text-muted-foreground">
-                <span>Connect</span>
-                <span className="tabular-nums">{connectRate}%</span>
-              </div>
-              <Progress value={connectRate} className="h-1.5" />
-            </div>
+            {active ? (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-9 rounded-xl"
+                onClick={() => controlMutation.mutate({ callId: active.id, action: "hangup" })}
+              >
+                <PhoneOff className="mr-1.5 size-4" /> End
+              </Button>
+            ) : null}
           </div>
         </div>
 
-        {showShortcuts ? (
-          <div className="mt-2 flex flex-wrap gap-2 border-t border-border/60 pt-2">
+        <div className="grid grid-cols-2 gap-2 px-4 py-3 sm:grid-cols-3 lg:grid-cols-6 lg:px-6">
+          {[
+            { label: "Queue", value: stats?.waiting ?? 0, icon: PhoneIncoming, tone: "bg-success/15 text-success", live: (stats?.waiting ?? 0) > 0 },
+            { label: "Calls", value: stats?.calls ?? 0, icon: PhoneCall, tone: "bg-brand/12 text-brand" },
+            { label: "Connected", value: stats?.connected ?? 0, icon: Users, tone: "bg-info/15 text-info" },
+            { label: "Talk", value: clock(stats?.talkSeconds ?? 0), icon: Timer, tone: "bg-warning/20 text-brand-tan" },
+            { label: "Sales", value: stats?.sales ?? 0, icon: Rocket, tone: "bg-success/15 text-success" },
+            { label: "Connect", value: `${connectRate}%`, icon: Signal, tone: "bg-brand-teal/15 text-brand-teal" },
+          ].map((s) => (
+            <div key={s.label} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-xl border border-border/60 bg-card px-3 py-2 shadow-sm">
+              <span className={cn("relative grid size-9 shrink-0 place-items-center rounded-lg", s.tone)}>
+                <s.icon className="size-4" />
+                {s.live ? <span className="absolute -right-0.5 -top-0.5 size-2 animate-pulse rounded-full bg-success" /> : null}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">{s.label}</p>
+                <p className="truncate font-display text-lg font-semibold text-foreground tabular-nums">{s.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {showShortcuts ? (
+        <Card className="rounded-2xl border-border/70 bg-card p-3 shadow-card">
+          <div className="flex flex-wrap gap-2">
             {SHORTCUTS.map((s) => (
               <span key={s.keys} className="flex items-center gap-1.5 rounded-full bg-surface/70 px-2.5 py-1 text-xs text-muted-foreground">
                 <kbd className="rounded bg-background px-1.5 py-0.5 font-mono text-[0.65rem] text-foreground shadow-sm">{s.keys}</kbd>
@@ -692,571 +701,154 @@ export function RealtimeDialer() {
               </span>
             ))}
           </div>
-        ) : null}
-      </Card>
+        </Card>
+      ) : null}
 
-      <div
-        className={cn(
-          "grid min-h-[640px] gap-3",
-          leftPanel === "script"
-            ? "xl:grid-cols-[minmax(360px,0.95fr)_minmax(500px,1fr)]"
-            : "xl:grid-cols-[minmax(320px,390px)_minmax(0,1fr)]",
-        )}
-      >
-        {/* -------------------------------------------------------------- softphone */}
-        {leftPanel === "script" ? (
-          <ScriptReaderPanel
-            compact
-            className="min-h-[640px]"
-            bodyHeightClassName="h-[calc(100vh-18rem)] min-h-[520px]"
-            onClose={() => setLeftPanel("dialer")}
-            closeLabel="Show dialer"
-          />
-        ) : (
-        <Card className="rounded-xl p-3 shadow-card">
-          <div className="mb-3 flex items-center justify-between gap-2 rounded-lg bg-surface/60 px-3 py-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <span className={cn("grid size-8 place-items-center rounded-lg", ready ? "bg-success/15 text-success" : "bg-muted text-muted-foreground")}>
-                <Phone className="size-4" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">Dialer</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {data?.numbers?.length ?? 0} caller IDs · {speedDial.length} saved
-                </p>
+      <div className="grid min-h-[720px] gap-4 xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(320px,390px)]">
+        <aside className="space-y-4">
+          <Card className="overflow-hidden rounded-2xl border-border/70 bg-card shadow-card">
+            <div className="border-b border-border/60 px-4 py-3">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Live Queue</p>
+                  <h2 className="font-display text-base font-semibold">Inbound floor</h2>
+                </div>
+                <Badge className="border-0 bg-success/12 text-success">{data?.queue.length ?? 0} waiting</Badge>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="h-8 gap-1.5 rounded-full" onClick={() => setLeftPanel("script")}>
-              <BookOpenText className="size-3.5" /> Script
-            </Button>
-          </div>
-          {active ? (
-            <div className="space-y-4">
-              <div
-                className={cn(
-                  "relative overflow-hidden rounded-2xl p-5 text-center",
-                  inWrap
-                    ? "bg-warning/15"
-                    : active.on_hold
-                      ? "bg-info/12"
-                      : "bg-gradient-to-br from-brand/20 to-brand/5",
+            <ScrollArea className="h-[250px]">
+              <div className="space-y-2 p-3">
+                {(data?.queue ?? []).length === 0 ? (
+                  <div className="grid place-items-center gap-2 rounded-xl border border-dashed border-border bg-surface/45 py-8 text-center">
+                    <Volume2 className="size-5 text-muted-foreground" />
+                    <p className="max-w-[12rem] text-xs text-muted-foreground">No callers waiting. New inbound calls appear here instantly.</p>
+                  </div>
+                ) : (
+                  (data?.queue ?? []).slice(0, 4).map((c, i) => {
+                    const waited = secondsSince(c.queued_at);
+                    return (
+                      <div key={c.id} className="rounded-xl border border-border/60 bg-surface/40 p-3">
+                        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-foreground">{c.contact_name ?? formatPhone(c.phone_e164)}</p>
+                            <p className="truncate text-xs text-muted-foreground">#{i + 1} in line {c.to_number ? `· ${formatPhone(c.to_number)}` : ""}</p>
+                          </div>
+                          <span className={cn("text-xs font-semibold tabular-nums", waitTone(waited))}>{clock(waited)}</span>
+                        </div>
+                        <Button className="mt-2 h-8 w-full rounded-lg" size="sm" disabled={Boolean(active) || !ready} onClick={() => answerCall(c.id)}>
+                          Answer
+                        </Button>
+                      </div>
+                    );
+                  })
                 )}
-              >
-                {connected && !active.on_hold ? (
-                  <span className="absolute left-1/2 top-0 h-24 w-24 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-brand/20" />
-                ) : null}
-                <div className="relative">
-                  <Badge variant="secondary" className="mb-2 capitalize">
-                    {active.direction} · {active.state}
-                    {active.muted ? " · muted" : ""}
-                  </Badge>
-                  <p className="font-display text-2xl font-semibold">{formatPhone(active.phone_e164)}</p>
-                  <p className="text-sm text-muted-foreground">{active.contact_name ?? "Unknown caller"}</p>
-                  <p className="mt-2 text-4xl font-semibold tabular-nums">{clock(liveSeconds)}</p>
-                  {tones ? (
-                    <p className="mt-1 text-xs tracking-widest text-muted-foreground">DTMF {tones}</p>
-                  ) : null}
-
-                  <div className="mt-3 flex items-center justify-center gap-1.5">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 gap-1 text-xs"
-                      onClick={() => void copyNumber(active.phone_e164 ?? "")}
-                    >
-                      <Copy className="size-3.5" /> Copy
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 gap-1 text-xs"
-                      onClick={() => toggleSpeedDial(active.phone_e164 ?? "", active.contact_name)}
-                    >
-                      <Star
-                        className={cn(
-                          "size-3.5",
-                          inSpeedDial(active.phone_e164 ?? "") && "fill-current text-warning",
-                        )}
-                      />
-                      Speed dial
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 gap-1 text-xs"
-                      onClick={() => openCallback(active.phone_e164, active.contact_name)}
-                    >
-                      <CalendarClock className="size-3.5" /> Set callback
-                    </Button>
-                    <CallScriptDialog
-                      phone={active.phone_e164 ?? ""}
-                      contactName={active.contact_name ?? null}
-                      trigger={
-                        <Button size="sm" variant="ghost" className="h-8 gap-1 text-xs">
-                          <BookOpenText className="size-3.5" /> Script
-                        </Button>
-                      }
-                    />
-
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 gap-1 text-xs text-destructive"
-                      onClick={() => openDnc(active.phone_e164, active.contact_name)}
-                    >
-                      <Ban className="size-3.5" /> DNC
-                    </Button>
-
-                  </div>
-                </div>
               </div>
+            </ScrollArea>
+            <div className="border-t border-border/60 p-3">
+              <Button variant="outline" size="sm" className="w-full rounded-lg" onClick={() => setDeskTab("queue")}>
+                Queue manager
+              </Button>
+            </div>
+          </Card>
 
+          <Card className="rounded-2xl border-border/70 bg-card p-4 shadow-card">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <div>
+                <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Agent Status</p>
+                <h2 className="font-display text-base font-semibold">Floor controls</h2>
+              </div>
+              <Button variant="outline" size="icon" className="size-8 rounded-lg" onClick={() => setShowShortcuts((v) => !v)} aria-label="Keyboard shortcuts" title="Keyboard shortcuts">
+                <Keyboard className="size-4" />
+              </Button>
+            </div>
+            <div className="space-y-2">
+              <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-xl border border-border/60 bg-surface/45 px-3 py-2 text-sm font-medium">
+                <span className="min-w-0 truncate">Ready to receive</span>
+                <Switch checked={ready} onCheckedChange={setReady} />
+              </label>
+              <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-xl border border-border/60 bg-surface/45 px-3 py-2 text-sm font-medium">
+                <span className="min-w-0 truncate">Auto-answer queue</span>
+                <Switch checked={autoAnswer} onCheckedChange={setAutoAnswer} />
+              </label>
+              <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-xl border border-border/60 bg-surface/45 px-3 py-2 text-sm font-medium">
+                <span className="min-w-0 truncate">Auto-load leads</span>
+                <Switch checked={autoNext} onCheckedChange={setAutoNext} />
+              </label>
+            </div>
+            <div className="mt-4">
+              <div className="mb-1.5 flex justify-between text-[0.65rem] font-medium uppercase tracking-widest text-muted-foreground">
+                <span>Connect rate</span>
+                <span className="tabular-nums">{connectRate}%</span>
+              </div>
+              <Progress value={connectRate} className="h-2" />
+            </div>
+          </Card>
 
-
-              {inWrap ? (
-                <div className="space-y-3">
-                  <div className="rounded-2xl border border-border/60 bg-surface/50 p-3">
-                    <div className="mb-1.5 flex items-center justify-between text-xs">
-                      <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
-                        <Timer className="size-3.5" /> Wrap-up time
-                      </span>
-                      <span
-                        className={cn(
-                          "font-semibold tabular-nums",
-                          wrapLeft === 0 ? "text-destructive" : "text-foreground",
-                        )}
-                      >
-                        {wrapLeft === 0 ? "Overrun" : `${wrapLeft}s left`}
-                      </span>
-                    </div>
-                    <Progress value={(wrapLeft / WRAP_ALLOWANCE) * 100} className="h-1.5" />
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5">
-                    {QUICK_DISPOSITIONS.map((d) => (
-                      <Button
-                        key={d}
-                        size="sm"
-                        variant={disposition === d ? "default" : "outline"}
-                        className="rounded-full"
-                        onClick={() => setDisposition(d)}
-                      >
-                        {d}
-                      </Button>
-                    ))}
-                  </div>
-                  <Select value={disposition} onValueChange={(v) => setDisposition(v as Disposition)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All outcomes…" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DISPOSITIONS.map((d) => (
-                        <SelectItem key={d} value={d}>
-                          {d}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div>
-                    <Label className="text-xs">Call notes</Label>
-                    <Textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Schedule a callback (optional)</Label>
-                    <Input
-                      type="datetime-local"
-                      value={callbackAt}
-                      onChange={(e) => setCallbackAt(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      className="flex-1"
-                      disabled={!disposition || wrapMutation.isPending}
-                      onClick={() => wrapMutation.mutate(disposition as Disposition)}
-                    >
-                      Save outcome
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="text-destructive"
-                      disabled={wrapMutation.isPending}
-                      onClick={() => wrapMutation.mutate("DNC")}
-                    >
-                      <Ban className="mr-1 size-4" /> DNC
-                    </Button>
-                  </div>
-                </div>
+          <Card className="rounded-2xl border-border/70 bg-card p-4 shadow-card">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <div>
+                <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Callbacks</p>
+                <h2 className="font-display text-base font-semibold">Follow-ups</h2>
+              </div>
+              <Badge variant="secondary">{callbacks.length}</Badge>
+            </div>
+            <div className="space-y-2">
+              {callbacks.slice(0, 3).length === 0 ? (
+                <p className="rounded-xl border border-dashed border-border bg-surface/45 p-3 text-xs text-muted-foreground">No open callbacks right now.</p>
               ) : (
-                <div className="space-y-3">
-                  {active.state === "ringing" && active.direction === "inbound" ? (
-                    <Button className="h-12 w-full" onClick={() => answerCall(active.id)}>
-                      <Phone className="mr-2 size-4" /> Answer
-                    </Button>
-                  ) : null}
-
-                  <div className="grid grid-cols-3 gap-2">
-                    <Button
-                      variant="outline"
-                      className="h-11"
-                      disabled={!connected}
-                      onClick={() =>
-                        controlMutation.mutate({
-                          callId: active.id,
-                          action: active.on_hold ? "resume" : "hold",
-                        })
-                      }
-                    >
-                      {active.on_hold ? <Play className="mr-1 size-4" /> : <Pause className="mr-1 size-4" />}
-                      {active.on_hold ? "Resume" : "Hold"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-11"
-                      disabled={!connected}
-                      onClick={() =>
-                        controlMutation.mutate({
-                          callId: active.id,
-                          action: active.muted ? "unmute" : "mute",
-                        })
-                      }
-                    >
-                      {active.muted ? <MicOff className="mr-1 size-4" /> : <Mic className="mr-1 size-4" />}
-                      {active.muted ? "Unmute" : "Mute"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-11"
-                      disabled={!connected}
-                      onClick={() => setShowInCallPad((v) => !v)}
-                    >
-                      <Grip className="mr-1 size-4" /> Keypad
-                    </Button>
-                  </div>
-
-                  {showInCallPad ? (
-                    <div className="grid grid-cols-3 gap-2 rounded-2xl bg-surface/60 p-2">
-                      {KEYPAD.map((k) => (
-                        <Button key={k.key} variant="ghost" className="h-10" onClick={() => sendTone(k.key)}>
-                          {k.key}
-                        </Button>
-                      ))}
+                callbacks.slice(0, 3).map((c) => (
+                  <button key={c.id} type="button" className="w-full rounded-xl border border-border/60 bg-surface/35 p-3 text-left transition-colors hover:bg-surface" onClick={() => setDeskTab("callbacks")}>
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+                      <span className="truncate text-sm font-semibold">{c.contact_name ?? formatPhone(c.phone_e164)}</span>
+                      <Badge className={cn("border-0", CALLBACK_STATUS_TONE[(c.status as CallbackStatus) ?? "Pending"])}>{c.status}</Badge>
                     </div>
-                  ) : null}
-
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Transfer to extension or number"
-                      value={transferTo}
-                      onChange={(e) => setTransferTo(e.target.value)}
-                    />
-                    <Button
-                      variant="outline"
-                      disabled={!connected || !transferTo}
-                      onClick={() =>
-                        controlMutation.mutate({ callId: active.id, action: "transfer", transferTo })
-                      }
-                    >
-                      <PhoneForwarded className="size-4" />
-                    </Button>
-                  </div>
-
-                  <div className="rounded-2xl border border-border/60 bg-surface/40 p-3">
-                    <Label className="mb-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <StickyNote className="size-3.5" /> Live notes — carried into the outcome
-                    </Label>
-                    <Textarea
-                      rows={3}
-                      value={liveNotes}
-                      onChange={(e) => setLiveNotes(e.target.value)}
-                      placeholder="Type while you talk: needs, objections, next step…"
-                    />
-                  </div>
-
-
-                  <Button
-                    variant="destructive"
-                    className="h-12 w-full"
-                    onClick={() => controlMutation.mutate({ callId: active.id, action: "hangup" })}
-                  >
-                    <PhoneOff className="mr-2 size-4" /> End call
-                  </Button>
-                </div>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">{c.reason}</p>
+                  </button>
+                ))
               )}
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-border/60 bg-surface/60 p-3">
-                <Input
-                  value={digits}
-                  onChange={(e) => setDigits(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") dialNow();
-                  }}
-                  placeholder="Enter a number"
-                  className="h-12 border-0 bg-transparent text-center text-2xl font-semibold tracking-wider shadow-none focus-visible:ring-0"
-                />
-                {digits ? (
-                  <p className="text-center text-xs text-muted-foreground">{formatPhone(digits)}</p>
-                ) : (
-                  <p className="text-center text-xs text-muted-foreground">
-                    Type on your keyboard — the desk listens for digits
-                  </p>
-                )}
-                {debouncedDigits.replace(/\D/g, "").length >= 7 ? (
-                  <p
-                    className={cn(
-                      "mt-1 flex items-center justify-center gap-1.5 text-xs font-medium",
-                      dncCheck.isFetching
-                        ? "text-muted-foreground"
-                        : dncBlocked
-                          ? "text-destructive"
-                          : "text-success",
-                    )}
-                  >
-                    {dncCheck.isFetching ? (
-                      <>Checking Do-Not-Call…</>
-                    ) : dncBlocked ? (
-                      <>
-                        <ShieldOff className="size-3.5" /> On DNC — {dncEntry?.reason}
-                      </>
-                    ) : (
-                      <>
-                        <ShieldCheck className="size-3.5" /> Cleared against DNC
-                      </>
-                    )}
-                  </p>
-                ) : null}
+            <Button className="mt-3 w-full rounded-lg" size="sm" variant="outline" onClick={() => openCallback(digits || active?.phone_e164 || "", active?.contact_name)}>
+              <PlusCircle className="mr-1.5 size-4" /> New callback
+            </Button>
+          </Card>
+        </aside>
 
-                <div className="mt-2 flex items-center justify-center gap-1">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 gap-1 text-xs"
-                    onClick={() => void pasteNumber()}
-                  >
-                    <ClipboardPaste className="size-3.5" /> Paste
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 gap-1 text-xs"
-                    disabled={!digits}
-                    onClick={() => void copyNumber(digits)}
-                  >
-                    <Copy className="size-3.5" /> Copy
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 gap-1 text-xs"
-                    disabled={digits.replace(/\D/g, "").length < 7}
-                    onClick={() => toggleSpeedDial(digits)}
-                  >
-                    <Star
-                      className={cn("size-3.5", inSpeedDial(digits) && "fill-current text-warning")}
-                    />
-                    {inSpeedDial(digits) ? "Saved" : "Save"}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 gap-1 text-xs"
-                    disabled={!digits}
-                    onClick={() => setDigits("")}
-                  >
-                    <Trash2 className="size-3.5" /> Clear
-                  </Button>
-                </div>
-              </div>
-
-              {dncBlocked ? (
-                <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
-                  <ShieldAlert className="size-4 shrink-0" />
-                  <span className="min-w-0 flex-1">
-                    Dialing is blocked for compliance. Any attempt is logged in the audit trail.
-                  </span>
-                  <Button asChild size="sm" variant="outline" className="h-7 text-xs">
-                    <Link to="/dnc">Open DNC center</Link>
-                  </Button>
-                </div>
-              ) : null}
-
-              <div className="grid grid-cols-3 gap-2">
-                {KEYPAD.map((k) => (
-                  <Button
-                    key={k.key}
-                    variant="outline"
-                    className="h-14 flex-col gap-0 rounded-2xl text-lg transition-transform active:scale-95"
-                    onClick={() => pressKey(k.key)}
-                  >
-                    {k.key}
-                    {k.sub ? (
-                      <span className="text-[0.6rem] tracking-widest text-muted-foreground">{k.sub}</span>
-                    ) : null}
-                  </Button>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Select value={fromId} onValueChange={setFromId}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Caller ID" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="auto">Automatic caller ID</SelectItem>
-                    {(data?.numbers ?? []).map((n) => (
-                      <SelectItem key={n.id} value={n.id}>
-                        {n.label} · {formatPhone(n.e164)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button variant="ghost" size="icon" onClick={() => setDigits((d) => d.slice(0, -1))}>
-                  <Delete className="size-4" />
-                </Button>
-              </div>
-
-              <Button
-                className="h-12 w-full rounded-2xl"
-                disabled={digits.length < 7 || dialMutation.isPending || dncBlocked}
-                onClick={dialNow}
-              >
-                {dncBlocked ? (
-                  <>
-                    <ShieldOff className="mr-2 size-4" /> Blocked — on DNC
-                  </>
-                ) : (
-                  <>
-                    <PhoneCall className="mr-2 size-4" /> Call
-                  </>
-                )}
-              </Button>
-
-              <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" onClick={() => openCallback(digits)}>
-                  <CalendarClock className="mr-2 size-4" /> Set callback
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-destructive"
-                  onClick={() => openDnc(digits)}
-                >
-                  <Ban className="mr-2 size-4" /> Add to DNC
-                </Button>
-                <CallScriptDialog
-                  phone={digits}
-                  contactName={lead?.contact_name ?? null}
-
-                  trigger={
-                    <Button variant="outline" className="col-span-2">
-                      <BookOpenText className="mr-2 size-4" /> Open agent script
-                    </Button>
-                  }
-                />
-              </div>
-
-
-              {speedDial.length ? (
-                <div>
-                  <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    <Zap className="size-3.5" /> Speed dial
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {speedDial.map((s) => (
-                      <span
-                        key={s.phone}
-                        className="group flex items-center gap-1 rounded-full bg-brand/12 py-0.5 pl-2.5 pr-1 text-xs text-brand"
-                      >
-                        <button className="font-medium" onClick={() => setDigits(s.phone)}>
-                          {s.name || formatPhone(s.phone)}
-                        </button>
-                        <button
-                          className="rounded-full p-1 text-muted-foreground hover:text-destructive"
-                          aria-label="Remove from speed dial"
-                          onClick={() => toggleSpeedDial(s.phone)}
-                        >
-                          <Trash2 className="size-3" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-
-
-              {(data?.today ?? []).length ? (
-                <div>
-                  <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    <Star className="size-3.5" /> Recent
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[...new Set((data?.today ?? []).map((c) => c.phone_e164).filter((p): p is string => Boolean(p)))]
-                      .slice(0, 6)
-                      .map((p) => (
-                      <Button
-                        key={p}
-                        size="sm"
-                        variant="secondary"
-                        className="rounded-full text-xs"
-                        onClick={() => setDigits(p)}
-                      >
-                        {formatPhone(p)}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          )}
-        </Card>
-        )}
-
-        {/* --------------------------------------------------------------- work area */}
-        <Card className="min-h-[640px] overflow-hidden rounded-xl p-0 shadow-card">
+        <Card className="min-w-0 overflow-hidden rounded-2xl border-border/70 bg-card shadow-card">
           <Tabs value={deskTab} onValueChange={(value) => setDeskTab(value as DeskTab)}>
-            <div className="sticky top-[4.25rem] z-10 border-b border-border/60 bg-card/95 px-3 py-2 backdrop-blur">
+            <div className="border-b border-border/60 bg-card px-4 py-3">
               <div className="overflow-x-auto pb-1">
-                <TabsList className="h-10 min-w-max justify-start gap-1 rounded-full bg-surface/70 p-1">
-                  <TabsTrigger value="lead" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                    <ClipboardList className="mr-1.5 size-4" /> Lead card
+                <TabsList className="h-11 min-w-max justify-start gap-1 rounded-xl bg-surface/70 p-1">
+                  <TabsTrigger value="lead" className="rounded-lg px-3 data-[state=active]:bg-card data-[state=active]:text-brand-teal">
+                    <ClipboardList className="mr-1.5 size-4" /> Lead Card
                   </TabsTrigger>
-                  <TabsTrigger value="quotes" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                    <Star className="mr-1.5 size-4" /> Quotes
+                  <TabsTrigger value="script" className="rounded-lg px-3 data-[state=active]:bg-card data-[state=active]:text-brand-teal">
+                    <BookOpenText className="mr-1.5 size-4" /> Dynamic Script
                   </TabsTrigger>
-                  <TabsTrigger value="queue" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                  <TabsTrigger value="quotes" className="rounded-lg px-3 data-[state=active]:bg-card data-[state=active]:text-brand-teal">
+                    <Star className="mr-1.5 size-4" /> Quotes & Rates
+                  </TabsTrigger>
+                  <TabsTrigger value="history" className="rounded-lg px-3 data-[state=active]:bg-card data-[state=active]:text-brand-teal">
+                    <History className="mr-1.5 size-4" /> Customer History
+                  </TabsTrigger>
+                  <TabsTrigger value="queue" className="rounded-lg px-3 data-[state=active]:bg-card data-[state=active]:text-brand-teal">
                     <PhoneIncoming className="mr-1.5 size-4" /> Queue
-                    {(data?.queue.length ?? 0) > 0 ? (
-                      <Badge variant="secondary" className="ml-2">
-                        {data?.queue.length}
-                      </Badge>
-                    ) : null}
                   </TabsTrigger>
-                  <TabsTrigger value="callbacks" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                  <TabsTrigger value="callbacks" className="rounded-lg px-3 data-[state=active]:bg-card data-[state=active]:text-brand-teal">
                     <CalendarClock className="mr-1.5 size-4" /> Callbacks
                   </TabsTrigger>
-                  <TabsTrigger value="power" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                    <Gauge className="mr-1.5 size-4" /> Power dialer
+                  <TabsTrigger value="power" className="rounded-lg px-3 data-[state=active]:bg-card data-[state=active]:text-brand-teal">
+                    <Gauge className="mr-1.5 size-4" /> Power
                   </TabsTrigger>
-                  <TabsTrigger value="history" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                    <History className="mr-1.5 size-4" /> Today
-                  </TabsTrigger>
-                  <TabsTrigger value="compliance" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                  <TabsTrigger value="compliance" className="rounded-lg px-3 data-[state=active]:bg-card data-[state=active]:text-brand-teal">
                     <ShieldOff className="mr-1.5 size-4" /> DNC
-                    {(blocked.data?.events.length ?? 0) > 0 ? (
-                      <Badge variant="secondary" className="ml-2">
-                        {blocked.data?.events.length}
-                      </Badge>
-                    ) : null}
+                    {(blocked.data?.events.length ?? 0) > 0 ? <Badge variant="secondary" className="ml-2">{blocked.data?.events.length}</Badge> : null}
                   </TabsTrigger>
-              </TabsList>
+                </TabsList>
               </div>
             </div>
 
-            {/* ------------------------------------------------------------ lead card */}
             <TabsContent value="lead" className="m-0 p-4">
-              <ScrollArea className="h-[calc(100vh-18rem)] min-h-[520px] pr-3">
+              <ScrollArea className="h-[calc(100vh-17rem)] min-h-[570px] pr-3">
                 <LeadIntakePanel
                   phone={activePhone}
                   contactName={activeContactName}
@@ -1265,14 +857,21 @@ export function RealtimeDialer() {
               </ScrollArea>
             </TabsContent>
 
-            {/* ------------------------------------------------------------ quotes */}
+            <TabsContent value="script" className="m-0 p-4">
+              <ScriptReaderPanel
+                compact
+                className="overflow-hidden rounded-xl border border-border/60 shadow-none"
+                bodyHeightClassName="h-[calc(100vh-17rem)] min-h-[570px]"
+              />
+            </TabsContent>
+
             <TabsContent value="quotes" className="m-0 p-4">
-              <div className="grid gap-3 lg:grid-cols-[minmax(260px,320px)_minmax(0,1fr)]">
-                <div className="space-y-3 rounded-lg border border-border/60 bg-surface/45 p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">Applicant intake</p>
-                      <p className="text-xs text-muted-foreground">
+              <div className="grid gap-4 lg:grid-cols-[minmax(250px,310px)_minmax(0,1fr)]">
+                <div className="space-y-3 rounded-xl border border-border/60 bg-surface/45 p-4">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                    <div className="min-w-0">
+                      <p className="truncate font-display text-base font-semibold text-foreground">Applicant intake</p>
+                      <p className="truncate text-xs text-muted-foreground">
                         {activeContactName ?? "New applicant"}{activePhone ? ` · ${formatPhone(activePhone)}` : ""}
                       </p>
                     </div>
@@ -1291,39 +890,39 @@ export function RealtimeDialer() {
                       <Label htmlFor="quote-age">Applicant age</Label>
                       <Input id="quote-age" value={quoteAge} onChange={(e) => setQuoteAge(e.target.value)} />
                     </div>
-                    <label className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm">
-                      Tobacco use
+                    <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm">
+                      <span className="min-w-0 truncate">Tobacco use</span>
                       <Switch checked={quoteTobacco} onCheckedChange={setQuoteTobacco} />
                     </label>
                   </div>
-                  <div className="rounded-md border border-brand/25 bg-brand/5 p-3">
-                    <p className="text-xs font-medium uppercase tracking-wide text-brand">Estimated monthly subsidy</p>
-                    <p className="mt-1 text-2xl font-semibold text-foreground">{currency(quoteSubsidy)}</p>
+                  <div className="rounded-xl border border-brand-teal/25 bg-brand-teal/5 p-3">
+                    <p className="text-xs font-medium uppercase tracking-wide text-brand-teal">Estimated monthly subsidy</p>
+                    <p className="mt-1 font-display text-2xl font-semibold text-foreground">{currency(quoteSubsidy)}</p>
                     <p className="mt-1 text-xs text-muted-foreground">Based on ZIP {quoteZip || "—"} and current applicant details.</p>
                   </div>
-                  <Button className="w-full gap-1.5" disabled={quoteCompare.length < 2}>
+                  <Button className="w-full gap-1.5 rounded-xl" disabled={quoteCompare.length < 2}>
                     <FileCheck2 className="size-4" /> Compare selected
                   </Button>
                 </div>
 
                 <div className="min-w-0 space-y-3">
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="grid gap-2 sm:grid-cols-3">
                     <Select value={quoteCarrierFilter} onValueChange={setQuoteCarrierFilter}>
-                      <SelectTrigger className="h-9 w-auto min-w-[10rem]"><SelectValue placeholder="Carrier" /></SelectTrigger>
+                      <SelectTrigger className="h-9"><SelectValue placeholder="Carrier" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All carriers</SelectItem>
                         {quoteCarriers.map((carrier) => <SelectItem key={carrier} value={carrier}>{carrier}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <Select value={quoteMetalFilter} onValueChange={setQuoteMetalFilter}>
-                      <SelectTrigger className="h-9 w-auto min-w-[9rem]"><SelectValue placeholder="Metal level" /></SelectTrigger>
+                      <SelectTrigger className="h-9"><SelectValue placeholder="Metal level" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All metal levels</SelectItem>
                         {quoteMetals.map((metal) => <SelectItem key={metal} value={metal}>{metal}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <Select value={quoteSort} onValueChange={setQuoteSort}>
-                      <SelectTrigger className="h-9 w-auto min-w-[10rem] lg:ml-auto"><SelectValue placeholder="Sort" /></SelectTrigger>
+                      <SelectTrigger className="h-9"><SelectValue placeholder="Sort" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="premium-asc">Premium: low to high</SelectItem>
                         <SelectItem value="premium-desc">Premium: high to low</SelectItem>
@@ -1333,25 +932,25 @@ export function RealtimeDialer() {
                     </Select>
                   </div>
 
-                  <ScrollArea className="h-[calc(100vh-22rem)] min-h-[430px] pr-3">
+                  <ScrollArea className="h-[calc(100vh-21rem)] min-h-[470px] pr-3">
                     <div className="space-y-2">
                       {quoteResults.map((plan) => (
-                        <div key={plan.id} className="rounded-lg border border-border/60 bg-card p-3 shadow-sm">
-                          <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div key={plan.id} className="rounded-xl border border-border/60 bg-card p-3 shadow-sm transition-colors hover:border-brand-teal/35">
+                          <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
                             <Checkbox
                               checked={quoteCompare.includes(plan.id)}
                               onCheckedChange={() => toggleQuoteCompare(plan.id)}
                               className="mt-1"
                               aria-label={`Compare ${plan.planName}`}
                             />
-                            <div className="min-w-[220px] flex-1">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <p className="text-sm font-semibold text-foreground">{plan.planName}</p>
+                            <div className="min-w-0">
+                              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                                <p className="truncate text-sm font-semibold text-foreground">{plan.planName}</p>
                                 <Badge variant="outline">{plan.metal}</Badge>
                                 <Badge variant="outline">{plan.type}</Badge>
                                 {plan.hsaEligible ? <Badge variant="outline">HSA</Badge> : null}
                               </div>
-                              <p className="mt-0.5 text-xs text-muted-foreground">{plan.carrier} · {plan.network} network</p>
+                              <p className="mt-0.5 truncate text-xs text-muted-foreground">{plan.carrier} · {plan.network} network</p>
                               <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
                                 <span><span className="text-muted-foreground">Deductible</span><br /><strong>{currency(plan.deductible)}</strong></span>
                                 <span><span className="text-muted-foreground">MOOP</span><br /><strong>{currency(plan.oopMax)}</strong></span>
@@ -1359,12 +958,12 @@ export function RealtimeDialer() {
                                 <span><span className="text-muted-foreground">Rx</span><br /><strong>{currency(plan.genericRx)}</strong></span>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <p className="text-2xl font-semibold text-foreground">{currency(plan.subsidizedPremium)}<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                            <div className="col-span-2 text-left lg:col-span-1 lg:text-right">
+                              <p className="font-display text-2xl font-semibold text-foreground">{currency(plan.subsidizedPremium)}<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
                               <p className="text-xs text-muted-foreground line-through">{currency(plan.premium)}/mo</p>
-                              <div className="mt-2 flex justify-end gap-1.5">
-                                <Button variant="outline" size="sm" className="h-8 gap-1.5"><Send className="size-3.5" /> Send</Button>
-                                <Button size="sm" className="h-8 gap-1.5"><FileCheck2 className="size-3.5" /> Apply</Button>
+                              <div className="mt-2 flex justify-start gap-1.5 lg:justify-end">
+                                <Button variant="outline" size="sm" className="h-8 gap-1.5 rounded-lg"><Send className="size-3.5" /> Send</Button>
+                                <Button size="sm" className="h-8 gap-1.5 rounded-lg"><FileCheck2 className="size-3.5" /> Apply</Button>
                               </div>
                             </div>
                           </div>
@@ -1376,186 +975,94 @@ export function RealtimeDialer() {
               </div>
             </TabsContent>
 
-
-            {/* -------------------------------------------------------- inbound queue */}
             <TabsContent value="queue" className="m-0 p-4">
-              <ScrollArea className="h-[340px] pr-3">
+              <ScrollArea className="h-[360px] pr-3">
                 {(data?.queue ?? []).length === 0 ? (
                   <div className="grid place-items-center gap-2 py-14 text-center">
-                    <span className="grid size-12 place-items-center rounded-2xl bg-surface text-muted-foreground">
+                    <span className="grid size-12 place-items-center rounded-xl bg-surface text-muted-foreground">
                       <Volume2 className="size-5" />
                     </span>
-                    <p className="text-sm text-muted-foreground">
-                      No callers waiting. Inbound calls appear here the moment they land.
-                    </p>
+                    <p className="text-sm text-muted-foreground">No callers waiting. Inbound calls appear here the moment they land.</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {(data?.queue ?? []).map((c, i) => {
                       const waited = secondsSince(c.queued_at);
                       return (
-                        <div
-                          key={c.id}
-                          className="flex items-center gap-3 rounded-2xl border border-border/60 bg-surface/40 p-3"
-                        >
-                          <span className="grid size-9 place-items-center rounded-full bg-success/15 text-success">
+                        <div key={c.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border/60 bg-surface/40 p-3">
+                          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-success/15 text-success">
                             <PhoneIncoming className="size-4" />
                           </span>
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate font-medium">
-                              {formatPhone(c.phone_e164)}
-                              <span className="ml-2 text-xs text-muted-foreground">#{i + 1} in line</span>
-                            </p>
-                            <p className="truncate text-xs text-muted-foreground">
-                              {c.contact_name ?? "Unknown"}
-                              {c.to_number ? ` · on ${formatPhone(c.to_number)}` : ""}
-                            </p>
+                          <div className="min-w-0">
+                            <p className="truncate font-medium">{formatPhone(c.phone_e164)} <span className="text-xs text-muted-foreground">#{i + 1} in line</span></p>
+                            <p className="truncate text-xs text-muted-foreground">{c.contact_name ?? "Unknown"}{c.to_number ? ` · on ${formatPhone(c.to_number)}` : ""}</p>
                           </div>
-                          <span className={cn("text-sm font-semibold tabular-nums", waitTone(waited))}>
-                            {clock(waited)}
-                          </span>
-                          <Button size="sm" disabled={Boolean(active) || !ready} onClick={() => answerCall(c.id)}>
-                            Answer
-                          </Button>
+                          <div className="flex shrink-0 items-center gap-2">
+                            <span className={cn("text-sm font-semibold tabular-nums", waitTone(waited))}>{clock(waited)}</span>
+                            <Button size="sm" disabled={Boolean(active) || !ready} onClick={() => answerCall(c.id)}>Answer</Button>
+                          </div>
                         </div>
                       );
                     })}
                   </div>
                 )}
               </ScrollArea>
-
               <Separator className="my-4" />
               <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
-                <Input
-                  placeholder="Test caller number"
-                  value={sim.phone}
-                  onChange={(e) => setSim((s) => ({ ...s, phone: e.target.value }))}
-                />
+                <Input placeholder="Test caller number" value={sim.phone} onChange={(e) => setSim((s) => ({ ...s, phone: e.target.value }))} />
                 <Select value={sim.numberId} onValueChange={(v) => setSim((s) => ({ ...s, numberId: v }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Called number" />
-                  </SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Called number" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="auto">Any number</SelectItem>
-                    {(data?.numbers ?? []).map((n) => (
-                      <SelectItem key={n.id} value={n.id}>
-                        {n.label}
-                      </SelectItem>
-                    ))}
+                    {(data?.numbers ?? []).map((n) => <SelectItem key={n.id} value={n.id}>{n.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
-                <Button
-                  variant="outline"
-                  disabled={sim.phone.length < 7 || simulateMutation.isPending}
-                  onClick={() => simulateMutation.mutate()}
-                >
+                <Button variant="outline" disabled={sim.phone.length < 7 || simulateMutation.isPending} onClick={() => simulateMutation.mutate()}>
                   <PhoneIncoming className="mr-2 size-4" /> Place test call
                 </Button>
               </div>
             </TabsContent>
 
-            {/* ------------------------------------------------------------ callbacks */}
             <TabsContent value="callbacks" className="m-0 p-4">
-              <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border/60 bg-surface/40 p-3">
-                <span className="grid size-9 place-items-center rounded-full bg-brand/12 text-brand">
+              <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border/60 bg-surface/40 p-3">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand/12 text-brand">
                   <CalendarClock className="size-4" />
                 </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">Set a callback for any number</p>
-                  <p className="text-xs text-muted-foreground">
-                    Quick slots, reason presets and notes — it lands straight in the callback book.
-                  </p>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">Set a callback for any number</p>
+                  <p className="truncate text-xs text-muted-foreground">Quick slots, reason presets and notes — it lands straight in the callback book.</p>
                 </div>
-                <Button size="sm" onClick={() => openCallback(digits || active?.phone_e164 || "", active?.contact_name)}>
-                  <PlusCircle className="mr-1.5 size-4" /> Set callback
-                </Button>
-                <Button asChild size="sm" variant="outline">
-                  <Link to="/callbacks">Callback book</Link>
-                </Button>
+                <div className="flex shrink-0 gap-2">
+                  <Button size="sm" onClick={() => openCallback(digits || active?.phone_e164 || "", active?.contact_name)}><PlusCircle className="mr-1.5 size-4" /> Set</Button>
+                  <Button asChild size="sm" variant="outline"><Link to="/callbacks">Book</Link></Button>
+                </div>
               </div>
-
-
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {(["open", ...CALLBACK_STATUSES] as const).map((s) => (
-                  <Button
-                    key={s}
-                    size="sm"
-                    variant={cbFilter === s ? "default" : "outline"}
-                    className="rounded-full text-xs"
-                    onClick={() => setCbFilter(s as "open" | CallbackStatus)}
-                  >
+                  <Button key={s} size="sm" variant={cbFilter === s ? "default" : "outline"} className="rounded-full text-xs" onClick={() => setCbFilter(s as "open" | CallbackStatus)}>
                     {s === "open" ? "Open" : s}
                   </Button>
                 ))}
               </div>
-
-              <ScrollArea className="mt-3 h-[280px] pr-3">
+              <ScrollArea className="mt-3 h-[350px] pr-3">
                 {callbacks.length === 0 ? (
-                  <p className="py-12 text-center text-sm text-muted-foreground">
-                    Nothing here — booked callbacks show up with their status and due time.
-                  </p>
+                  <p className="py-12 text-center text-sm text-muted-foreground">Nothing here — booked callbacks show up with their status and due time.</p>
                 ) : (
                   <div className="space-y-2">
                     {callbacks.map((c) => (
-                      <div
-                        key={c.id}
-                        className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/60 bg-surface/40 p-3"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-medium">
-                            {formatPhone(c.phone_e164)}{" "}
-                            <span className="text-muted-foreground">{c.contact_name ?? ""}</span>
-                          </p>
+                      <div key={c.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border/60 bg-surface/40 p-3 xl:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{formatPhone(c.phone_e164)} <span className="text-muted-foreground">{c.contact_name ?? ""}</span></p>
                           <p className="truncate text-xs text-muted-foreground">
-                            {c.reason}
-                            {c.scheduled_at
-                              ? ` · ${new Date(c.scheduled_at).toLocaleString("en-US", {
-                                  month: "short",
-                                  day: "numeric",
-                                  hour: "numeric",
-                                  minute: "2-digit",
-                                })}`
-                              : " · unscheduled"}
-                            {c.attempts ? ` · ${c.attempts} attempts` : ""}
+                            {c.reason}{c.scheduled_at ? ` · ${new Date(c.scheduled_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}` : " · unscheduled"}{c.attempts ? ` · ${c.attempts} attempts` : ""}
                           </p>
                         </div>
-                        <Badge
-                          className={cn(
-                            "border-0",
-                            CALLBACK_STATUS_TONE[(c.status as CallbackStatus) ?? "Pending"],
-                          )}
-                        >
-                          {c.status}
-                        </Badge>
-                        <Select
-                          value={c.status}
-                          onValueChange={(v) =>
-                            callbackStatusMutation.mutate({ id: c.id, status: v as CallbackStatus })
-                          }
-                        >
-                          <SelectTrigger className="w-[150px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {CALLBACK_STATUSES.map((s) => (
-                              <SelectItem key={s} value={s}>
-                                {s}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
+                        <Badge className={cn("border-0", CALLBACK_STATUS_TONE[(c.status as CallbackStatus) ?? "Pending"])}>{c.status}</Badge>
+                        <Select value={c.status} onValueChange={(v) => callbackStatusMutation.mutate({ id: c.id, status: v as CallbackStatus })}>
+                          <SelectTrigger className="w-[150px]"><SelectValue /></SelectTrigger>
+                          <SelectContent>{CALLBACK_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                         </Select>
-                        <Button
-                          size="sm"
-                          disabled={Boolean(active)}
-                          onClick={() =>
-                            dialMutation.mutate({
-                              phone: c.phone_e164,
-                              mode: "manual",
-                              callbackId: c.id,
-                              ...(c.contact_name ? { contactName: c.contact_name } : {}),
-                            })
-                          }
-                        >
+                        <Button size="sm" disabled={Boolean(active)} onClick={() => dialMutation.mutate({ phone: c.phone_e164, mode: "manual", callbackId: c.id, ...(c.contact_name ? { contactName: c.contact_name } : {}) })}>
                           <Phone className="mr-1 size-4" /> Call
                         </Button>
                       </div>
@@ -1565,82 +1072,31 @@ export function RealtimeDialer() {
               </ScrollArea>
             </TabsContent>
 
-            {/* ---------------------------------------------------------- power dialer */}
             <TabsContent value="power" className="m-0 space-y-4 p-4">
-              <div className="flex flex-wrap gap-2">
+              <div className="grid gap-2 lg:grid-cols-[minmax(0,260px)_auto_auto]">
                 <Select value={campaignId} onValueChange={setCampaignId}>
-                  <SelectTrigger className="w-[260px]">
-                    <SelectValue placeholder="Pick a campaign" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(data?.campaigns ?? []).map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name} · {c.mode}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                  <SelectTrigger><SelectValue placeholder="Pick a campaign" /></SelectTrigger>
+                  <SelectContent>{(data?.campaigns ?? []).map((c) => <SelectItem key={c.id} value={c.id}>{c.name} · {c.mode}</SelectItem>)}</SelectContent>
                 </Select>
-                <Button disabled={!campaignId || leadMutation.isPending} onClick={() => leadMutation.mutate()}>
-                  <ArrowLeftRight className="mr-2 size-4" /> Next lead
-                </Button>
+                <Button disabled={!campaignId || leadMutation.isPending} onClick={() => leadMutation.mutate()}><ArrowLeftRight className="mr-2 size-4" /> Next lead</Button>
                 {lead ? (
-                  <Button
-                    disabled={Boolean(active)}
-                    onClick={() =>
-                      dialMutation.mutate({
-                        phone: lead.phone_e164,
-                        mode: "power",
-                        dialTaskId: lead.id,
-                        campaignId,
-                        ...(lead.contact_name ? { contactName: lead.contact_name } : {}),
-                      })
-                    }
-                  >
+                  <Button disabled={Boolean(active)} onClick={() => dialMutation.mutate({ phone: lead.phone_e164, mode: "power", dialTaskId: lead.id, campaignId, ...(lead.contact_name ? { contactName: lead.contact_name } : {}) })}>
                     <PhoneCall className="mr-2 size-4" /> Dial {formatPhone(lead.phone_e164)}
                   </Button>
                 ) : null}
-                <label className="ml-auto flex items-center gap-2 rounded-full border border-border/60 bg-surface/50 px-3 py-1.5 text-xs">
-                  <Switch checked={autoNext} onCheckedChange={setAutoNext} />
-                  Auto-load next lead
-                </label>
               </div>
-
-
-              <ScrollArea className="h-[300px] pr-3">
+              <ScrollArea className="h-[380px] pr-3">
                 {(data?.tasks ?? []).length === 0 ? (
-                  <p className="py-12 text-center text-sm text-muted-foreground">
-                    No leads loaded. Operations can upload lists in Phone System → Campaigns.
-                  </p>
+                  <p className="py-12 text-center text-sm text-muted-foreground">No leads loaded. Operations can upload lists in Phone System → Campaigns.</p>
                 ) : (
                   <div className="space-y-2">
                     {(data?.tasks ?? []).map((t) => (
-                      <div
-                        key={t.id}
-                        className="flex items-center gap-3 rounded-2xl border border-border/60 bg-surface/40 p-3"
-                      >
-                        <div className="min-w-0 flex-1">
+                      <div key={t.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border/60 bg-surface/40 p-3">
+                        <div className="min-w-0">
                           <p className="truncate font-medium">{formatPhone(t.phone_e164)}</p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {t.contact_name ?? "Lead"} · {t.attempts} attempts
-                            {t.last_outcome ? ` · ${t.last_outcome}` : ""}
-                          </p>
+                          <p className="truncate text-xs text-muted-foreground">{t.contact_name ?? "Lead"} · {t.attempts} attempts{t.last_outcome ? ` · ${t.last_outcome}` : ""}</p>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={Boolean(active)}
-                          onClick={() =>
-                            dialMutation.mutate({
-                              phone: t.phone_e164,
-                              mode: "power",
-                              dialTaskId: t.id,
-                              ...(t.campaign_id ? { campaignId: t.campaign_id } : {}),
-                              ...(t.contact_name ? { contactName: t.contact_name } : {}),
-                            })
-                          }
-                        >
-                          Dial
-                        </Button>
+                        <Button size="sm" variant="outline" disabled={Boolean(active)} onClick={() => dialMutation.mutate({ phone: t.phone_e164, mode: "power", dialTaskId: t.id, ...(t.campaign_id ? { campaignId: t.campaign_id } : {}), ...(t.contact_name ? { contactName: t.contact_name } : {}) })}>Dial</Button>
                       </div>
                     ))}
                   </div>
@@ -1648,73 +1104,28 @@ export function RealtimeDialer() {
               </ScrollArea>
             </TabsContent>
 
-            {/* -------------------------------------------------------------- history */}
             <TabsContent value="history" className="m-0 p-4">
               <div className="relative mb-3">
                 <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  className="pl-9"
-                  placeholder="Search today's calls"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
+                <Input className="pl-9" placeholder="Search today's calls" value={search} onChange={(e) => setSearch(e.target.value)} />
               </div>
-              <ScrollArea className="h-[340px] pr-3">
+              <ScrollArea className="h-[430px] pr-3">
                 {history.length === 0 ? (
                   <p className="py-12 text-center text-sm text-muted-foreground">No calls yet today.</p>
                 ) : (
                   <div className="space-y-2">
                     {history.map((c) => (
-                      <div
-                        key={c.id}
-                        className="flex items-center gap-3 rounded-2xl border border-border/60 bg-surface/40 p-3"
-                      >
-                        <span className="grid size-9 place-items-center rounded-full bg-muted text-muted-foreground">
-                          {c.direction === "inbound" ? (
-                            <PhoneIncoming className="size-4" />
-                          ) : (
-                            <PhoneCall className="size-4" />
-                          )}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-medium">
-                            {formatPhone(c.phone_e164)}{" "}
-                            <span className="text-muted-foreground">{c.contact_name ?? ""}</span>
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(c.queued_at).toLocaleTimeString("en-US", {
-                              hour: "numeric",
-                              minute: "2-digit",
-                            })}{" "}
-                            · {clock(c.talk_seconds ?? 0)} talk
-                          </p>
+                      <div key={c.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-3 rounded-xl border border-border/60 bg-surface/40 p-3">
+                        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground">{c.direction === "inbound" ? <PhoneIncoming className="size-4" /> : <PhoneCall className="size-4" />}</span>
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{formatPhone(c.phone_e164)} <span className="text-muted-foreground">{c.contact_name ?? ""}</span></p>
+                          <p className="text-xs text-muted-foreground">{new Date(c.queued_at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })} · {clock(c.talk_seconds ?? 0)} talk</p>
                         </div>
-                        {c.disposition ? (
-                          <Badge className={cn("border-0", DISPOSITION_TONE[c.disposition] ?? "")}>
-                            {c.disposition}
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="capitalize">
-                            {c.state}
-                          </Badge>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          disabled={Boolean(active)}
-                          onClick={() => dialMutation.mutate({ phone: c.phone_e164 ?? "", mode: "manual" })}
-                        >
-                          <PhoneCall className="size-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-destructive"
-                          title="Add to Do-Not-Call"
-                          onClick={() => openDnc(c.phone_e164, c.contact_name)}
-                        >
-                          <Ban className="size-4" />
-                        </Button>
+                        {c.disposition ? <Badge className={cn("border-0", DISPOSITION_TONE[c.disposition] ?? "")}>{c.disposition}</Badge> : <Badge variant="outline" className="capitalize">{c.state}</Badge>}
+                        <div className="flex shrink-0 gap-1">
+                          <Button size="sm" variant="ghost" disabled={Boolean(active)} onClick={() => dialMutation.mutate({ phone: c.phone_e164 ?? "", mode: "manual" })}><PhoneCall className="size-4" /></Button>
+                          <Button size="sm" variant="ghost" className="text-destructive" title="Add to Do-Not-Call" onClick={() => openDnc(c.phone_e164, c.contact_name)}><Ban className="size-4" /></Button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1722,63 +1133,34 @@ export function RealtimeDialer() {
               </ScrollArea>
             </TabsContent>
 
-            {/* ----------------------------------------------------------- compliance */}
             <TabsContent value="compliance" className="m-0 space-y-3 p-4">
-              <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border/60 bg-surface/40 p-3">
-                <span className="grid size-9 place-items-center rounded-full bg-destructive/12 text-destructive">
-                  <ShieldOff className="size-4" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">
-                    {blocked.data?.totals.active ?? 0} numbers suppressed
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {blocked.data?.totals.blocked ?? 0} dial attempts blocked in the last 7 days
-                  </p>
+              <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border/60 bg-surface/40 p-3">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-destructive/12 text-destructive"><ShieldOff className="size-4" /></span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{blocked.data?.totals.active ?? 0} numbers suppressed</p>
+                  <p className="truncate text-xs text-muted-foreground">{blocked.data?.totals.blocked ?? 0} dial attempts blocked in the last 7 days</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => openDnc(digits || "")}>
-                  <Ban className="mr-1.5 size-4" /> Add number
-                </Button>
-                <Button asChild size="sm">
-                  <Link to="/dnc">Full DNC center</Link>
-                </Button>
+                <div className="flex shrink-0 gap-2">
+                  <Button variant="outline" size="sm" onClick={() => openDnc(digits || "")}><Ban className="mr-1.5 size-4" /> Add</Button>
+                  <Button asChild size="sm"><Link to="/dnc">DNC center</Link></Button>
+                </div>
               </div>
-
-              <ScrollArea className="h-[320px] pr-3">
+              <ScrollArea className="h-[430px] pr-3">
                 {(blocked.data?.events ?? []).length === 0 ? (
                   <div className="grid place-items-center gap-2 py-14 text-center">
-                    <span className="grid size-12 place-items-center rounded-2xl bg-success/12 text-success">
-                      <ShieldCheck className="size-5" />
-                    </span>
-                    <p className="text-sm text-muted-foreground">
-                      No blocked dial attempts this week — the floor is staying compliant.
-                    </p>
+                    <span className="grid size-12 place-items-center rounded-xl bg-success/12 text-success"><ShieldCheck className="size-5" /></span>
+                    <p className="text-sm text-muted-foreground">No blocked dial attempts this week — the floor is staying compliant.</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {(blocked.data?.events ?? []).map((ev) => (
-                      <div
-                        key={ev.id}
-                        className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/60 bg-surface/40 p-3"
-                      >
-                        <Badge className={cn("border-0", DNC_ACTION_TONE[ev.action])}>
-                          {DNC_ACTION_LABEL[ev.action] ?? ev.action}
-                        </Badge>
-                        <div className="min-w-0 flex-1">
+                      <div key={ev.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border/60 bg-surface/40 p-3">
+                        <Badge className={cn("border-0", DNC_ACTION_TONE[ev.action])}>{DNC_ACTION_LABEL[ev.action] ?? ev.action}</Badge>
+                        <div className="min-w-0">
                           <p className="truncate font-medium tabular-nums">{formatPhone(ev.phone_e164)}</p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {ev.reason ?? "—"} · {ev.source}
-                            {ev.actor_name ? ` · ${ev.actor_name}` : ""}
-                          </p>
+                          <p className="truncate text-xs text-muted-foreground">{ev.reason ?? "—"} · {ev.source}{ev.actor_name ? ` · ${ev.actor_name}` : ""}</p>
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(ev.created_at).toLocaleString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            hour: "numeric",
-                            minute: "2-digit",
-                          })}
-                        </span>
+                        <span className="shrink-0 text-xs text-muted-foreground">{new Date(ev.created_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
                       </div>
                     ))}
                   </div>
@@ -1787,6 +1169,168 @@ export function RealtimeDialer() {
             </TabsContent>
           </Tabs>
         </Card>
+
+        <aside className="space-y-4">
+          <Card className="overflow-hidden rounded-2xl border-brand-ink/80 bg-brand-ink text-brand-ink-foreground shadow-raised">
+            <div className="border-b border-brand-ink-foreground/10 p-4">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+                <div className="min-w-0">
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-brand-ink-foreground/55">Professional Softphone</p>
+                  <p className="truncate font-display text-lg font-semibold">{active ? formatPhone(active.phone_e164) : digits ? formatPhone(digits) : "Ready to dial"}</p>
+                </div>
+                <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", active ? "bg-brand-orange text-primary-foreground" : "bg-success text-success-foreground")}>
+                  {active ? <Signal className="size-5" /> : <Phone className="size-5" />}
+                </span>
+              </div>
+              <p className="mt-1 truncate text-xs text-brand-ink-foreground/60">{active?.contact_name ?? lead?.contact_name ?? "Manual, inbound, and power dial supported"}</p>
+            </div>
+
+            {active ? (
+              <div className="space-y-4 p-4">
+                <div className="rounded-xl bg-brand-ink-foreground/10 p-4 text-center">
+                  <Badge className="mb-2 border-0 bg-brand-ink-foreground/10 text-brand-ink-foreground capitalize">{active.direction} · {active.state}{active.muted ? " · muted" : ""}</Badge>
+                  <p className="font-display text-4xl font-semibold tabular-nums">{clock(liveSeconds)}</p>
+                  {tones ? <p className="mt-1 text-xs tracking-widest text-brand-ink-foreground/55">DTMF {tones}</p> : null}
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <Button variant="outline" className="h-11 border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground hover:bg-brand-ink-foreground/15" disabled={!connected} onClick={() => controlMutation.mutate({ callId: active.id, action: active.on_hold ? "resume" : "hold" })}>
+                    {active.on_hold ? <Play className="mr-1 size-4" /> : <Pause className="mr-1 size-4" />}{active.on_hold ? "Resume" : "Hold"}
+                  </Button>
+                  <Button variant="outline" className="h-11 border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground hover:bg-brand-ink-foreground/15" disabled={!connected} onClick={() => controlMutation.mutate({ callId: active.id, action: active.muted ? "unmute" : "mute" })}>
+                    {active.muted ? <MicOff className="mr-1 size-4" /> : <Mic className="mr-1 size-4" />}{active.muted ? "Unmute" : "Mute"}
+                  </Button>
+                  <Button variant="outline" className="h-11 border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground hover:bg-brand-ink-foreground/15" disabled={!connected} onClick={() => setShowInCallPad((v) => !v)}>
+                    <Grip className="mr-1 size-4" /> Pad
+                  </Button>
+                </div>
+                {showInCallPad ? (
+                  <div className="grid grid-cols-3 gap-2 rounded-xl bg-brand-ink-foreground/10 p-2">
+                    {KEYPAD.map((k) => <Button key={k.key} variant="ghost" className="h-10 text-brand-ink-foreground hover:bg-brand-ink-foreground/10" onClick={() => sendTone(k.key)}>{k.key}</Button>)}
+                  </div>
+                ) : null}
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+                  <Input className="border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground placeholder:text-brand-ink-foreground/45" placeholder="Transfer extension or number" value={transferTo} onChange={(e) => setTransferTo(e.target.value)} />
+                  <Button variant="outline" className="border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground hover:bg-brand-ink-foreground/15" disabled={!connected || !transferTo} onClick={() => controlMutation.mutate({ callId: active.id, action: "transfer", transferTo })}>
+                    <PhoneForwarded className="size-4" />
+                  </Button>
+                </div>
+                {active.state === "ringing" && active.direction === "inbound" ? <Button className="h-12 w-full rounded-xl bg-success text-success-foreground hover:bg-success/90" onClick={() => answerCall(active.id)}><Phone className="mr-2 size-4" /> Answer</Button> : null}
+                <Button variant="destructive" className="h-12 w-full rounded-xl" onClick={() => controlMutation.mutate({ callId: active.id, action: "hangup" })}>
+                  <PhoneOff className="mr-2 size-4" /> End interaction
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4 p-4">
+                <div className="rounded-xl border border-brand-ink-foreground/10 bg-brand-ink-foreground/10 p-3">
+                  <Input
+                    value={digits}
+                    onChange={(e) => setDigits(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") dialNow(); }}
+                    placeholder="Enter a number"
+                    className="h-12 border-0 bg-transparent text-center font-display text-2xl font-semibold tracking-wider text-brand-ink-foreground shadow-none placeholder:text-brand-ink-foreground/45 focus-visible:ring-0"
+                  />
+                  {digits ? <p className="text-center text-xs text-brand-ink-foreground/60">{formatPhone(digits)}</p> : <p className="text-center text-xs text-brand-ink-foreground/60">Type numbers here or use your keyboard</p>}
+                  {debouncedDigits.replace(/\D/g, "").length >= 7 ? (
+                    <div className={cn("mt-2 flex items-center justify-center gap-1.5 text-xs font-medium", dncCheck.isFetching ? "text-brand-ink-foreground/60" : dncBlocked ? "text-destructive" : "text-success")}>
+                      {dncCheck.isFetching ? <>Checking Do-Not-Call…</> : dncBlocked ? <><ShieldOff className="size-3.5" /> On DNC — {dncEntry?.reason}</> : <><ShieldCheck className="size-3.5" /> Cleared against DNC</>}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {KEYPAD.map((k) => (
+                    <Button key={k.key} variant="ghost" className="h-14 flex-col gap-0 rounded-xl bg-brand-ink-foreground/10 font-display text-lg text-brand-ink-foreground transition-transform hover:bg-brand-ink-foreground/15 active:scale-95" onClick={() => pressKey(k.key)}>
+                      {k.key}{k.sub ? <span className="text-[0.6rem] tracking-widest text-brand-ink-foreground/50">{k.sub}</span> : null}
+                    </Button>
+                  ))}
+                </div>
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                  <Select value={fromId} onValueChange={setFromId}>
+                    <SelectTrigger className="border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground"><SelectValue placeholder="Caller ID" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">Automatic caller ID</SelectItem>
+                      {(data?.numbers ?? []).map((n) => <SelectItem key={n.id} value={n.id}>{n.label} · {formatPhone(n.e164)}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Button variant="ghost" size="icon" className="text-brand-ink-foreground hover:bg-brand-ink-foreground/10" onClick={() => setDigits((d) => d.slice(0, -1))}><Delete className="size-4" /></Button>
+                </div>
+                <Button className="h-12 w-full rounded-xl bg-success text-success-foreground hover:bg-success/90" disabled={digits.length < 7 || dialMutation.isPending || dncBlocked} onClick={dialNow}>
+                  {dncBlocked ? <><ShieldOff className="mr-2 size-4" /> Blocked — on DNC</> : <><PhoneCall className="mr-2 size-4" /> Start call</>}
+                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="outline" className="border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground hover:bg-brand-ink-foreground/15" onClick={() => void pasteNumber()}><ClipboardPaste className="mr-1.5 size-4" /> Paste</Button>
+                  <Button variant="outline" className="border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground hover:bg-brand-ink-foreground/15" disabled={!digits} onClick={() => setDigits("")}><Trash2 className="mr-1.5 size-4" /> Clear</Button>
+                  <Button variant="outline" className="border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground hover:bg-brand-ink-foreground/15" disabled={!digits} onClick={() => void copyNumber(digits)}><Copy className="mr-1.5 size-4" /> Copy</Button>
+                  <Button variant="outline" className="border-brand-ink-foreground/15 bg-brand-ink-foreground/10 text-brand-ink-foreground hover:bg-brand-ink-foreground/15" disabled={digits.replace(/\D/g, "").length < 7} onClick={() => toggleSpeedDial(digits)}><Star className={cn("mr-1.5 size-4", inSpeedDial(digits) && "fill-current text-warning")} /> {inSpeedDial(digits) ? "Saved" : "Save"}</Button>
+                </div>
+                {dncBlocked ? (
+                  <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+                    <div className="flex gap-2"><ShieldAlert className="size-4 shrink-0" /><span>Dialing is blocked for compliance. Any attempt is logged.</span></div>
+                    <Button asChild size="sm" variant="outline" className="mt-2 h-8 w-full"><Link to="/dnc">Open DNC center</Link></Button>
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </Card>
+
+          <Card className="rounded-2xl border-border/70 bg-card shadow-card">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border/60 p-4">
+              <div className="min-w-0">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Call Outcome</p>
+                <h2 className="truncate font-display text-base font-semibold">Disposition notes</h2>
+              </div>
+              <Badge variant="outline">{inWrap ? "Wrap-up" : "Drafting"}</Badge>
+            </div>
+            <div className="space-y-3 p-4">
+              {inWrap ? (
+                <div className="rounded-xl border border-warning/40 bg-warning/10 p-3">
+                  <div className="mb-1.5 flex items-center justify-between text-xs">
+                    <span className="flex items-center gap-1.5 font-medium text-muted-foreground"><Timer className="size-3.5" /> Wrap-up time</span>
+                    <span className={cn("font-semibold tabular-nums", wrapLeft === 0 ? "text-destructive" : "text-foreground")}>{wrapLeft === 0 ? "Overrun" : `${wrapLeft}s left`}</span>
+                  </div>
+                  <Progress value={(wrapLeft / WRAP_ALLOWANCE) * 100} className="h-1.5" />
+                </div>
+              ) : null}
+              <div className="flex flex-wrap gap-1.5">
+                {QUICK_DISPOSITIONS.map((d) => (
+                  <Button key={d} size="sm" variant={disposition === d ? "default" : "outline"} className="rounded-full text-xs" onClick={() => setDisposition(d)}>{d}</Button>
+                ))}
+              </div>
+              <Select value={disposition} onValueChange={(v) => setDisposition(v as Disposition)}>
+                <SelectTrigger><SelectValue placeholder="All outcomes…" /></SelectTrigger>
+                <SelectContent>{DISPOSITIONS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+              </Select>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Call notes</Label>
+                <Textarea rows={5} value={inWrap ? notes : liveNotes} onChange={(e) => inWrap ? setNotes(e.target.value) : setLiveNotes(e.target.value)} placeholder="Enter detailed call notes, objections, needs, and next step…" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Schedule a callback</Label>
+                <Input type="datetime-local" value={callbackAt} onChange={(e) => setCallbackAt(e.target.value)} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" className="rounded-xl" onClick={() => openCallback(digits || active?.phone_e164 || "", active?.contact_name)}>
+                  <CalendarClock className="mr-1.5 size-4" /> Follow-up
+                </Button>
+                <Button className="rounded-xl" disabled={!active || !disposition || wrapMutation.isPending} onClick={() => wrapMutation.mutate(disposition as Disposition)}>
+                  Submit outcome
+                </Button>
+              </div>
+              {speedDial.length ? (
+                <div className="border-t border-border/60 pt-3">
+                  <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><Zap className="size-3.5" /> Speed dial</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {speedDial.map((s) => (
+                      <span key={s.phone} className="group flex items-center gap-1 rounded-full bg-brand/12 py-0.5 pl-2.5 pr-1 text-xs text-brand">
+                        <button type="button" className="font-medium" onClick={() => setDigits(s.phone)}>{s.name || formatPhone(s.phone)}</button>
+                        <button type="button" className="rounded-full p-1 text-muted-foreground hover:text-destructive" aria-label="Remove from speed dial" onClick={() => toggleSpeedDial(s.phone)}><Trash2 className="size-3" /></button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </Card>
+        </aside>
       </div>
 
       <CallbackDialog

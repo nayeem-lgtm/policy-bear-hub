@@ -22,6 +22,7 @@ import {
   ClipboardPaste,
   Copy,
   Delete,
+  FileCheck2,
   Gauge,
   Grip,
   History,
@@ -38,6 +39,7 @@ import {
   PlusCircle,
   Rocket,
   Search,
+  Send,
   ShieldAlert,
   ShieldCheck,
   ShieldOff,
@@ -100,6 +102,8 @@ import { LeadIntakePanel } from "@/components/telephony/LeadIntakePanel";
 import { CallScriptDialog, ScriptReaderPanel } from "@/components/telephony/CallScriptDialog";
 import { cn } from "@/lib/utils";
 import { playChirp, playDtmf, playRing } from "@/lib/dialer-tones";
+import { quotePlans } from "@/lib/mock-data";
+import { currency, unique } from "@/lib/use-filters";
 
 const KEYPAD: { key: string; sub: string }[] = [
   { key: "1", sub: "" },
@@ -121,7 +125,7 @@ const QUICK_DISPOSITIONS: Disposition[] = ["Sold", "Interested", "Not Interested
 const SPEED_DIAL_KEY = "pb.dialer.speedDial";
 const WRAP_ALLOWANCE = 45;
 
-type DeskTab = "lead" | "queue" | "callbacks" | "power" | "history" | "compliance";
+type DeskTab = "lead" | "quotes" | "queue" | "callbacks" | "power" | "history" | "compliance";
 
 const SHORTCUTS: { keys: string; label: string }[] = [
   { keys: "0-9 * #", label: "Type digits" },
@@ -215,6 +219,14 @@ export function RealtimeDialer() {
   const [speedDial, setSpeedDial] = useState<{ phone: string; name: string }[]>([]);
   const [leftPanel, setLeftPanel] = useState<"dialer" | "script">("dialer");
   const [deskTab, setDeskTab] = useState<DeskTab>("lead");
+  const [quoteZip, setQuoteZip] = useState("77042");
+  const [quoteIncome, setQuoteIncome] = useState("38400");
+  const [quoteAge, setQuoteAge] = useState("34");
+  const [quoteTobacco, setQuoteTobacco] = useState(false);
+  const [quoteCarrierFilter, setQuoteCarrierFilter] = useState("all");
+  const [quoteMetalFilter, setQuoteMetalFilter] = useState("all");
+  const [quoteSort, setQuoteSort] = useState("premium-asc");
+  const [quoteCompare, setQuoteCompare] = useState<string[]>([]);
 
   useEffect(() => {
     try {
@@ -539,6 +551,33 @@ export function RealtimeDialer() {
 
   const activePhone = active?.phone_e164 ?? digits;
   const activeContactName = active?.contact_name ?? lead?.contact_name ?? null;
+  const quoteCarriers = unique(quotePlans, (p) => p.carrier);
+  const quoteMetals = unique(quotePlans, (p) => p.metal);
+  const quoteSubsidy = useMemo(() => {
+    const income = Number(quoteIncome) || 0;
+    const ageAdjustment = Math.max(0, (Number(quoteAge) || 0) - 35) * 4;
+    const tobaccoAdjustment = quoteTobacco ? 70 : 0;
+    return Math.max(0, Math.round(420 - income / 200 + ageAdjustment - tobaccoAdjustment));
+  }, [quoteAge, quoteIncome, quoteTobacco]);
+  const quoteResults = useMemo(() => {
+    const rows = quotePlans.filter(
+      (p) =>
+        (quoteCarrierFilter === "all" || p.carrier === quoteCarrierFilter) &&
+        (quoteMetalFilter === "all" || p.metal === quoteMetalFilter),
+    );
+    return [...rows].sort((a, b) => {
+      if (quoteSort === "premium-asc") return a.subsidizedPremium - b.subsidizedPremium;
+      if (quoteSort === "premium-desc") return b.subsidizedPremium - a.subsidizedPremium;
+      if (quoteSort === "deductible-asc") return a.deductible - b.deductible;
+      if (quoteSort === "rating-desc") return b.rating - a.rating;
+      return 0;
+    });
+  }, [quoteCarrierFilter, quoteMetalFilter, quoteSort]);
+  const toggleQuoteCompare = (id: string) => {
+    setQuoteCompare((current) =>
+      current.includes(id) ? current.filter((item) => item !== id) : current.length < 3 ? [...current, id] : current,
+    );
+  };
 
 
   return (
@@ -579,6 +618,14 @@ export function RealtimeDialer() {
               onClick={() => setDeskTab("lead")}
             >
               <ClipboardList className="size-3.5" /> Lead card
+            </Button>
+            <Button
+              variant={deskTab === "quotes" ? "default" : "outline"}
+              size="sm"
+              className="h-8 gap-1.5 rounded-full"
+              onClick={() => setDeskTab("quotes")}
+            >
+              <Star className="size-3.5" /> Quotes
             </Button>
             <Button
               variant={leftPanel === "script" ? "default" : "outline"}
@@ -1177,6 +1224,9 @@ export function RealtimeDialer() {
                 <TabsTrigger value="lead" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
                   <ClipboardList className="mr-1.5 size-4" /> Lead card
                 </TabsTrigger>
+                <TabsTrigger value="quotes" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                  <Star className="mr-1.5 size-4" /> Quotes
+                </TabsTrigger>
                 <TabsTrigger value="queue" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
                   <PhoneIncoming className="mr-1.5 size-4" /> Queue
                   {(data?.queue.length ?? 0) > 0 ? (
@@ -1218,6 +1268,122 @@ export function RealtimeDialer() {
                   onAddToDnc={(p: string, n: string | null) => openDnc(p, n)}
                 />
               </ScrollArea>
+            </TabsContent>
+
+            {/* ------------------------------------------------------------ quotes */}
+            <TabsContent value="quotes" className="m-0 p-4">
+              <div className="grid gap-3 lg:grid-cols-[minmax(260px,320px)_minmax(0,1fr)]">
+                <div className="space-y-3 rounded-lg border border-border/60 bg-surface/45 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Applicant intake</p>
+                      <p className="text-xs text-muted-foreground">
+                        {activeContactName ?? "New applicant"}{activePhone ? ` · ${formatPhone(activePhone)}` : ""}
+                      </p>
+                    </div>
+                    <Badge variant="secondary">{quoteCompare.length}/3</Badge>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="quote-zip">ZIP code</Label>
+                      <Input id="quote-zip" value={quoteZip} onChange={(e) => setQuoteZip(e.target.value)} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="quote-income">Annual household income</Label>
+                      <Input id="quote-income" value={quoteIncome} onChange={(e) => setQuoteIncome(e.target.value)} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="quote-age">Applicant age</Label>
+                      <Input id="quote-age" value={quoteAge} onChange={(e) => setQuoteAge(e.target.value)} />
+                    </div>
+                    <label className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm">
+                      Tobacco use
+                      <Switch checked={quoteTobacco} onCheckedChange={setQuoteTobacco} />
+                    </label>
+                  </div>
+                  <div className="rounded-md border border-brand/25 bg-brand/5 p-3">
+                    <p className="text-xs font-medium uppercase tracking-wide text-brand">Estimated monthly subsidy</p>
+                    <p className="mt-1 text-2xl font-semibold text-foreground">{currency(quoteSubsidy)}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Based on ZIP {quoteZip || "—"} and current applicant details.</p>
+                  </div>
+                  <Button className="w-full gap-1.5" disabled={quoteCompare.length < 2}>
+                    <FileCheck2 className="size-4" /> Compare selected
+                  </Button>
+                </div>
+
+                <div className="min-w-0 space-y-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Select value={quoteCarrierFilter} onValueChange={setQuoteCarrierFilter}>
+                      <SelectTrigger className="h-9 w-auto min-w-[10rem]"><SelectValue placeholder="Carrier" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All carriers</SelectItem>
+                        {quoteCarriers.map((carrier) => <SelectItem key={carrier} value={carrier}>{carrier}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <Select value={quoteMetalFilter} onValueChange={setQuoteMetalFilter}>
+                      <SelectTrigger className="h-9 w-auto min-w-[9rem]"><SelectValue placeholder="Metal level" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All metal levels</SelectItem>
+                        {quoteMetals.map((metal) => <SelectItem key={metal} value={metal}>{metal}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <Select value={quoteSort} onValueChange={setQuoteSort}>
+                      <SelectTrigger className="h-9 w-auto min-w-[10rem] lg:ml-auto"><SelectValue placeholder="Sort" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="premium-asc">Premium: low to high</SelectItem>
+                        <SelectItem value="premium-desc">Premium: high to low</SelectItem>
+                        <SelectItem value="deductible-asc">Deductible: low to high</SelectItem>
+                        <SelectItem value="rating-desc">Rating: high to low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <ScrollArea className="h-[calc(100vh-22rem)] min-h-[430px] pr-3">
+                    <div className="space-y-2">
+                      {quoteResults.map((plan) => (
+                        <div key={plan.id} className="rounded-lg border border-border/60 bg-card p-3 shadow-sm">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <button
+                              type="button"
+                              aria-pressed={quoteCompare.includes(plan.id)}
+                              className={cn(
+                                "mt-1 grid size-5 place-items-center rounded border border-primary text-primary transition-colors",
+                                quoteCompare.includes(plan.id) && "bg-primary text-primary-foreground",
+                              )}
+                              onClick={() => toggleQuoteCompare(plan.id)}
+                            >
+                              {quoteCompare.includes(plan.id) ? <FileCheck2 className="size-3.5" /> : null}
+                            </button>
+                            <div className="min-w-[220px] flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="text-sm font-semibold text-foreground">{plan.planName}</p>
+                                <Badge variant="outline">{plan.metal}</Badge>
+                                <Badge variant="outline">{plan.type}</Badge>
+                                {plan.hsaEligible ? <Badge variant="outline">HSA</Badge> : null}
+                              </div>
+                              <p className="mt-0.5 text-xs text-muted-foreground">{plan.carrier} · {plan.network} network</p>
+                              <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+                                <span><span className="text-muted-foreground">Deductible</span><br /><strong>{currency(plan.deductible)}</strong></span>
+                                <span><span className="text-muted-foreground">MOOP</span><br /><strong>{currency(plan.oopMax)}</strong></span>
+                                <span><span className="text-muted-foreground">PCP</span><br /><strong>{currency(plan.pcpCopay)}</strong></span>
+                                <span><span className="text-muted-foreground">Rx</span><br /><strong>{currency(plan.genericRx)}</strong></span>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-2xl font-semibold text-foreground">{currency(plan.subsidizedPremium)}<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                              <p className="text-xs text-muted-foreground line-through">{currency(plan.premium)}/mo</p>
+                              <div className="mt-2 flex justify-end gap-1.5">
+                                <Button variant="outline" size="sm" className="h-8 gap-1.5"><Send className="size-3.5" /> Send</Button>
+                                <Button size="sm" className="h-8 gap-1.5"><FileCheck2 className="size-3.5" /> Apply</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </div>
             </TabsContent>
 
 

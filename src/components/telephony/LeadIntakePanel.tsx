@@ -34,7 +34,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { CallScriptDialog } from "@/components/telephony/CallScriptDialog";
 import { formatPhone } from "@/lib/phone";
 import { LEAD_CARD_EVENT, loadLeadCard, saveLeadCard } from "@/lib/lead-card";
 import { LEAD_FIELD_NAMES, LEAD_SECTIONS, leadFieldOptions } from "@/lib/lead-fields";
@@ -137,8 +136,6 @@ export function LeadIntakePanel({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {dirty ? <Badge variant="secondary">Unsaved</Badge> : null}
-          <CallScriptDialog phone={phone} contactName={contactName ?? null} />
-
           <Button variant="ghost" className="gap-1.5" onClick={reset}>
             <RotateCcw className="size-4" /> Clear
           </Button>

@@ -1167,14 +1167,18 @@ export function RealtimeDialer() {
         )}
 
         {/* --------------------------------------------------------------- work area */}
-        <Card className="rounded-3xl p-0 shadow-card">
-          <Tabs defaultValue="lead">
-            <div className="border-b border-border/60 px-4 pt-4">
-              <TabsList className="flex-wrap">
-                <TabsTrigger value="lead">
+        <Card className="min-h-[640px] overflow-hidden rounded-xl p-0 shadow-card">
+          <Tabs value={deskTab} onValueChange={(value) => setDeskTab(value as DeskTab)}>
+            <div className="sticky top-[4.25rem] z-10 border-b border-border/60 bg-card/95 px-3 py-2 backdrop-blur">
+              <div className="flex items-center gap-2 overflow-x-auto">
+                <Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label="Scroll tools left">
+                  <ArrowLeftRight className="size-3.5 rotate-180" />
+                </Button>
+                <TabsList className="h-10 justify-start gap-1 rounded-full bg-surface/70 p-1">
+                <TabsTrigger value="lead" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
                   <ClipboardList className="mr-1.5 size-4" /> Lead card
                 </TabsTrigger>
-                <TabsTrigger value="queue">
+                <TabsTrigger value="queue" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
                   <PhoneIncoming className="mr-1.5 size-4" /> Queue
                   {(data?.queue.length ?? 0) > 0 ? (
                     <Badge variant="secondary" className="ml-2">
@@ -1182,16 +1186,16 @@ export function RealtimeDialer() {
                     </Badge>
                   ) : null}
                 </TabsTrigger>
-                <TabsTrigger value="callbacks">
+                <TabsTrigger value="callbacks" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
                   <CalendarClock className="mr-1.5 size-4" /> Callbacks
                 </TabsTrigger>
-                <TabsTrigger value="power">
+                <TabsTrigger value="power" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
                   <Gauge className="mr-1.5 size-4" /> Power dialer
                 </TabsTrigger>
-                <TabsTrigger value="history">
+                <TabsTrigger value="history" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
                   <History className="mr-1.5 size-4" /> Today
                 </TabsTrigger>
-                <TabsTrigger value="compliance">
+                <TabsTrigger value="compliance" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
                   <ShieldOff className="mr-1.5 size-4" /> DNC
                   {(blocked.data?.events.length ?? 0) > 0 ? (
                     <Badge variant="secondary" className="ml-2">
@@ -1200,15 +1204,18 @@ export function RealtimeDialer() {
                   ) : null}
                 </TabsTrigger>
               </TabsList>
-
+                <Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label="Scroll tools right">
+                  <ArrowLeftRight className="size-3.5" />
+                </Button>
+              </div>
             </div>
 
             {/* ------------------------------------------------------------ lead card */}
             <TabsContent value="lead" className="m-0 p-4">
-              <ScrollArea className="h-[620px] pr-3">
+              <ScrollArea className="h-[calc(100vh-18rem)] min-h-[520px] pr-3">
                 <LeadIntakePanel
-                  phone={active?.phone_e164 ?? digits}
-                  contactName={active?.contact_name ?? lead?.contact_name ?? null}
+                  phone={activePhone}
+                  contactName={activeContactName}
                   onAddToDnc={(p: string, n: string | null) => openDnc(p, n)}
                 />
               </ScrollArea>

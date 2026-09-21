@@ -26,6 +26,7 @@ import {
   Grip,
   History,
   Keyboard,
+  MessageSquare,
   Mic,
   MicOff,
   Pause,
@@ -97,7 +98,7 @@ import { DNC_ACTION_LABEL, DNC_ACTION_TONE } from "@/lib/dnc-shared";
 import { CallbackDialog } from "@/components/callbacks/CallbackDialog";
 import { AddToDncDialog } from "@/components/compliance/AddToDncDialog";
 import { LeadIntakePanel } from "@/components/telephony/LeadIntakePanel";
-import { CallScriptDialog } from "@/components/telephony/CallScriptDialog";
+import { CallScriptDialog, ScriptReaderPanel } from "@/components/telephony/CallScriptDialog";
 import { cn } from "@/lib/utils";
 import { playChirp, playDtmf, playRing } from "@/lib/dialer-tones";
 
@@ -120,6 +121,8 @@ const QUICK_DISPOSITIONS: Disposition[] = ["Sold", "Interested", "Not Interested
 
 const SPEED_DIAL_KEY = "pb.dialer.speedDial";
 const WRAP_ALLOWANCE = 45;
+
+type DeskTab = "lead" | "queue" | "callbacks" | "power" | "history" | "compliance";
 
 const SHORTCUTS: { keys: string; label: string }[] = [
   { keys: "0-9 * #", label: "Type digits" },
@@ -211,6 +214,8 @@ export function RealtimeDialer() {
   const [liveNotes, setLiveNotes] = useState("");
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [speedDial, setSpeedDial] = useState<{ phone: string; name: string }[]>([]);
+  const [leftPanel, setLeftPanel] = useState<"dialer" | "script">("dialer");
+  const [deskTab, setDeskTab] = useState<DeskTab>("lead");
 
   useEffect(() => {
     try {
@@ -533,65 +538,97 @@ export function RealtimeDialer() {
     }
   };
 
+  const activePhone = active?.phone_e164 ?? digits;
+  const activeContactName = active?.contact_name ?? lead?.contact_name ?? null;
+
 
   return (
-    <div className="space-y-5">
-      {/* ------------------------------------------------------------ presence bar */}
-      <Card className="rounded-3xl border-border/60 bg-gradient-to-r from-brand/12 via-surface to-background p-4 shadow-card">
-        <div className="flex flex-wrap items-center gap-4">
-          <span
-            className={cn(
-              "relative grid size-11 place-items-center rounded-2xl",
-              ready ? "bg-success/15 text-success" : "bg-muted text-muted-foreground",
-            )}
-          >
-            <Signal className="size-5" />
-            {ready ? (
-              <span className="absolute -right-0.5 -top-0.5 size-2.5 animate-pulse rounded-full bg-success ring-2 ring-card" />
-            ) : null}
-          </span>
-          <div className="min-w-0">
-            <p className="font-display text-base font-semibold text-foreground">
-              {ready ? "Ready for calls" : "Not accepting calls"}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Policy Bear Dialer · {data?.numbers?.length ?? 0} numbers · {data?.campaigns?.length ?? 0}{" "}
-              campaigns · {speedDial.length} speed dial
-            </p>
+    <div className="space-y-3">
+      {/* ------------------------------------------------------------ compact command bar */}
+      <Card className="sticky top-0 z-20 rounded-xl border-border/70 bg-card/95 p-2.5 shadow-card backdrop-blur">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+            {[
+              {
+                label: "Queue",
+                value: stats?.waiting ?? 0,
+                icon: PhoneIncoming,
+                tone: "bg-success/15 text-success",
+                live: (stats?.waiting ?? 0) > 0,
+              },
+              { label: "Calls", value: stats?.calls ?? 0, icon: PhoneCall, tone: "bg-brand/12 text-brand" },
+              { label: "Connected", value: stats?.connected ?? 0, icon: Users, tone: "bg-info/15 text-info" },
+              { label: "Talk", value: clock(stats?.talkSeconds ?? 0), icon: Timer, tone: "bg-warning/20 text-brand-tan" },
+              { label: "Sales", value: stats?.sales ?? 0, icon: Rocket, tone: "bg-success/15 text-success" },
+            ].map((s) => (
+              <div key={s.label} className="flex h-8 items-center gap-1.5 rounded-full bg-surface/70 px-2.5 text-xs text-muted-foreground">
+                <span className={cn("relative grid size-5 place-items-center rounded-full", s.tone)}>
+                  <s.icon className="size-3.5" />
+                  {s.live ? <span className="absolute -right-0.5 -top-0.5 size-1.5 animate-pulse rounded-full bg-success" /> : null}
+                </span>
+                <span>{s.label}</span>
+                <strong className="font-semibold tabular-nums text-foreground">{s.value}</strong>
+              </div>
+            ))}
           </div>
 
-          <div className="ml-auto flex flex-wrap items-center gap-4">
-            <label className="flex items-center gap-2 text-sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant={deskTab === "lead" ? "default" : "outline"}
+              size="sm"
+              className="h-8 gap-1.5 rounded-full"
+              onClick={() => setDeskTab("lead")}
+            >
+              <ClipboardList className="size-3.5" /> Lead card
+            </Button>
+            <Button
+              variant={leftPanel === "script" ? "default" : "outline"}
+              size="sm"
+              className="h-8 gap-1.5 rounded-full"
+              onClick={() => setLeftPanel((panel) => (panel === "script" ? "dialer" : "script"))}
+            >
+              {leftPanel === "script" ? <Phone className="size-3.5" /> : <BookOpenText className="size-3.5" />}
+              {leftPanel === "script" ? "Show dialer" : "Agent script"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5 rounded-full"
+              onClick={() => setDeskTab("queue")}
+            >
+              <PhoneIncoming className="size-3.5" /> Queue
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-8 rounded-full"
+              title={sound ? "Mute desk audio" : "Enable desk audio"}
+              aria-label={sound ? "Mute desk audio" : "Enable desk audio"}
+              onClick={() => setSound((s) => !s)}
+            >
+              {sound ? <Bell className="size-3.5" /> : <BellOff className="size-3.5 text-muted-foreground" />}
+            </Button>
+            <label className="flex h-8 items-center gap-2 rounded-full bg-surface/70 px-2.5 text-xs font-medium">
               <Switch checked={ready} onCheckedChange={setReady} />
               Ready
             </label>
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex h-8 items-center gap-2 rounded-full bg-surface/70 px-2.5 text-xs font-medium">
               <Switch checked={autoAnswer} onCheckedChange={setAutoAnswer} />
               Auto-answer
             </label>
             <Button
               variant="outline"
               size="icon"
-              className="rounded-xl"
-              title={sound ? "Mute desk audio" : "Enable desk audio"}
-              aria-label={sound ? "Mute desk audio" : "Enable desk audio"}
-              onClick={() => setSound((s) => !s)}
-            >
-              {sound ? <Bell className="size-4" /> : <BellOff className="size-4 text-muted-foreground" />}
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-xl"
+              className="size-8 rounded-full"
               title="Keyboard shortcuts"
               aria-label="Keyboard shortcuts"
               onClick={() => setShowShortcuts((v) => !v)}
             >
-              <Keyboard className="size-4" />
+              <Keyboard className="size-3.5" />
             </Button>
-            <div className="hidden min-w-[160px] sm:block">
-              <div className="mb-1 flex justify-between text-xs text-muted-foreground">
-                <span>Connect rate</span>
+            <div className="hidden min-w-[130px] md:block">
+              <div className="mb-1 flex justify-between text-[0.65rem] text-muted-foreground">
+                <span>Connect</span>
                 <span className="tabular-nums">{connectRate}%</span>
               </div>
               <Progress value={connectRate} className="h-1.5" />
@@ -600,15 +637,10 @@ export function RealtimeDialer() {
         </div>
 
         {showShortcuts ? (
-          <div className="mt-3 flex flex-wrap gap-2 border-t border-border/60 pt-3">
+          <div className="mt-2 flex flex-wrap gap-2 border-t border-border/60 pt-2">
             {SHORTCUTS.map((s) => (
-              <span
-                key={s.keys}
-                className="flex items-center gap-1.5 rounded-full bg-surface/70 px-2.5 py-1 text-xs text-muted-foreground"
-              >
-                <kbd className="rounded bg-background px-1.5 py-0.5 font-mono text-[0.65rem] text-foreground shadow-sm">
-                  {s.keys}
-                </kbd>
+              <span key={s.keys} className="flex items-center gap-1.5 rounded-full bg-surface/70 px-2.5 py-1 text-xs text-muted-foreground">
+                <kbd className="rounded bg-background px-1.5 py-0.5 font-mono text-[0.65rem] text-foreground shadow-sm">{s.keys}</kbd>
                 {s.label}
               </span>
             ))}
@@ -616,38 +648,41 @@ export function RealtimeDialer() {
         ) : null}
       </Card>
 
-
-      {/* ------------------------------------------------------------ status strip */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        {[
-          {
-            label: "Waiting in queue",
-            value: stats?.waiting ?? 0,
-            icon: PhoneIncoming,
-            tone: "bg-success/15 text-success",
-            live: (stats?.waiting ?? 0) > 0,
-          },
-          { label: "Calls today", value: stats?.calls ?? 0, icon: PhoneCall, tone: "bg-brand/12 text-brand" },
-          { label: "Connected", value: stats?.connected ?? 0, icon: Users, tone: "bg-info/15 text-info" },
-          { label: "Talk time", value: clock(stats?.talkSeconds ?? 0), icon: Timer, tone: "bg-warning/20 text-brand-tan" },
-          { label: "Sales", value: stats?.sales ?? 0, icon: Rocket, tone: "bg-success/15 text-success" },
-        ].map((s) => (
-          <Card key={s.label} className="flex items-center gap-3 rounded-2xl p-4 shadow-card">
-            <span className={cn("grid size-10 place-items-center rounded-xl", s.tone)}>
-              <s.icon className="size-5" />
-            </span>
-            <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-              <p className="truncate text-xl font-semibold tabular-nums">{s.value}</p>
-            </div>
-            {s.live ? <span className="ml-auto size-2 animate-pulse rounded-full bg-success" /> : null}
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
+      <div
+        className={cn(
+          "grid min-h-[640px] gap-3",
+          leftPanel === "script"
+            ? "xl:grid-cols-[minmax(360px,0.95fr)_minmax(500px,1fr)]"
+            : "xl:grid-cols-[minmax(320px,390px)_minmax(0,1fr)]",
+        )}
+      >
         {/* -------------------------------------------------------------- softphone */}
-        <Card className="rounded-3xl p-5 shadow-card">
+        {leftPanel === "script" ? (
+          <ScriptReaderPanel
+            compact
+            className="min-h-[640px]"
+            bodyHeightClassName="h-[calc(100vh-18rem)] min-h-[520px]"
+            onClose={() => setLeftPanel("dialer")}
+            closeLabel="Show dialer"
+          />
+        ) : (
+        <Card className="rounded-xl p-3 shadow-card">
+          <div className="mb-3 flex items-center justify-between gap-2 rounded-lg bg-surface/60 px-3 py-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className={cn("grid size-8 place-items-center rounded-lg", ready ? "bg-success/15 text-success" : "bg-muted text-muted-foreground")}>
+                <Phone className="size-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground">Dialer</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {data?.numbers?.length ?? 0} caller IDs · {speedDial.length} saved
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" className="h-8 gap-1.5 rounded-full" onClick={() => setLeftPanel("script")}>
+              <BookOpenText className="size-3.5" /> Script
+            </Button>
+          </div>
           {active ? (
             <div className="space-y-4">
               <div
@@ -1129,6 +1164,7 @@ export function RealtimeDialer() {
             </div>
           )}
         </Card>
+        )}
 
         {/* --------------------------------------------------------------- work area */}
         <Card className="rounded-3xl p-0 shadow-card">

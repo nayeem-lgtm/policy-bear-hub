@@ -26,7 +26,6 @@ import {
   Grip,
   History,
   Keyboard,
-  MessageSquare,
   Mic,
   MicOff,
   Pause,

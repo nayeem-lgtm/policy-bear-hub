@@ -579,28 +579,41 @@ export function RealtimeDialer() {
     );
   };
 
+  const dueCallbacks = callbacks.filter((c) => c.scheduled_at && new Date(c.scheduled_at).getTime() <= Date.now()).length;
+  const nextQueued = data?.queue?.[0] ?? null;
+  const priorityAction = active
+    ? "Document call outcome"
+    : nextQueued && ready
+      ? "Answer longest waiting caller"
+      : dueCallbacks > 0
+        ? "Work due callbacks"
+        : campaignId && lead
+          ? "Dial loaded campaign lead"
+          : "Load next lead or manual dial";
+  const complianceStatus = dncBlocked ? "DNC block active" : dncCheck.isFetching ? "Checking compliance" : "DNC clear";
+
 
   return (
-    <div className="mx-auto flex max-w-[1500px] flex-col gap-4 text-foreground">
-      <Card className="overflow-hidden rounded-2xl border-border/70 bg-card shadow-raised">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-border/60 bg-surface/35 px-4 py-3 sm:flex sm:flex-wrap sm:justify-between lg:px-6">
+    <div className="mx-auto flex max-w-[1540px] flex-col gap-4 text-foreground">
+      <Card className="overflow-hidden rounded-xl border-border/70 bg-card shadow-raised">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-border/60 bg-card px-4 py-4 sm:flex sm:flex-wrap sm:justify-between lg:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <span className={cn("relative grid size-11 shrink-0 place-items-center rounded-xl", active ? "bg-success/15 text-success" : ready ? "bg-brand-teal/15 text-brand-teal" : "bg-muted text-muted-foreground")}>
+            <span className={cn("relative grid size-12 shrink-0 place-items-center rounded-xl border", active ? "border-success/30 bg-success/15 text-success" : ready ? "border-brand-teal/25 bg-brand-teal/10 text-brand-teal" : "border-border bg-muted text-muted-foreground")}>
               <Phone className="size-5" />
               {ready ? <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-success ring-2 ring-card" /> : null}
             </span>
             <div className="min-w-0">
               <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <h1 className="truncate font-display text-xl font-semibold text-foreground sm:text-2xl">
-                  {activeContactName ?? lead?.contact_name ?? "Active Agent Desk"}
+                  Agent Desk Command Center
                 </h1>
-                <Badge className="border-0 bg-success/12 text-success">{active ? "Verified call" : ready ? "Ready" : "Paused"}</Badge>
-                <Badge className="border-0 bg-brand-orange/12 text-brand-orange">High intent</Badge>
+                <Badge className="border-0 bg-success/12 text-success">{active ? "Call live" : ready ? "Ready" : "Paused"}</Badge>
+                <Badge className="border-0 bg-brand/10 text-brand">{priorityAction}</Badge>
               </div>
               <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                <span className="tabular">{activePhone ? formatPhone(activePhone) : "No active caller"}</span>
+                <span className="tabular">{activeContactName ?? (activePhone ? formatPhone(activePhone) : "No active caller")}</span>
                 <span className="size-1 rounded-full bg-border" />
-                <span>Policy Bear agent cockpit</span>
+                <span>Lead intake, script, quotes, callbacks and compliance in one desk</span>
                 <span className="size-1 rounded-full bg-border" />
                 <span className="font-semibold text-brand-teal">{active ? `${active.direction} · ${active.state}` : "Standing by"}</span>
               </div>
@@ -608,14 +621,14 @@ export function RealtimeDialer() {
           </div>
 
           <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-            <div className="hidden rounded-xl border border-border/60 bg-card px-3 py-2 text-right sm:block">
+            <div className="hidden rounded-lg border border-border/60 bg-surface/45 px-3 py-2 text-right sm:block">
               <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Call Duration</p>
               <p className="font-display text-lg font-semibold text-brand-orange tabular-nums">{active ? clock(liveSeconds) : clock(stats?.talkSeconds ?? 0)}</p>
             </div>
             <Button
               variant={deskTab === "lead" ? "default" : "outline"}
               size="sm"
-              className="h-9 gap-1.5 rounded-xl"
+              className="h-9 gap-1.5 rounded-lg"
               onClick={() => setDeskTab("lead")}
             >
               <ClipboardList className="size-4" /> Lead
@@ -623,7 +636,7 @@ export function RealtimeDialer() {
             <Button
               variant={deskTab === "script" ? "default" : "outline"}
               size="sm"
-              className="h-9 gap-1.5 rounded-xl"
+              className="h-9 gap-1.5 rounded-lg"
               onClick={() => setDeskTab("script")}
             >
               <BookOpenText className="size-4" /> Script
@@ -631,7 +644,7 @@ export function RealtimeDialer() {
             <Button
               variant={deskTab === "quotes" ? "default" : "outline"}
               size="sm"
-              className="h-9 gap-1.5 rounded-xl"
+              className="h-9 gap-1.5 rounded-lg"
               onClick={() => setDeskTab("quotes")}
             >
               <Star className="size-4" /> Quotes
@@ -640,7 +653,7 @@ export function RealtimeDialer() {
               phone={activePhone}
               contactName={activeContactName}
               trigger={
-                <Button variant="outline" size="icon" className="size-9 rounded-xl" aria-label="Pop out agent script" title="Pop out agent script">
+                <Button variant="outline" size="icon" className="size-9 rounded-lg" aria-label="Pop out agent script" title="Pop out agent script">
                   <BookOpenText className="size-4" />
                 </Button>
               }
@@ -648,7 +661,7 @@ export function RealtimeDialer() {
             <Button
               variant="outline"
               size="icon"
-              className="size-9 rounded-xl"
+              className="size-9 rounded-lg"
               title={sound ? "Mute desk audio" : "Enable desk audio"}
               aria-label={sound ? "Mute desk audio" : "Enable desk audio"}
               onClick={() => setSound((s) => !s)}
@@ -659,7 +672,7 @@ export function RealtimeDialer() {
               <Button
                 variant="destructive"
                 size="sm"
-                className="h-9 rounded-xl"
+                className="h-9 rounded-lg"
                 onClick={() => controlMutation.mutate({ callId: active.id, action: "hangup" })}
               >
                 <PhoneOff className="mr-1.5 size-4" /> End
@@ -668,7 +681,7 @@ export function RealtimeDialer() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 px-4 py-3 sm:grid-cols-3 lg:grid-cols-6 lg:px-6">
+        <div className="grid grid-cols-2 gap-2 bg-surface/25 px-4 py-3 sm:grid-cols-3 lg:grid-cols-6 lg:px-6">
           {[
             { label: "Queue", value: stats?.waiting ?? 0, icon: PhoneIncoming, tone: "bg-success/15 text-success", live: (stats?.waiting ?? 0) > 0 },
             { label: "Calls", value: stats?.calls ?? 0, icon: PhoneCall, tone: "bg-brand/12 text-brand" },
@@ -677,7 +690,7 @@ export function RealtimeDialer() {
             { label: "Sales", value: stats?.sales ?? 0, icon: Rocket, tone: "bg-success/15 text-success" },
             { label: "Connect", value: `${connectRate}%`, icon: Signal, tone: "bg-brand-teal/15 text-brand-teal" },
           ].map((s) => (
-            <div key={s.label} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-xl border border-border/60 bg-card px-3 py-2 shadow-sm">
+            <div key={s.label} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-lg border border-border/60 bg-card px-3 py-2 shadow-sm">
               <span className={cn("relative grid size-9 shrink-0 place-items-center rounded-lg", s.tone)}>
                 <s.icon className="size-4" />
                 {s.live ? <span className="absolute -right-0.5 -top-0.5 size-2 animate-pulse rounded-full bg-success" /> : null}
@@ -704,9 +717,49 @@ export function RealtimeDialer() {
         </Card>
       ) : null}
 
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(290px,0.65fr)]">
+        <Card className="rounded-xl border-border/70 bg-card p-4 shadow-card">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+            <div className="min-w-0">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Current workstream</p>
+              <h2 className="truncate font-display text-lg font-semibold text-foreground">{priorityAction}</h2>
+              <p className="mt-1 truncate text-sm text-muted-foreground">
+                {activeContactName ?? lead?.contact_name ?? "No customer selected"}{activePhone ? ` · ${formatPhone(activePhone)}` : ""}
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 sm:min-w-[420px]">
+              <div className="rounded-lg border border-border/60 bg-surface/45 p-3">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Queue SLA</p>
+                <p className="mt-1 font-display text-xl font-semibold text-foreground tabular-nums">{nextQueued ? clock(secondsSince(nextQueued.queued_at)) : "Clear"}</p>
+              </div>
+              <div className="rounded-lg border border-border/60 bg-surface/45 p-3">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Due callbacks</p>
+                <p className="mt-1 font-display text-xl font-semibold text-foreground tabular-nums">{dueCallbacks}</p>
+              </div>
+              <div className="rounded-lg border border-border/60 bg-surface/45 p-3">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Compliance</p>
+                <p className={cn("mt-1 truncate text-sm font-semibold", dncBlocked ? "text-destructive" : "text-success")}>{complianceStatus}</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+        <Card className="rounded-xl border-border/70 bg-brand-ink p-4 text-brand-ink-foreground shadow-card">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+            <div className="min-w-0">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-brand-ink-foreground/55">Next best move</p>
+              <h2 className="truncate font-display text-lg font-semibold">{priorityAction}</h2>
+              <p className="mt-1 text-xs text-brand-ink-foreground/60">Use the center workspace, then complete the outcome before moving on.</p>
+            </div>
+            <Button size="sm" className="shrink-0 rounded-lg bg-brand-yellow text-brand-yellow-foreground hover:bg-brand-yellow/90" onClick={() => active ? setDeskTab("lead") : nextQueued ? setDeskTab("queue") : dueCallbacks > 0 ? setDeskTab("callbacks") : setDeskTab("power")}>
+              Open
+            </Button>
+          </div>
+        </Card>
+      </div>
+
       <div className="grid min-h-[720px] gap-4 xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(320px,390px)]">
         <aside className="space-y-4">
-          <Card className="overflow-hidden rounded-2xl border-border/70 bg-card shadow-card">
+          <Card className="overflow-hidden rounded-xl border-border/70 bg-card shadow-card">
             <div className="border-b border-border/60 px-4 py-3">
               <div className="flex items-center justify-between gap-2">
                 <div>
@@ -719,7 +772,7 @@ export function RealtimeDialer() {
             <ScrollArea className="h-[250px]">
               <div className="space-y-2 p-3">
                 {(data?.queue ?? []).length === 0 ? (
-                  <div className="grid place-items-center gap-2 rounded-xl border border-dashed border-border bg-surface/45 py-8 text-center">
+                  <div className="grid place-items-center gap-2 rounded-lg border border-dashed border-border bg-surface/45 py-8 text-center">
                     <Volume2 className="size-5 text-muted-foreground" />
                     <p className="max-w-[12rem] text-xs text-muted-foreground">No callers waiting. New inbound calls appear here instantly.</p>
                   </div>
@@ -727,7 +780,7 @@ export function RealtimeDialer() {
                   (data?.queue ?? []).slice(0, 4).map((c, i) => {
                     const waited = secondsSince(c.queued_at);
                     return (
-                      <div key={c.id} className="rounded-xl border border-border/60 bg-surface/40 p-3">
+                      <div key={c.id} className="rounded-lg border border-border/60 bg-surface/40 p-3">
                         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                           <div className="min-w-0">
                             <p className="truncate text-sm font-semibold text-foreground">{c.contact_name ?? formatPhone(c.phone_e164)}</p>
@@ -751,7 +804,7 @@ export function RealtimeDialer() {
             </div>
           </Card>
 
-          <Card className="rounded-2xl border-border/70 bg-card p-4 shadow-card">
+          <Card className="rounded-xl border-border/70 bg-card p-4 shadow-card">
             <div className="mb-3 flex items-center justify-between gap-2">
               <div>
                 <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Agent Status</p>
@@ -762,15 +815,15 @@ export function RealtimeDialer() {
               </Button>
             </div>
             <div className="space-y-2">
-              <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-xl border border-border/60 bg-surface/45 px-3 py-2 text-sm font-medium">
+              <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-border/60 bg-surface/45 px-3 py-2 text-sm font-medium">
                 <span className="min-w-0 truncate">Ready to receive</span>
                 <Switch checked={ready} onCheckedChange={setReady} />
               </label>
-              <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-xl border border-border/60 bg-surface/45 px-3 py-2 text-sm font-medium">
+              <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-border/60 bg-surface/45 px-3 py-2 text-sm font-medium">
                 <span className="min-w-0 truncate">Auto-answer queue</span>
                 <Switch checked={autoAnswer} onCheckedChange={setAutoAnswer} />
               </label>
-              <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-xl border border-border/60 bg-surface/45 px-3 py-2 text-sm font-medium">
+              <label className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-border/60 bg-surface/45 px-3 py-2 text-sm font-medium">
                 <span className="min-w-0 truncate">Auto-load leads</span>
                 <Switch checked={autoNext} onCheckedChange={setAutoNext} />
               </label>
@@ -784,7 +837,7 @@ export function RealtimeDialer() {
             </div>
           </Card>
 
-          <Card className="rounded-2xl border-border/70 bg-card p-4 shadow-card">
+          <Card className="rounded-xl border-border/70 bg-card p-4 shadow-card">
             <div className="mb-3 flex items-center justify-between gap-2">
               <div>
                 <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">Callbacks</p>
@@ -794,10 +847,10 @@ export function RealtimeDialer() {
             </div>
             <div className="space-y-2">
               {callbacks.slice(0, 3).length === 0 ? (
-                <p className="rounded-xl border border-dashed border-border bg-surface/45 p-3 text-xs text-muted-foreground">No open callbacks right now.</p>
+                  <p className="rounded-lg border border-dashed border-border bg-surface/45 p-3 text-xs text-muted-foreground">No open callbacks right now.</p>
               ) : (
                 callbacks.slice(0, 3).map((c) => (
-                  <button key={c.id} type="button" className="w-full rounded-xl border border-border/60 bg-surface/35 p-3 text-left transition-colors hover:bg-surface" onClick={() => setDeskTab("callbacks")}>
+                  <button key={c.id} type="button" className="w-full rounded-lg border border-border/60 bg-surface/35 p-3 text-left transition-colors hover:bg-surface" onClick={() => setDeskTab("callbacks")}>
                     <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
                       <span className="truncate text-sm font-semibold">{c.contact_name ?? formatPhone(c.phone_e164)}</span>
                       <Badge className={cn("border-0", CALLBACK_STATUS_TONE[(c.status as CallbackStatus) ?? "Pending"])}>{c.status}</Badge>
@@ -813,11 +866,11 @@ export function RealtimeDialer() {
           </Card>
         </aside>
 
-        <Card className="min-w-0 overflow-hidden rounded-2xl border-border/70 bg-card shadow-card">
+        <Card className="min-w-0 overflow-hidden rounded-xl border-border/70 bg-card shadow-card">
           <Tabs value={deskTab} onValueChange={(value) => setDeskTab(value as DeskTab)}>
             <div className="border-b border-border/60 bg-card px-4 py-3">
               <div className="overflow-x-auto pb-1">
-                <TabsList className="h-11 min-w-max justify-start gap-1 rounded-xl bg-surface/70 p-1">
+                <TabsList className="h-11 min-w-max justify-start gap-1 rounded-lg bg-surface/70 p-1">
                   <TabsTrigger value="lead" className="rounded-lg px-3 data-[state=active]:bg-card data-[state=active]:text-brand-teal">
                     <ClipboardList className="mr-1.5 size-4" /> Lead Card
                   </TabsTrigger>

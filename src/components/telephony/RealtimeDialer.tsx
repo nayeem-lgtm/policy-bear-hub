@@ -59,6 +59,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
@@ -1216,46 +1217,40 @@ export function RealtimeDialer() {
         <Card className="min-h-[640px] overflow-hidden rounded-xl p-0 shadow-card">
           <Tabs value={deskTab} onValueChange={(value) => setDeskTab(value as DeskTab)}>
             <div className="sticky top-[4.25rem] z-10 border-b border-border/60 bg-card/95 px-3 py-2 backdrop-blur">
-              <div className="flex items-center gap-2 overflow-x-auto">
-                <Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label="Scroll tools left">
-                  <ArrowLeftRight className="size-3.5 rotate-180" />
-                </Button>
-                <TabsList className="h-10 justify-start gap-1 rounded-full bg-surface/70 p-1">
-                <TabsTrigger value="lead" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                  <ClipboardList className="mr-1.5 size-4" /> Lead card
-                </TabsTrigger>
-                <TabsTrigger value="quotes" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                  <Star className="mr-1.5 size-4" /> Quotes
-                </TabsTrigger>
-                <TabsTrigger value="queue" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                  <PhoneIncoming className="mr-1.5 size-4" /> Queue
-                  {(data?.queue.length ?? 0) > 0 ? (
-                    <Badge variant="secondary" className="ml-2">
-                      {data?.queue.length}
-                    </Badge>
-                  ) : null}
-                </TabsTrigger>
-                <TabsTrigger value="callbacks" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                  <CalendarClock className="mr-1.5 size-4" /> Callbacks
-                </TabsTrigger>
-                <TabsTrigger value="power" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                  <Gauge className="mr-1.5 size-4" /> Power dialer
-                </TabsTrigger>
-                <TabsTrigger value="history" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                  <History className="mr-1.5 size-4" /> Today
-                </TabsTrigger>
-                <TabsTrigger value="compliance" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
-                  <ShieldOff className="mr-1.5 size-4" /> DNC
-                  {(blocked.data?.events.length ?? 0) > 0 ? (
-                    <Badge variant="secondary" className="ml-2">
-                      {blocked.data?.events.length}
-                    </Badge>
-                  ) : null}
-                </TabsTrigger>
+              <div className="overflow-x-auto pb-1">
+                <TabsList className="h-10 min-w-max justify-start gap-1 rounded-full bg-surface/70 p-1">
+                  <TabsTrigger value="lead" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                    <ClipboardList className="mr-1.5 size-4" /> Lead card
+                  </TabsTrigger>
+                  <TabsTrigger value="quotes" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                    <Star className="mr-1.5 size-4" /> Quotes
+                  </TabsTrigger>
+                  <TabsTrigger value="queue" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                    <PhoneIncoming className="mr-1.5 size-4" /> Queue
+                    {(data?.queue.length ?? 0) > 0 ? (
+                      <Badge variant="secondary" className="ml-2">
+                        {data?.queue.length}
+                      </Badge>
+                    ) : null}
+                  </TabsTrigger>
+                  <TabsTrigger value="callbacks" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                    <CalendarClock className="mr-1.5 size-4" /> Callbacks
+                  </TabsTrigger>
+                  <TabsTrigger value="power" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                    <Gauge className="mr-1.5 size-4" /> Power dialer
+                  </TabsTrigger>
+                  <TabsTrigger value="history" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                    <History className="mr-1.5 size-4" /> Today
+                  </TabsTrigger>
+                  <TabsTrigger value="compliance" className="rounded-full px-3 data-[state=active]:bg-card data-[state=active]:text-brand">
+                    <ShieldOff className="mr-1.5 size-4" /> DNC
+                    {(blocked.data?.events.length ?? 0) > 0 ? (
+                      <Badge variant="secondary" className="ml-2">
+                        {blocked.data?.events.length}
+                      </Badge>
+                    ) : null}
+                  </TabsTrigger>
               </TabsList>
-                <Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label="Scroll tools right">
-                  <ArrowLeftRight className="size-3.5" />
-                </Button>
               </div>
             </div>
 
@@ -1343,17 +1338,12 @@ export function RealtimeDialer() {
                       {quoteResults.map((plan) => (
                         <div key={plan.id} className="rounded-lg border border-border/60 bg-card p-3 shadow-sm">
                           <div className="flex flex-wrap items-start justify-between gap-3">
-                            <button
-                              type="button"
-                              aria-pressed={quoteCompare.includes(plan.id)}
-                              className={cn(
-                                "mt-1 grid size-5 place-items-center rounded border border-primary text-primary transition-colors",
-                                quoteCompare.includes(plan.id) && "bg-primary text-primary-foreground",
-                              )}
-                              onClick={() => toggleQuoteCompare(plan.id)}
-                            >
-                              {quoteCompare.includes(plan.id) ? <FileCheck2 className="size-3.5" /> : null}
-                            </button>
+                            <Checkbox
+                              checked={quoteCompare.includes(plan.id)}
+                              onCheckedChange={() => toggleQuoteCompare(plan.id)}
+                              className="mt-1"
+                              aria-label={`Compare ${plan.planName}`}
+                            />
                             <div className="min-w-[220px] flex-1">
                               <div className="flex flex-wrap items-center gap-2">
                                 <p className="text-sm font-semibold text-foreground">{plan.planName}</p>
